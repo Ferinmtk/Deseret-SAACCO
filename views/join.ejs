@@ -1,0 +1,80 @@
+<%- include('partials/header') %>
+
+<!-- HERO SECTION -->
+<section class="join-hero d-flex align-items-center text-white text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Join Deseret SACCO</h1>
+    <p class="lead">Become part of a trusted LDS financial family in Kenya.</p>
+  </div>
+</section>
+
+<!-- WHY JOIN SECTION -->
+<section class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Why Join?</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <h5> Faith-Aligned Finance</h5>
+        <p>We operate by gospel principles of stewardship and service.</p>
+      </div>
+      <div class="col-md-4">
+        <h5> Affordable Loans</h5>
+        <p>Access fair and flexible credit solutions for real needs.</p>
+      </div>
+      <div class="col-md-4">
+        <h5> Uplift Together</h5>
+        <p>We grow as a united Church workforce and member community.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGN-UP FORM -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-4">Get Started</h2>
+    <form class="mx-auto" style="max-width: 600px;">
+      <div class="mb-3">
+        <label for="fullName" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="fullName" placeholder="e.g. Mary Njeri">
+      </div>
+      
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="tel" class="form-control" id="phone" placeholder="+2547...">
+      </div>
+
+      <div class="mb-3">
+        <label for="employment" class="form-label">Church Employment Status</label>
+        <select class="form-select" id="employment">
+          <option selected disabled>Select one</option>
+          <option>Church Employee</option>
+          <option>Self-employed Member</option>
+          <option>Volunteer/Service Missionary</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Services You’re Interested In</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="Savings" id="savings">
+          <label class="form-check-label" for="savings">Savings</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="Loans" id="loans">
+          <label class="form-check-label" for="loans">Loans</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="Insurance" id="insurance">
+          <label class="form-check-label" for="insurance">Insurance</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="Investments" id="investments">
+          <label class="form-check-label" for="investments">Investments</label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Apply to Join</button>
+    </form>
+  </div>
+</section>

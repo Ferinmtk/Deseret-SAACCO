@@ -1,0 +1,202 @@
+<%- include('partials/header') %>
+
+<!-- HERO SECTION -->
+<section class="services-hero d-flex align-items-center text-white text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold">Our Services</h1>
+    <p class="lead">Empowering LDS members in Kenya through reliable financial solutions.</p>
+  </div>
+</section>
+
+<!-- SERVICES GRID -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center g-4">
+
+      <!-- Savings Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#savingsModal">
+          <div class="card-body">
+            <i class="bi bi-piggy-bank-fill display-4 text-primary mb-3"></i>
+            <h5 class="card-title fw-bold">Savings</h5>
+            <p class="card-text">Start building your secure future today.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loans Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#loansModal">
+          <div class="card-body">
+            <i class="bi bi-cash-coin display-4 text-success mb-3"></i>
+            <h5 class="card-title fw-bold">Loans</h5>
+            <p class="card-text">Accessible and member-friendly loans.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insurance Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#insuranceModal">
+          <div class="card-body">
+            <i class="bi bi-shield-plus display-4 text-danger mb-3"></i>
+            <h5 class="card-title fw-bold">Insurance</h5>
+            <p class="card-text">Protect your family with peace of mind.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Investment Card -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#investmentsModal">
+          <div class="card-body">
+            <i class="bi bi-graph-up-arrow display-4 text-warning mb-3"></i>
+            <h5 class="card-title fw-bold">Investments</h5>
+            <p class="card-text">Smart and secure growth opportunities.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAVINGS MODAL -->
+<div class="modal fade" id="savingsModal" tabindex="-1" aria-labelledby="savingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="savingsModalLabel">Savings Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Our SACCO offers savings plans with competitive interest rates (4–6% annually). Members can save weekly or monthly, with flexible withdrawal options and no hidden fees. Your contributions build stability for both you and the entire LDS community.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOANS MODAL -->
+<div class="modal fade" id="loansModal" tabindex="-1" aria-labelledby="loansModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="loansModalLabel">Loans</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>We offer personal, emergency, and business loans at low interest (as low as 1% per month). Approval is fast and member-focused. Repayment periods are flexible and stress-free.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSURANCE MODAL -->
+<div class="modal fade" id="insuranceModal" tabindex="-1" aria-labelledby="insuranceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="insuranceModalLabel">Insurance Services</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Access affordable group insurance packages covering life, health, and emergency services. Members get premium coverage with gospel-centered transparency and peace of mind.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVESTMENTS MODAL -->
+<div class="modal fade" id="investmentsModal" tabindex="-1" aria-labelledby="investmentsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="investmentsModalLabel">Investment Options</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Invest your savings in SACCO-led real estate, short-term bonds, and cooperative projects. Receive annual dividends while helping your fellow saints grow financially.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TESTIMONIALS -->
+<section class="bg-white py-5 fade-up" id="testimonials">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">What Our Members Say</h2>
+
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+
+        <!-- Testimonial 1 -->
+        <div class="carousel-item active text-center">
+          <img src="/img/member1.jpg" class="rounded-circle mb-3" width="100" height="100" alt="John Kamau">
+          <blockquote class="blockquote">
+            <p class="mb-3 fst-italic">"Deseret SACCO helped me start my business with a loan that was so fair and easy to repay. I'm truly grateful."</p>
+            <footer class="blockquote-footer">John Kamau <cite title="Nairobi Stake">Nairobi Stake</cite></footer>
+          </blockquote>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="carousel-item text-center">
+          <img src="/img/member2.jpg" class="rounded-circle mb-3" width="100" height="100" alt="Mary Mueni">
+          <blockquote class="blockquote">
+            <p class="mb-3 fst-italic">"I feel safe saving with Deseret SACCO — it's run by people who share my faith and values."</p>
+            <footer class="blockquote-footer">Mary Mueni <cite title="Westlands Ward">Westlands Ward</cite></footer>
+          </blockquote>
+        </div>
+
+        <!-- Testimonial 3 -->
+        <div class="carousel-item text-center">
+          <img src="/img/member3.jpg" class="rounded-circle mb-3" width="100" height="100" alt="Elder Mboya">
+          <blockquote class="blockquote">
+            <p class="mb-3 fst-italic">"Their insurance plan helped my family during a tough emergency. I'll never forget that support."</p>
+            <footer class="blockquote-footer">Elder Mboya <cite title="Church Workforce">Church Workforce</cite></footer>
+          </blockquote>
+        </div>
+
+      </div>
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+    <div class="text-center mt-4">
+
+  </div>
+</section>
+<!-- Testimonial Form Modal -->
+<div class="modal fade" id="testimonialFormModal" tabindex="-1" aria-labelledby="testimonialFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="testimonialFormModalLabel">Share Your Testimony</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="memberName" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="memberName" placeholder="Mary Mueni">
+          </div>
+          <div class="mb-3">
+            <label for="memberWard" class="form-label">Ward / Stake</label>
+            <input type="text" class="form-control" id="memberWard" placeholder="Westlands Ward">
+          </div>
+          <div class="mb-3">
+            <label for="memberTestimony" class="form-label">Testimony</label>
+            <textarea class="form-control" id="memberTestimony" rows="4" placeholder="Describe how Deseret SACCO has helped you..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Submit Testimony</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%- include('partials/footer') %>

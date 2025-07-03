@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+
+<section class="login-wrapper">
+  <div class="login-card">
+    <h3 class="text-center">Member Login</h3>
+    
+    <form>
+      <div class="mb-3">
+        <input type="text" class="form-control" placeholder="Member ID" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" class="form-control" placeholder="Password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+    </form>
+
+    <div class="text-center mb-3">OR</div>
+
+    <button class="btn btn-google w-100 mb-3">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon">
+      Login with Google
+    </button>
+
+    <p class="text-center mt-3">Don’t have an account? <a href="/portal/signup" class="text-info">Sign Up</a></p>
+  </div>
+</section>
+
+<%- include('../partials/footer') %>

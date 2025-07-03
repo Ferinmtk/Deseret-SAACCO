@@ -1,0 +1,279 @@
+/* Reset default spacing */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: clamp(16px, 1.2vw, 20px);
+  scroll-behavior: smooth;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Remove default spacing from body that causes gaps */
+body {
+  overflow-x: hidden;
+}
+
+/* Navbar overlay on hero */
+.custom-navbar {
+  background: transparent;
+  transition: background-color 1.3s ease;
+  padding: 1rem 1rem;
+  z-index: 9999;
+}
+
+/* Dark background after scroll */
+.custom-navbar.scrolled {
+  background-color: rgba(35, 71, 53, 0.9);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand and links */
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  color: rgb(255, 255, 255) !important;
+  margin-left: 15px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #0dcaf0 !important;
+}
+
+
+/* HERO SECTION */
+.hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("/img/hero.jpeg") ;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  overflow: hidden;
+}
+
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.55); /* Darker overlay */
+  z-index: 0;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fade-In Scroll Animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.appear {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Section spacing */
+.scroll-section {
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+footer {
+  background: #02d1af;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+
+/*About Page*/
+.about-hero {
+  height: 60vh;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+              url('/img/saving.avif') center center / cover no-repeat;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+.about-content h2 {
+  color: #004d40;
+  margin-bottom: 15px;
+}
+
+.about-content ul li::before {
+  content: "✔";
+  color: #198754; /* Bootstrap green */
+  margin-right: 8px;
+}
+
+.about-content ul li::before {
+  content: "✔";
+  color: #0dcaf0;
+  margin-right: 8px;
+}
+
+
+/*Join Page*/
+.join-hero {
+  height: 60vh;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
+              url('/img/temple.jpg') center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.join-hero h1, .join-hero p {
+  color: #fff;
+}
+
+.form-check-label {
+  font-weight: 500;
+}
+
+.form-check {
+  margin-bottom: 8px;
+}
+
+/* Services*/
+.services-hero {
+  height: 60vh;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
+              url('/img/service.avif') center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.service-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.service-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 123, 255, 0.15);
+  filter: brightness(1.05);
+  z-index: 2;
+}
+
+.modal.fade .modal-dialog {
+  transform: translateY(30px);
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.modal.fade.show .modal-dialog {
+  transform: translateY(0);
+}
+
+blockquote {
+  font-size: 1.1rem;
+  color: #333;
+  padding: 20px;
+}
+
+.carousel .carousel-item {
+  min-height: 180px;
+}
+
+.carousel-item img {
+  object-fit: cover;
+  border: 3px solid #0dcaf0;
+}
+
+/* Fade-up animation */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-up.appear {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in, .fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.appear {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* Contact Hero Section */
+.contact-hero {
+  background: url("/img/contact.avif") no-repeat center center / cover;
+  height: 60vh;
+  position: relative;
+}
+
+.contact-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.contact-hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Contact form */
+form input, form textarea {
+  border-radius: 8px;
+  box-shadow: none;
+  border: 1px solid #ccc;
+}
+
+.map-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.map-button {
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  background-color: #004d40;
+  border: none;
+  transition: 0.3s ease-in-out;
+}
+
+.map-button:hover {
+  background-color: #00695c;
+  transform: scale(1.05);
+}
