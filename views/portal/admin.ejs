@@ -1,0 +1,171 @@
+<%- include('../partials/header') %>
+
+<!-- STYLES -->
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease-in-out;
+  }
+
+  :root {
+    --bg-color: #f5f8fa;
+    --text-color: #111;
+    --card-bg: white;
+  }
+
+  body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --card-bg: #1e1e1e;
+  }
+
+  .sidebar {
+    background: #00695c;
+    color: white;
+    height: 100vh;
+    padding: 2rem 1rem;
+    position: fixed;
+    width: 240px;
+  }
+
+  .sidebar h4 {
+    color: #fff;
+    margin-bottom: 2rem;
+  }
+
+  .sidebar a {
+    display: block;
+    color: #fff;
+    margin: 1rem 0;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .sidebar a:hover {
+    text-decoration: underline;
+  }
+
+  .main-content {
+    margin-left: 260px;
+    padding: 2rem;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    transition: transform 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .dark-toggle {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    background: #00695c;
+    border: none;
+    color: white;
+    border-radius: 30px;
+    padding: 8px 20px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+
+  canvas {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+</style>
+
+<!-- TOGGLE BUTTON -->
+<button class="dark-toggle" onclick="toggleDarkMode()">🌗 Toggle Theme</button>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h4>Deseret SACCO</h4>
+  <a href="#">Dashboard</a>
+  <a href="#">Members</a>
+  <a href="#">Savings</a>
+  <a href="#">Loans</a>
+  <a href="#">Messages</a>
+  <a href="#">Reports</a>
+  <a href="#">Logout</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <h2 class="mb-4">📊 Admin Dashboard Overview</h2>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card text-center">
+        <h6>Total Members</h6>
+        <h4>215</h4>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <h6>Savings</h6>
+        <h4>KES 12.4M</h4>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <h6>Loans</h6>
+        <h4>81 Active</h4>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <h6>Pending Apps</h6>
+        <h4>12</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART AREA -->
+  <div class="card mt-4">
+    <h5>Monthly Loan Disbursements</h5>
+    <canvas id="loansChart" height="100"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Chart.js loan graph
+  const ctx = document.getElementById('loansChart').getContext('2d');
+  const loansChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Loan Disbursed (KES)',
+        data: [200000, 350000, 250000, 400000, 380000, 420000],
+        fill: true,
+        borderColor: '#00695c',
+        backgroundColor: 'rgba(0, 105, 92, 0.1)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  // Dark mode toggle
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+  }
+</script>
+
+<%- include('../partials/footer') %>
