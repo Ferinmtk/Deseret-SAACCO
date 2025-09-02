@@ -475,7 +475,7 @@ form input, form textarea {
 .about-section .row.text-center .col-md-3:hover,
 .about-section .row.text-center .col-md-4:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 58px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 58px rgba(0,0,0,0.15);
   background: #f8f9fa;
 }
 
