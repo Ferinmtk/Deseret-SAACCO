@@ -105,7 +105,7 @@ footer {
 }
 
 
-/*About Page*/
+/* About Page Styling */
 .about-hero {
   height: 60vh;
   background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
@@ -117,23 +117,63 @@ footer {
   text-align: center;
 }
 
-
-.about-content h2 {
-  color: #004d40;
-  margin-bottom: 15px;
+.about-section h2,
+.about-section h3 {
+  color: #003c3c;
 }
 
-.about-content ul li::before {
-  content: "✔";
-  color: #198754; /* Bootstrap green */
-  margin-right: 8px;
+.about-section ul {
+  list-style: none;
+  padding-left: 0;
 }
 
-.about-content ul li::before {
+.about-section ul li::before {
   content: "✔";
   color: #0dcaf0;
   margin-right: 8px;
 }
+
+/* Fade-in base class */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero text animation (optional) */
+.about-hero h1,
+.about-hero p {
+  animation: slideInFromTop 3s ease-out forwards;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-90px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button hover animation */
+.btn-success:hover {
+  background-color: #157347;
+  transform: scale(1.05);
+  transition: 0.3s ease;
+}
+
+
+
+
+
+
 
 
 /*Join Page*/
@@ -169,20 +209,6 @@ footer {
   color: white;
 }
 
-.service-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
-  cursor: pointer;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #fff;
-}
-
-.service-card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 123, 255, 0.15);
-  filter: brightness(1.05);
-  z-index: 2;
-}
 
 .modal.fade .modal-dialog {
   transform: translateY(30px);
@@ -211,7 +237,7 @@ blockquote {
 /* Fade-up animation */
 .fade-up {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(20px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -230,6 +256,42 @@ blockquote {
   opacity: 1;
   transform: translateY(0);
 }
+
+.service-card {
+  background-color: #fff;
+  border-radius: 45px;
+  transition: all 1.5s ease;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: #050505;
+
+}
+
+.service-card:hover {
+  box-shadow: 0 0 95px rgba(0, 123, 255, 0.4);
+  transform: translateY(-30px);
+}
+
+.learn-more {
+  display: none;
+}
+
+.service-card:hover .learn-more {
+  display: inline-block;
+}
+
+.modal.fade .modal-dialog {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transform: translateY(-50px);
+  opacity: 10;
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0);
+  opacity: 10;
+}
+
 
 
 /* Contact Hero Section */
@@ -276,4 +338,179 @@ form input, form textarea {
 .map-button:hover {
   background-color: #00695c;
   transform: scale(1.05);
+}
+
+
+/* FAQ Section */
+.faq-section {
+  padding: 60px 20px;
+  background: #f8f9fa;
+}
+
+.faq-section .section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #004080;
+}
+
+.accordion {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.accordion-item {
+  margin-bottom: 15px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.accordion-header {
+  width: 100%;
+  text-align: left;
+  padding: 15px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: #e9f2ff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.accordion-header:hover {
+  background: #d6e8ff;
+}
+
+.accordion-header.active {
+  background: #004080;
+  color: #fff;
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding: 0 20px;
+}
+
+.accordion-body p,
+.accordion-body ol {
+  padding: 15px 0;
+  margin: 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+
+
+/* ===== ABOUT PAGE ===== */
+.about-hero {
+  background: url('/img/service.avif') center/cover no-repeat;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 3px 8px rgba(0,0,0,0.6);
+}
+
+.about-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.about-hero p {
+  font-size: 1.25rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Section Styling */
+.about-section h2,
+.about-section h3 {
+  color: #004b23;
+  margin-bottom: 15px;
+}
+
+.about-section p,
+.about-section li {
+  color: #333;
+  line-height: 1.7;
+}
+
+.about-section ul {
+  padding-left: 20px;
+}
+
+.about-section img {
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Principles Icons */
+.about-section .bi {
+  color: #198754;
+  transition: transform 0.3s ease;
+}
+
+.about-section .bi:hover {
+  transform: scale(1.2);
+}
+
+/* Directors & Supervisory Committees */
+.about-section .row.text-center .col-md-3,
+.about-section .row.text-center .col-md-4 {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.about-section .row.text-center .col-md-3:hover,
+.about-section .row.text-center .col-md-4:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 58px rgba(0,0,0,0.15);
+  background: #f8f9fa;
+}
+
+/* CTA Button */
+.about-section .btn-success {
+  background: #004b23;
+  border: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.about-section .btn-success:hover {
+  background: #198754;
+  transform: scale(1.05);
+}
+
+
+/* Member Cards */
+.member-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.member-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.member-card .member-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 3px solid #198754;
 }

@@ -1,0 +1,103 @@
+<%- include('partials/header') %>
+
+<section class="faq-section">
+  <div class="container">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+
+    <div class="accordion">
+
+      <!-- Membership -->
+      <div class="accordion-item">
+        <button class="accordion-header">How do I become a member of the Sacco?</button>
+        <div class="accordion-body">
+          <ol>
+            <li>The Sacco draws its membership from employees of The Church of Jesus Christ of Latter-day Saints, members' spouses, and children above 18 years of existing members.</li>
+            <li>Willing persons working in the Church Institution are only required to have an introductory letter from their employer stating willingness of the employer to offer check-off facility to the employee.</li>
+            <li>The entrance form will need to be completed and signed by the applicant before submitting it to the Sacco.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header">Is there a Registration Fee?</button>
+        <div class="accordion-body">
+          <p>Yes, a one-time registration fee is required when joining the Sacco. Please check with the office for the current rate.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header">Do I get a return on my Savings in the Sacco?</button>
+        <div class="accordion-body">
+          <p>Yes, members earn dividends and interest rebates on their savings and deposits, distributed annually depending on the Sacco’s performance.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header">When am I eligible for a loan from the Sacco after joining?</button>
+        <div class="accordion-body">
+          <p>Members become eligible for loans after consistently saving and meeting the minimum requirements set out in the Sacco by-laws.</p>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <button class="accordion-header">What do I need when applying for a loan?</button>
+        <div class="accordion-body">
+          <p>You will need a completed loan application form, proof of deposits, guarantors (if required), and any other documents requested by the Sacco.</p>
+        </div>
+      </div>
+
+      <!-- Keep repeating structure for all other questions -->
+      <% [
+        "How much loan can I qualify for?",
+        "How many loans can I be given by the Sacco/Can I apply for more than one loan?",
+        "Which Loan products are available for me?",
+        "Can I pay extra amounts outside payroll payments?",
+        "What is the maximum repayment period for a loan?",
+        "Must I have guarantors when applying for a loan?",
+        "What does a guarantor need to know before guaranteeing?",
+        "Can I pay off my loan in a lump sum?",
+        "Is it possible I extend the duration of my loan repayment?",
+        "What is the difference between Deposits and Share Capital?",
+        "Can I transfer my deposit to another member at the point I cease to be a member of the Sacco?",
+        "Can I continue being a member of the Sacco as an individual when I leave Catholic institution employment? How do I make my contributions?",
+        "Standing order",
+        "Why should I sign up for mobile banking (MSacco)?",
+        "When CBK reduces its base lending rate why is that the Sacco interest rate does not reduce?",
+        "How do I change my personal details in your database?",
+        "If I opened my account from Nairobi, can I access my account from any other Branch?",
+        "Is membership open to groups or chamas?",
+        "What is Category B Membership?",
+        "What is the relationship between Kirtland housing and Deseret Sacco?",
+        "How can I join Kirtland Housing cooperative?",
+        "Where are Deseret Sacco Offices located?",
+        "What is FOSA?",
+        "How fast does it take to issue/replace lost/renew expired ATM?",
+        "What happens when an ATM is used to withdraw money, money is not dispensed, and the transaction is recognized as a withdrawal and no funds were dispensed?",
+        "How do you register for mobile banking?",
+        "What do I do if I forget my Msacco PIN?",
+        "How much can one access through M-sacco per day and what are the charges?",
+        "Can I transfer money from my FOSA A/C to my bank account, or another person’s bank account?"
+      ].forEach(function(question) { %>
+        <div class="accordion-item">
+          <button class="accordion-header"><%= question %></button>
+          <div class="accordion-body">
+            <p>Answer coming from Sacco by-laws / management guidelines.</p>
+          </div>
+        </div>
+      <% }) %>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll(".accordion-header").forEach(button => {
+    button.addEventListener("click", () => {
+      const body = button.nextElementSibling;
+      button.classList.toggle("active");
+      body.style.maxHeight = body.style.maxHeight ? null : body.scrollHeight + "px";
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>

@@ -76,6 +76,10 @@ app.post('/join', (req, res) => {
 });
 
 
+app.get("/faqs", (req, res) => {
+  res.render("faqs");
+});
+
 
 // Start server
 const PORT = process.env.PORT || 3000;

@@ -2,18 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Deseret SACCO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deseret SACCO Society Limited</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar">
+  
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="/">Deseret SACCO</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+      <img src="/img/logo.png" alt="Deseret SACCO Logo" height="35" class="me-2">
+      Deseret SACCO
+    </a>
+    
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     
+    <!-- Links -->
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
@@ -21,10 +31,13 @@
         <li class="nav-item"><a class="nav-link" href="/services">Services</a></li>
         <li class="nav-item"><a class="nav-link" href="/join">Join</a></li>
         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="/portal/login">Portal</a></li>
-
+        <li class="nav-item">
+          <a class="btn btn-light btn-sm ms-lg-3" href="/portal/login">
+            Member Portal
+          </a>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
-
+<!-- End Navbar -->
