@@ -15,7 +15,7 @@
     <!-- Brand -->
     <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
       <img src="/img/logo.jpg" alt="Deseret SACCO Logo" height="35" class="me-2">
-      Deseret SACCO
+      Deseret Sacco Limited
     </a>
     
     <!-- Mobile Toggle -->
@@ -27,12 +27,14 @@
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="/services">Services</a></li>
-        <li class="nav-item"><a class="nav-link" href="/join">Join</a></li>
-        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="/services">Services & Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="/join">Join Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Contact Us</a></li>
+        
+        <!-- Member Portal button -->
         <li class="nav-item">
-          <a class="btn btn-light btn-sm ms-lg-3" href="/portal/login">
+          <a class="btn btn-light btn-sm ms-lg-3 portal-link" href="/portal/login">
             Member Portal
           </a>
         </li>
@@ -41,3 +43,21 @@
   </div>
 </nav>
 <!-- End Navbar -->
+
+<!-- Active Link Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll(".navbar-nav .nav-link, .portal-link");
+
+    links.forEach(link => {
+      if (link.getAttribute("href") === currentPath) {
+        link.classList.add("active");
+      }
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

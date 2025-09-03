@@ -80,6 +80,9 @@ app.get("/faqs", (req, res) => {
   res.render("faqs");
 });
 
+app.get("/resources", (req, res) => {
+  res.render("resources");
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
