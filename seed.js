@@ -4,7 +4,7 @@ const { all, run, tx, pool } = require('./db');
 const { hashPassword } = require('./lib/auth');
 const S = require('./lib/sacco');
 
-const TABLES = ['login_attempts', 'contact_messages', 'audit', 'loan_events', 'transactions', 'guarantees', 'loans', 'payments', 'requests', 'goals', 'nominees', 'members', 'staff', 'loan_products', 'settings'];
+const TABLES = ['mpesa_requests', 'login_attempts', 'contact_messages', 'audit', 'loan_events', 'transactions', 'guarantees', 'loans', 'payments', 'requests', 'goals', 'nominees', 'members', 'staff', 'loan_products', 'settings'];
 
 // Multi-row INSERT in chunks; returns the new ids in input order.
 async function insertMany(table, cols, rows) {

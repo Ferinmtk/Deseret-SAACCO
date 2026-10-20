@@ -15,10 +15,27 @@ const logEvent = (loanId, step, actor, note) =>
 const fullName = m => `${m.first_name} ${m.last_name}`;
 
 const products = () => all('SELECT * FROM loan_products ORDER BY position');
-const withEligibility = async (member, list) => {
+const withEligibility = async (member, list, topupOf) => {
   const position = await S.borrowerPosition(member);
-  return Promise.all(list.map(async p => ({ ...p, ...await S.eligibility(member, p, position) })));
+  return Promise.all(list.map(async p => ({ ...p, ...await S.eligibility(member, p, position, topupOf) })));
 };
+
+// A top-up must be on one of the member's own active loans with no arrears.
+// The new loan is the same product, and its payout first clears what's left on the old one.
+async function topupTarget(member, id) {
+  if (!id) return null;
+  const loan = (await S.memberLoans(member.id, ['disbursed'])).find(l => l.id === Number(id));
+  if (!loan || loan.state.arrears > 0) return null;
+  return { ...loan, clears: S.payoff(loan, loan.state.paid) };
+}
+
+// The products a member may apply for: all of them, or only the old loan's product for a top-up.
+async function applyOptions(member, topup) {
+  const list = await withEligibility(member, await products(), topup && topup.id);
+  if (!topup) return list;
+  return list.filter(p => p.code === topup.product).map(p => ({ ...p, max: p.max > topup.clears ? p.max : 0,
+    reasons: p.max > topup.clears ? p.reasons : [...p.reasons, `You can’t borrow more than the ${S.fmtKes(topup.clears)} you still owe right now.`] }));
+}
 
 router.get('/login', (req, res) => {
   if (req.session.memberId) return res.redirect('/portal');
@@ -255,28 +272,32 @@ router.get('/loans', async (req, res) => {
 });
 
 router.get('/loans/apply', async (req, res) => {
-  const list = await withEligibility(req.member, await products());
+  const topup = await topupTarget(req.member, req.query.topup);
+  const list = await applyOptions(req.member, topup);
   const selected = list.find(p => p.code === req.query.product) || list.find(p => p.max > 0) || list[0];
   const ownFree = (await S.guarantorCapacity(req.member.id)).free;
-  res.render('portal/apply', { title: 'Apply for a loan', products: list, selected, error: null, form: {}, ownFree });
+  res.render('portal/apply', { title: topup ? 'Top up a loan' : 'Apply for a loan', products: list, selected, error: null, form: {}, ownFree, topup });
 });
 
 router.post('/loans/apply', async (req, res) => {
   const m = req.member;
-  const list = await withEligibility(m, await products());
+  const topup = await topupTarget(m, req.body.topup_of);
+  if (req.body.topup_of && !topup) { req.flash('danger', 'That loan can’t be topped up. Clear any arrears first.'); return res.redirect('/portal/loans'); }
+  const list = await applyOptions(m, topup);
   const product = list.find(p => p.code === req.body.product);
   const principal = parseInt(req.body.amount, 10);
   const months = parseInt(req.body.months, 10);
   const guarantorNos = [].concat(req.body.guarantor_no || []).map(s => String(s).trim().toUpperCase()).filter(Boolean);
   const guarantorAmts = [].concat(req.body.guarantor_amount || []).map(n => parseInt(n, 10) || 0);
   const ownFree = (await S.guarantorCapacity(m.id)).free;
-  const fail = error => res.status(400).render('portal/apply', { title: 'Apply for a loan', products: list, selected: product || list[0], error, form: req.body, ownFree });
+  const fail = error => res.status(400).render('portal/apply', { title: topup ? 'Top up a loan' : 'Apply for a loan', products: list, selected: product || list[0], error, form: req.body, ownFree, topup });
 
   if (!product) return fail('Choose a loan product.');
   if (product.reasons.length) return fail(product.reasons[0]);
   if (!(principal >= 1000)) return fail('Enter the amount you want to borrow.');
   if (principal > product.max) return fail(`The most you can borrow on ${product.name} right now is ${S.fmtKes(product.max)}.`);
   if (!(months >= 1 && months <= product.max_months)) return fail(`Choose between 1 and ${product.max_months} months.`);
+  if (topup && principal <= topup.clears) return fail(`A top-up has to be more than the ${S.fmtKes(topup.clears)} you still owe.`);
 
   const guarantors = [];
   for (let i = 0; i < guarantorNos.length; i++) {
@@ -295,11 +316,13 @@ router.post('/loans/apply', async (req, res) => {
 
   const q = S.quote(product, principal, months);
   const loanId = await tx(async () => {
-    const id = (await run(`INSERT INTO loans (member_id, product, principal, months, rate_monthly, method, installment, total_payable, fee, purpose, status, applied_at)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'guarantors', ?)`,
+    const id = (await run(`INSERT INTO loans (member_id, product, principal, months, rate_monthly, method, installment, total_payable, fee, purpose, status, applied_at, topup_of)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'guarantors', ?, ?)`,
       m.id, product.code, principal, months, product.rate_monthly, product.method, q.installment, q.total, q.fee,
-      String(req.body.purpose || '').slice(0, 200), S.now())).lastInsertRowid;
-    await logEvent(id, 'applied', 'Member', `Applied for ${S.fmtKes(principal)} over ${months} months`);
+      String(req.body.purpose || '').slice(0, 200), S.now(), topup ? topup.id : null)).lastInsertRowid;
+    await logEvent(id, 'applied', 'Member', topup
+      ? `Top-up of loan #${topup.id}: ${S.fmtKes(principal)} over ${months} months, clearing ${S.fmtKes(topup.clears)}`
+      : `Applied for ${S.fmtKes(principal)} over ${months} months`);
     for (const g of guarantors) {
       await run(`INSERT INTO guarantees (loan_id, guarantor_id, amount, requested_at) VALUES (?, ?, ?, ?)`, id, g.id, g.amount, S.now());
     }
@@ -311,19 +334,49 @@ router.post('/loans/apply', async (req, res) => {
   res.redirect('/portal/loans/' + loanId);
 });
 
-router.get('/loans/:id', async (req, res, next) => {
+const SCHEDULE_STATUS = { paid: 'Paid', part: 'Part paid', overdue: 'Overdue', due: 'Upcoming', cleared: 'Cleared' };
+
+// One of the member's own loans, with its repayment position and schedule (each installment marked paid, part paid, overdue or upcoming).
+async function myLoan(req) {
   const loan = await one(`SELECT l.*, p.name AS product_name FROM loans l JOIN loan_products p ON p.code = l.product WHERE l.id = ? AND l.member_id = ?`,
     Number(req.params.id) || 0, req.member.id);
-  if (!loan) return next();
+  if (!loan) return null;
   loan.state = await S.loanState(loan);
+  const schedule = S.schedule(loan.principal, loan.months, loan.rate_monthly, loan.method, loan.disbursed_at);
+  let paid = loan.state.paid;
+  for (const row of schedule) { row.status = paid >= row.installment ? 'paid' : paid > 0 ? 'part' : (row.due && row.due < S.today() ? 'overdue' : 'due'); paid -= row.installment; }
+  // A closed loan owes nothing more, even if a top-up cleared it early (no future interest).
+  if (loan.status === 'closed') for (const row of schedule) if (row.status !== 'paid') row.status = 'cleared';
+  return { loan, schedule };
+}
+
+router.get('/loans/:id', async (req, res, next) => {
+  const found = await myLoan(req);
+  if (!found) return next();
+  const { loan, schedule } = found;
   const guarantors = await all(`SELECT g.*, m.first_name || ' ' || m.last_name AS name, m.member_no FROM guarantees g
                                 JOIN members m ON m.id = g.guarantor_id WHERE g.loan_id = ?`, loan.id);
   const events = await all('SELECT * FROM loan_events WHERE loan_id = ? ORDER BY created_at, id', loan.id);
   const repayments = await all(`SELECT * FROM transactions WHERE loan_id = ? AND account = 'loan' ORDER BY created_at DESC`, loan.id);
-  const schedule = S.schedule(loan.principal, loan.months, loan.rate_monthly, loan.method, loan.disbursed_at);
-  let paid = loan.state.paid;
-  for (const row of schedule) { row.status = paid >= row.installment ? 'paid' : paid > 0 ? 'part' : (row.due && row.due < S.today() ? 'overdue' : 'due'); paid -= row.installment; }
-  res.render('portal/loan', { title: loan.product_name, loan, guarantors, events, repayments, schedule });
+  const canTopUp = loan.status === 'disbursed' && !loan.state.arrears;
+  res.render('portal/loan', { title: loan.product_name, loan, guarantors, events, repayments, schedule, canTopUp, SCHEDULE_STATUS });
+});
+
+// Loan statement: ?format=csv for Excel, otherwise a printable page (Print / Save as PDF).
+router.get('/loans/:id/statement', async (req, res, next) => {
+  const found = await myLoan(req);
+  if (!found || !['disbursed', 'closed'].includes(found.loan.status)) return next();
+  const { loan, schedule } = found;
+  if (req.query.format === 'csv') {
+    return sendCsv(res, `deseret-sacco_${req.member.member_no}_loan-${loan.id}_schedule.csv`,
+      ['Installment', 'Due date', 'Principal', 'Interest', 'Installment amount', 'Balance after', 'Status'],
+      schedule.map(r => [r.no, r.due, r.principal, r.interest, r.installment, r.balance, SCHEDULE_STATUS[r.status]]));
+  }
+  let running = loan.total_payable;
+  const repayments = (await all(`SELECT * FROM transactions WHERE loan_id = ? AND account = 'loan' ORDER BY created_at, id`, loan.id))
+    .map(t => ({ ...t, balance: (running -= t.amount) }));
+  if (loan.status === 'closed' && repayments.length) repayments[repayments.length - 1].balance = 0;
+  res.render('portal/loan-statement', { loan, schedule, repayments, SCHEDULE_STATUS, clears: loan.status === 'disbursed' ? S.payoff(loan, loan.state.paid) : 0 });
 });
 
 router.get('/guarantees', async (req, res) => {

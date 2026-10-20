@@ -312,8 +312,20 @@ function loanAction(action, from, to, check) {
     if (!loan || loan.status !== from) return res.redirect('/admin/loans');
     const problem = check && await check(loan, req);
     if (problem) { req.flash('danger', problem); return res.redirect('/admin/loans/' + loan.id); }
-    const note = String(req.body.note || '').trim();
+    let note = String(req.body.note || '').trim();
     await tx(async () => {
+      // A top-up clears the old loan out of the new one before the rest is paid out.
+      if (action === 'disburse' && loan.topup_of) {
+        const old = await one('SELECT * FROM loans WHERE id = ?', loan.topup_of);
+        if (old && old.status === 'disbursed') {
+          const clears = S.payoff(old, (await S.loanState(old)).paid);
+          await run(`INSERT INTO transactions (member_id, loan_id, account, amount, description, created_at) VALUES (?, ?, 'loan', ?, ?, ?)`,
+            old.member_id, old.id, clears, `Cleared by top-up loan #${loan.id}`, S.now());
+          await run(`UPDATE loans SET status = 'closed' WHERE id = ?`, old.id);
+          await logEvent(old.id, 'closed', req.staff.name, `Cleared by top-up loan #${loan.id} (${S.fmtKes(clears)})`);
+          note = note || `Disbursed ${S.fmtKes(loan.principal - loan.fee - clears)} after clearing loan #${old.id} (${S.fmtKes(clears)}) and the ${S.fmtKes(loan.fee)} fee`;
+        }
+      }
       const col = { recommend: 'recommended_by', approve: 'approved_by', disburse: 'disbursed_by' }[action];
       await run(`UPDATE loans SET status = ?, ${col} = ?${action === 'disburse' ? ', disbursed_at = ?' : ''} WHERE id = ?`,
         ...(action === 'disburse' ? [to, req.staff.id, S.today(), loan.id] : [to, req.staff.id, loan.id]));
