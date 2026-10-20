@@ -32,6 +32,10 @@
   const setNav = () => navbar.classList.toggle('scrolled', window.scrollY > 50);
   window.addEventListener('scroll', setNav);
   setNav();
+  // On phones, give the open menu a solid background.
+  const menu = document.getElementById('navMenu');
+  menu.addEventListener('show.bs.collapse', () => navbar.classList.add('menu-open'));
+  menu.addEventListener('hidden.bs.collapse', () => navbar.classList.remove('menu-open'));
 
   // Gentle fade-in as sections scroll into view.
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {

@@ -3,6 +3,11 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Give each cell its column name, used as the label when tables stack on phones.
+  document.querySelectorAll('table.table-stack').forEach(t => {
+    const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (heads[i]) td.dataset.label = heads[i]; }));
+  });
   document.querySelectorAll('tr[data-href]').forEach(tr => tr.addEventListener('click', e => {
     if (!e.target.closest('a,button,form')) location.href = tr.dataset.href;
   }));
