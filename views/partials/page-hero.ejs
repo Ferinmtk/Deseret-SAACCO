@@ -1,4 +1,4 @@
-<section class="page-hero" style="background-image: url('<%= image %>')">
+<section class="page-hero" style="--hero-lg: url('/img/hero/<%= photo %>-1920.jpg'); --hero-sm: url('/img/hero/<%= photo %>-960.jpg'); background-position: <%= locals.focus || 'center' %>">
   <div class="container">
     <h1 class="display-5 fw-bold"><%= heading %></h1>
     <% if (locals.lead) { %><p class="lead mb-0"><%= lead %></p><% } %>
