@@ -137,22 +137,44 @@ body {
 }
 
 /* ===========================
-   HOME HERO: phone paying by M-Pesa
+   HERO SECTION (Homepage)
 =========================== */
-.hero-eyebrow { font-size: .85rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #eda547; margin-bottom: .75rem; }
-.home-hero {
-  background: radial-gradient(1100px 650px at 78% 45%, #12304a 0%, var(--brand) 62%);
-  color: #fff;
-  padding: 7rem 0 4rem;
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 6rem 0 3rem;
+  background: url("/img/hero/home-1920.jpg") center 30%/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   overflow: hidden;
 }
-.home-title { font-size: clamp(2.2rem, 5.2vw, 3.6rem); font-weight: 700; line-height: 1.06; letter-spacing: -.01em; margin-bottom: 1.1rem; }
-.home-lead { font-size: 1.15rem; line-height: 1.55; color: #cdd6df; max-width: 480px; margin: 0 auto; }
-@media (min-width: 992px) { .home-lead { margin: 0; } }
-.home-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem 1.4rem; margin-top: 1.75rem; font-size: .85rem; color: #9fb0c0; }
-.home-trust b { color: #fff; font-weight: 600; }
-@media (min-width: 992px) { .home-trust { justify-content: flex-start; } }
 
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+}
+
+.hero-eyebrow { font-size: .85rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #eda547; margin-bottom: .75rem; }
+.hero .lead { max-width: 640px; margin: 0 auto; }
+@media (min-width: 992px) { .hero .lead { margin: 0; } }
+/* The phone sits on the photo, so its caption is light */
+.hero .phone-note { color: #cdd6df; }
+.hero .phone-note b { color: #eda547; }
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===========================
+   M-PESA PHONE (Join page): PIN prompt, SMS, balance and loan limit rise
+=========================== */
 .phone {
   width: 290px; height: 560px; margin: 0 auto; padding: 10px;
   border-radius: 42px; background: #05090f;
@@ -171,10 +193,8 @@ body {
 .phone-limit b { display: block; font-size: 15px; color: var(--brand); font-variant-numeric: tabular-nums; }
 .phone-limit span { background: var(--brand-soft); color: var(--brand); font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 99px; }
 .phone .tx-list { margin: 12px 12px 0; border-radius: 12px; }
-.phone-note { text-align: center; font-size: .85rem; color: #9fb0c0; margin: 1.1rem 0 .25rem; }
-.phone-note b { color: #eda547; }
-.replay-btn { display: block; margin: 0 auto; background: none; border: 0; color: #9fb0c0; font-size: .85rem; text-decoration: underline; text-underline-offset: 3px; }
-.replay-btn:hover { color: #fff; }
+.phone-note { text-align: center; font-size: .85rem; color: var(--muted); margin: 1.1rem 0 .25rem; }
+.phone-note b { color: var(--brand); }
 
 /* Statement rows, shared by the phone and the member band */
 .tx-list { background: #fff; overflow: hidden; }
@@ -199,17 +219,17 @@ body {
 .sms p { margin: 5px 0 0; font-size: 11.5px; line-height: 1.42; color: #2a3744; }
 
 /* Before playing, the new deposit row is folded away */
-.home-hero:not(.done) .tx-new, .member-band:not(.done) .tx-new { max-height: 0; padding-top: 0; padding-bottom: 0; border-top-width: 0; }
-.home-hero.play .stk-scrim { animation: fadeIn .3s .5s forwards, fadeOut .3s 2.9s forwards; }
-.home-hero.play .stk { animation: sheetIn .45s .5s cubic-bezier(.2, .8, .2, 1) forwards, sheetOut .3s 2.9s forwards; }
-.home-hero.play .stk-pin i:nth-child(1) { animation: show .1s 1.3s forwards; }
-.home-hero.play .stk-pin i:nth-child(2) { animation: show .1s 1.55s forwards; }
-.home-hero.play .stk-pin i:nth-child(3) { animation: show .1s 1.8s forwards; }
-.home-hero.play .stk-pin i:nth-child(4) { animation: show .1s 2.05s forwards; }
-.home-hero.play .stk-ok { animation: press .35s 2.45s; }
-.home-hero.play .sms { animation: smsIn .5s 3.4s cubic-bezier(.2, .8, .2, 1) forwards, smsOut .45s 6.8s forwards; }
-.home-hero.play .tx-new { animation: rowIn .5s 4.6s forwards; }
-.home-hero.play .phone-bal { animation: goldFlash 2.4s 4.7s; }
+.pay-scene:not(.done) .tx-new, .stmt-scene:not(.done) .tx-new { max-height: 0; padding-top: 0; padding-bottom: 0; border-top-width: 0; }
+.pay-scene.play .stk-scrim { animation: fadeIn .3s .5s forwards, fadeOut .3s 2.9s forwards; }
+.pay-scene.play .stk { animation: sheetIn .45s .5s cubic-bezier(.2, .8, .2, 1) forwards, sheetOut .3s 2.9s forwards; }
+.pay-scene.play .stk-pin i:nth-child(1) { animation: show .1s 1.3s forwards; }
+.pay-scene.play .stk-pin i:nth-child(2) { animation: show .1s 1.55s forwards; }
+.pay-scene.play .stk-pin i:nth-child(3) { animation: show .1s 1.8s forwards; }
+.pay-scene.play .stk-pin i:nth-child(4) { animation: show .1s 2.05s forwards; }
+.pay-scene.play .stk-ok { animation: press .35s 2.45s; }
+.pay-scene.play .sms { animation: smsIn .5s 3.4s cubic-bezier(.2, .8, .2, 1) forwards, smsOut .45s 6.8s forwards; }
+.pay-scene.play .tx-new { animation: rowIn .5s 4.6s forwards; }
+.pay-scene.play .phone-bal { animation: goldFlash 2.4s 4.7s; }
 @keyframes fadeIn { to { opacity: 1; } }
 @keyframes fadeOut { to { opacity: 0; } }
 @keyframes show { to { opacity: 1; } }
@@ -250,18 +270,8 @@ body {
 .calc-fine { font-size: .75rem; color: var(--muted); margin: .8rem 0 0; }
 
 /* ===========================
-   MEMBER BAND: family photo with a live statement
+   LIVE STATEMENT (Join page): a deposit lands, then a guarantor accepts
 =========================== */
-.member-band { position: relative; padding: 5rem 0; color: #fff; background: var(--brand) url("/img/hero/home-1920.jpg") center 28%/cover no-repeat; }
-.member-band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 19, 29, .93) 0%, rgba(6, 19, 29, .8) 45%, rgba(6, 19, 29, .2) 80%); }
-.member-band .container { position: relative; }
-.member-band h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
-.member-band-lead { color: #cdd6df; font-size: 1.05rem; max-width: 480px; margin: .75rem auto 1.5rem; }
-@media (min-width: 992px) { .member-band-lead { margin-left: 0; } }
-.pay-details { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2.5rem; margin-top: 2rem; }
-.pay-details span { display: block; color: #b7c3cf; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
-.pay-details b { font-size: clamp(1.05rem, 4.6vw, 1.4rem); letter-spacing: .02em; overflow-wrap: anywhere; }
-@media (min-width: 992px) { .pay-details { justify-content: flex-start; } }
 .stmt-stack { max-width: 380px; margin: 0 auto; }
 .stmt { background: #fff; color: var(--brand); border-radius: 16px; overflow: hidden; box-shadow: 0 30px 60px rgba(0, 0, 0, .35); }
 .stmt-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
@@ -272,17 +282,14 @@ body {
 .stmt-toast { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; padding: 12px 14px; background: #fff; color: var(--brand); border-radius: 14px; box-shadow: 0 20px 40px rgba(0, 0, 0, .3); font-size: 12.5px; line-height: 1.45; opacity: 0; transform: translateY(10px); }
 .stmt-toast > span { flex: none; width: 30px; height: 30px; border-radius: 8px; background: #ecfdf3; color: #067647; display: grid; place-items: center; font-size: 18px; }
 .stmt-toast small { display: block; color: #8a9cae; font-size: 11px; }
-.member-band.play .tx-new { animation: rowIn .55s 1.1s forwards; }
-.member-band.play .stmt-toast { animation: sheetIn .5s 3.6s cubic-bezier(.2, .8, .2, 1) forwards; }
-.member-band.done .stmt-toast { opacity: 1; transform: none; }
+.stmt-scene.play .tx-new { animation: rowIn .55s 1.1s forwards; }
+.stmt-scene.play .stmt-toast { animation: sheetIn .5s 3.6s cubic-bezier(.2, .8, .2, 1) forwards; }
+.stmt-scene.done .stmt-toast { opacity: 1; transform: none; }
 
-/* Phones: a smaller handset so the headline still leads */
+/* Phones: a smaller handset */
 @media (max-width: 575.98px) {
-  .home-hero { padding-top: 6rem; }
   .phone { width: 260px; height: 500px; }
   .stk { top: 140px; }
-  .member-band { padding: 4rem 0; }
-  .member-band::before { background: rgba(6, 19, 29, .8); }
   .calc { padding: 1.25rem 1.1rem; }
 }
 
@@ -449,7 +456,7 @@ form input, form textarea {
 }
 @media (max-width: 768px) {
   .page-hero { background-image: var(--hero-sm); }
-  .member-band { background-image: url("/img/hero/home-960.jpg"); }
+  .hero { background-image: url("/img/hero/home-960.jpg"); }
 }
 .page-hero::before { content: ""; position: absolute; inset: 0; background: rgba(6, 19, 29, 0.62); }
 .page-hero .container { position: relative; }
@@ -483,6 +490,10 @@ form input, form textarea {
 }
 
 /* Payment details box */
+
+.pay-box { background: var(--brand); color: #fff; border-radius: 16px; padding: 2rem; }
+.pay-box .label { color: #b7c3cf; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+.pay-box .value { font-size: clamp(1.05rem, 4.6vw, 1.5rem); font-weight: 700; letter-spacing: .02em; overflow-wrap: anywhere; }
 
 .portal-btn { font-weight: 600; color: var(--brand) !important; }
 
