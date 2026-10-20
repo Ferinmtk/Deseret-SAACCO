@@ -388,9 +388,22 @@ router.post('/requests/:id', allow('handleRequests'), async (req, res) => {
   const r = await one(`SELECT * FROM requests WHERE id = ? AND status = 'pending'`, idParam(req));
   if (!r) return res.redirect('/admin/approvals');
   const approved = req.body.decision === 'approve';
-  await run('UPDATE requests SET status = ?, handled_by = ? WHERE id = ?', approved ? 'approved' : 'rejected', req.staff.id, r.id);
-  await audit(req.staff.name, approved ? 'Deduction change actioned' : 'Deduction change rejected', 'member', r.member_id, r.details);
-  req.flash('success', approved ? 'Marked as done. Remember to update the payroll check-off schedule.' : 'Request rejected.');
+  const isNominee = r.type === 'nominee_change';
+  await tx(async () => {
+    await run('UPDATE requests SET status = ?, handled_by = ? WHERE id = ?', approved ? 'approved' : 'rejected', req.staff.id, r.id);
+    // A confirmed nominee change replaces the member's nominees.
+    if (approved && isNominee) {
+      await run('DELETE FROM nominees WHERE member_id = ?', r.member_id);
+      for (const n of JSON.parse(r.details).nominees) {
+        await run('INSERT INTO nominees (member_id, name, relationship, id_number, phone, address, share_pct) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          r.member_id, n.name, n.relationship, n.id_number || null, n.phone || null, n.address || null, n.share_pct);
+      }
+    }
+  });
+  const what = isNominee ? 'Nominee change' : 'Deduction change';
+  await audit(req.staff.name, `${what} ${approved ? (isNominee ? 'confirmed' : 'actioned') : 'rejected'}`, 'member', r.member_id, r.details);
+  req.flash('success', !approved ? 'Request rejected. The member can see this in their portal.'
+    : isNominee ? 'Nominees updated. The member’s new nominees are now on file.' : 'Marked as done. Remember to update the payroll check-off schedule.');
   res.redirect('/admin/approvals');
 });
 

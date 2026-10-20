@@ -4,7 +4,7 @@
      { show: can.approveMember, n: counts.pendingMembers, text: 'New members to approve', href: '/admin/approvals', icon: 'person-plus' },
      { show: can.approvePayment, n: counts.pendingPayments, text: 'Payments to verify', href: '/admin/payments?status=pending', icon: 'receipt' },
      { show: !can.approvePayment && staff.role === 'clerk', n: counts.memberCodes, text: 'M-Pesa codes from members to verify', href: '/admin/approvals', icon: 'phone' },
-     { show: can.handleRequests, n: counts.requests, text: 'Deduction change requests', href: '/admin/approvals', icon: 'arrow-left-right' },
+     { show: can.handleRequests, n: counts.requests, text: 'Nominee and deduction requests', href: '/admin/approvals', icon: 'arrow-left-right' },
      { show: can.appraise, n: counts.appraisal, text: 'Loans to appraise', href: '/admin/loans', icon: 'clipboard-check' },
      { show: can.approveLoan, n: counts.recommended, text: 'Loans to approve', href: '/admin/loans', icon: 'check2-square' },
      { show: can.disburse, n: counts.approved, text: 'Loans to disburse', href: '/admin/loans', icon: 'send' },
