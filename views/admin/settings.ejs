@@ -29,12 +29,36 @@
   <% if (!ro) { %><button class="btn btn-primary mb-4">Save changes</button><% } %>
   </fieldset>
 </form>
-<div class="card">
-  <div class="card-header"><i class="bi bi-person-badge"></i> Staff & roles</div>
-  <div class="table-responsive"><table class="table">
-    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last sign-in</th></tr></thead>
-    <tbody><% for (const s of staffList) { %><tr><td><%= s.name %></td><td class="small"><%= s.email %></td><td><%= ROLE_LABELS[s.role] %></td><td class="small"><%= s.last_login ? S.fmtDate(s.last_login) : '—' %></td></tr><% } %></tbody>
+<div class="card" id="staff">
+  <div class="card-header"><i class="bi bi-person-badge"></i> Staff & leadership logins</div>
+  <div class="card-body small text-muted border-bottom">A login belongs to the office, not the person. When someone leaves office, switch off their login and add one for whoever takes over. Their member account stays as it is.</div>
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last sign-in</th><th></th></tr></thead>
+    <tbody><% for (const s of staffList) { %>
+      <tr class="<%= s.active ? '' : 'text-muted' %>">
+        <td><%= s.name %><% if (!s.active) { %> <span class="pill pill-muted">Switched off</span><% } else if (s.must_change_password) { %> <span class="pill pill-warn">Not signed in yet</span><% } %></td>
+        <td class="small"><%= s.email %></td><td><%= ROLE_LABELS[s.role] %></td>
+        <td class="small"><%= s.last_login ? S.fmtDate(s.last_login) : '—' %></td>
+        <td class="text-end"><% if (can.settings && s.id !== staff.id) { %>
+          <form method="POST" action="/admin/staff/<%= s.id %>/<%= s.active ? 'off' : 'on' %>" class="d-inline">
+            <button class="btn btn-sm <%= s.active ? 'btn-outline-danger' : 'btn-outline-primary' %>" <% if (s.active) { %>onclick="return confirm('Switch off <%= s.name.replace(/'/g, '') %>’s login? They will no longer be able to sign in.')"<% } %>><%= s.active ? 'Switch off' : 'Switch on' %></button>
+          </form>
+        <% } %></td>
+      </tr>
+    <% } %></tbody>
   </table></div>
+  <% if (can.settings) { %>
+    <form method="POST" action="/admin/staff" class="card-body border-top">
+      <div class="fw-semibold mb-2">Add a login (for example, a new board member or clerk)</div>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small" for="s-name">Full name</label><input class="form-control" id="s-name" name="name" maxlength="100" required></div>
+        <div class="col-md-4"><label class="form-label small" for="s-email">Email</label><input class="form-control" id="s-email" name="email" type="email" maxlength="200" required></div>
+        <div class="col-md-2"><label class="form-label small" for="s-role">Role</label><select class="form-select" id="s-role" name="role"><% for (const [key, label] of Object.entries(ROLE_LABELS)) { %><option value="<%= key %>" <%= key === 'board' ? 'selected' : '' %>><%= label %></option><% } %></select></div>
+        <div class="col-md-2"><button class="btn btn-primary w-100">Add login</button></div>
+      </div>
+      <div class="small text-muted mt-2">You’ll see a one-time password to give them in person. They choose their own when they first sign in.</div>
+    </form>
+  <% } %>
   <div class="card-body small text-muted border-top">Clerk records · Credit Officer appraises · Manager approves · Treasurer disburses · Board views. No one can approve their own entry.</div>
 </div>
 <%- include('../partials/app-bottom') %>

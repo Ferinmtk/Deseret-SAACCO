@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireStaff } = require('../lib/auth');
@@ -36,7 +37,8 @@ router.post('/login', async (req, res) => {
   const locked = await lockedFor('staff', email, req);
   if (locked) return res.status(429).render('admin/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'}.`, email });
   const staff = await one('SELECT * FROM staff WHERE email = ?', email);
-  if (!staff || !checkPassword(String(req.body.password || ''), staff.password_hash)) {
+  // A switched-off login (someone who has left office) fails like a wrong password.
+  if (!staff || !staff.active || !checkPassword(String(req.body.password || ''), staff.password_hash)) {
     await recordFailure('staff', email, req);
     await audit(email, 'Failed staff sign-in', 'staff', staff ? staff.id : null, req.ip);
     return res.status(401).render('admin/login', { error: 'Email or password is incorrect.', email });
@@ -57,7 +59,8 @@ router.use(requireStaff());
 
 router.use(async (req, res, next) => {
   req.staff = await one('SELECT * FROM staff WHERE id = ?', req.session.staffId);
-  if (!req.staff) { await req.endSession(); return res.redirect('/admin/login'); }
+  if (!req.staff || !req.staff.active) { await req.endSession(); return res.redirect('/admin/login'); }
+  if (req.staff.must_change_password && !['/change-password', '/logout'].includes(req.path)) return res.redirect('/admin/change-password');
   const role = req.staff.role;
   res.locals.staff = req.staff;
   res.locals.roleLabel = ROLE_LABELS[role];
@@ -287,7 +290,7 @@ router.post('/payments/:id/decision', async (req, res) => {
 
 // ---------- Loans ----------
 router.get('/loans', async (req, res) => {
-  const rows = await all(`SELECT l.*, m.first_name || ' ' || m.last_name AS name, m.member_no, p.name AS product_name,
+  const rows = await all(`SELECT l.*, m.first_name || ' ' || m.last_name AS name, m.member_no, m.official_role, p.name AS product_name,
                           (SELECT COUNT(*) FROM guarantees g WHERE g.loan_id = l.id AND g.status = 'accepted') AS accepted,
                           (SELECT COUNT(*) FROM guarantees g WHERE g.loan_id = l.id) AS requested
                           FROM loans l JOIN members m ON m.id = l.member_id JOIN loan_products p ON p.code = l.product
@@ -300,7 +303,8 @@ router.get('/loans', async (req, res) => {
 });
 
 router.get('/loans/:id', async (req, res, next) => {
-  const loan = await one(`SELECT l.*, p.name AS product_name FROM loans l JOIN loan_products p ON p.code = l.product WHERE l.id = ?`, idParam(req));
+  const loan = await one(`SELECT l.*, p.name AS product_name, m.official_role FROM loans l JOIN loan_products p ON p.code = l.product
+                          JOIN members m ON m.id = l.member_id WHERE l.id = ?`, idParam(req));
   if (!loan) return next();
   loan.state = await S.loanState(loan);
   const appraisal = await S.appraise(loan);
@@ -457,6 +461,63 @@ router.post('/settings', allow('settings'), async (req, res) => {
   if (changes.length) await audit(req.staff.name, 'Changed rules', 'settings', null, changes.join('; '));
   req.flash('success', changes.length ? `Saved ${changes.length} change(s). Existing loans keep their original terms.` : 'Nothing changed.');
   res.redirect('/admin/settings');
+});
+
+// ---------- Staff logins and handover ----------
+// A leadership or staff login belongs to the office. At handover the manager switches off
+// the outgoing person's login and adds one for the successor. Their member account is untouched.
+router.get('/change-password', (req, res) => res.render('admin/change-password', { title: 'Choose your password', error: null }));
+
+router.post('/change-password', async (req, res) => {
+  const fresh = String(req.body.next || ''), confirm = String(req.body.confirm || '');
+  const error = fresh.length < 10 ? 'Use at least 10 characters.'
+    : fresh !== confirm ? 'The two passwords don’t match.'
+    : null;
+  if (error) return res.status(400).render('admin/change-password', { title: 'Choose your password', error });
+  await run('UPDATE staff SET password_hash = ?, must_change_password = false WHERE id = ?', hashPassword(fresh), req.staff.id);
+  await audit(req.staff.name, 'Set first password', 'staff', req.staff.id);
+  req.flash('success', 'Password saved.');
+  res.redirect('/admin');
+});
+
+router.post('/staff', allow('settings'), async (req, res) => {
+  const name = String(req.body.name || '').trim().slice(0, 100);
+  const email = String(req.body.email || '').trim().toLowerCase().slice(0, 200);
+  const role = String(req.body.role || '');
+  const error = !name ? 'Enter their name.'
+    : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? 'Enter a valid email address.'
+    : !ROLE_LABELS[role] ? 'Choose a role.'
+    : await one('SELECT id FROM staff WHERE email = ?', email) ? 'That email already has a login.'
+    : null;
+  if (error) { req.flash('danger', error); return res.redirect('/admin/settings#staff'); }
+  // A one-time password the manager passes on in person; it must be replaced at first sign-in.
+  const temp = crypto.randomBytes(6).toString('base64url');
+  await run('INSERT INTO staff (name, email, role, password_hash, must_change_password) VALUES (?, ?, ?, ?, true)', name, email, role, hashPassword(temp));
+  await audit(req.staff.name, 'Added staff login', 'staff', null, `${name} (${ROLE_LABELS[role]}, ${email})`);
+  req.flash('success', `Login added for ${name}. Give them this one-time password in person: ${temp}. They will choose their own when they first sign in.`);
+  res.redirect('/admin/settings#staff');
+});
+
+const switchStaff = on => async (req, res) => {
+  const target = await one('SELECT * FROM staff WHERE id = ?', idParam(req));
+  if (!target || target.id === req.staff.id) { req.flash('danger', 'You can’t switch off your own login.'); return res.redirect('/admin/settings#staff'); }
+  await run('UPDATE staff SET active = ? WHERE id = ?', on, target.id);
+  await audit(req.staff.name, on ? 'Switched on staff login' : 'Switched off staff login', 'staff', target.id, `${target.name} (${ROLE_LABELS[target.role]})`);
+  req.flash('success', on ? `${target.name} can sign in again.` : `${target.name} can no longer sign in. Their member account (if any) is unchanged.`);
+  res.redirect('/admin/settings#staff');
+};
+router.post('/staff/:id/off', allow('settings'), switchStaff(false));
+router.post('/staff/:id/on', allow('settings'), switchStaff(true));
+
+// ---------- Officials ----------
+router.post('/members/:id/official', allow('approveMember'), async (req, res) => {
+  const m = await one('SELECT * FROM members WHERE id = ?', idParam(req));
+  if (!m) return res.redirect('/admin/members');
+  const role = S.OFFICIAL_ROLES.includes(req.body.role) ? req.body.role : null;
+  await run('UPDATE members SET official_role = ? WHERE id = ?', role, m.id);
+  await audit(req.staff.name, role ? 'Marked as official' : 'Removed official tag', 'member', m.id, role || m.official_role);
+  req.flash('success', role ? `${m.first_name} ${m.last_name} is now marked as ${role}.` : `${m.first_name} ${m.last_name} is no longer marked as an official.`);
+  res.redirect('/admin/members/' + m.id);
 });
 
 router.get('/audit', async (req, res) => {

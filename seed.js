@@ -219,6 +219,9 @@ async function seed() {
 
   // One member has given notice to leave.
   await run(`UPDATE members SET status = 'exiting', exit_notice_at = ? WHERE id = ?`, S.addMonths(T, -1), members[27].id);
+  // Two fictional officials (neither guarantees anyone, as By-law 69 requires). One has a loan in the pipeline.
+  await run(`UPDATE members SET official_role = 'Board member' WHERE id = ?`, members[24].id);
+  await run(`UPDATE members SET official_role = 'Credit committee' WHERE id = ?`, members[7].id);
   await run(`INSERT INTO audit (actor, action, entity, details) VALUES ('System', 'Demo data loaded', 'system', 'Sample data, not real members')`);
 }
 
