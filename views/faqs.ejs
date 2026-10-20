@@ -1,103 +1,66 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { pageTitle: 'FAQs' }) %>
 
-<section class="faq-section">
-  <div class="container">
-    <h2 class="section-title">Frequently Asked Questions</h2>
+<%- include('partials/page-hero', { image: '/img/saving.avif', heading: 'Frequently Asked Questions', lead: 'Answers based on the Society’s registered by-laws.' }) %>
 
-    <div class="accordion">
+<%
+  const groups = [
+    ['Membership', [
+      ['Who can join?', `<p>Employees of The Church of Jesus Christ of Latter-day Saints and its subsidiaries in Kenya, and their spouses. You must be 18 or over, live in Kenya, not belong to another SACCO, and have no conviction for fraud or dishonesty.</p><p>For membership of other family members or groups, please <a href="/contact">contact the office</a>.</p>`],
+      ['What does it cost to join?', `<p>A one-time, non-refundable entrance fee of <strong>KES 1,000</strong>, plus share capital of <strong>KES 6,500</strong> (325 shares of KES 20 each).</p>`],
+      ['What do I need to apply?', `<ul><li>The signed membership application form</li><li>A copy of your ID or passport</li><li>An introduction letter from your employer</li><li>If you were in another SACCO, a letter showing you owe it nothing</li></ul>`],
+      ['Is there a minimum monthly deposit?', `<p>Yes, at least <strong>KES 1,000</strong> a month.</p>`],
+    ]],
+    ['Savings and payments', [
+      ['What is the difference between share capital and deposits?', `<p><strong>Share capital</strong> is your stake in the Society. It earns a dividend, stays with the SACCO while you are a member, and can only be transferred to another member.</p><p><strong>Deposits</strong> are your monthly savings. They earn interest, decide how much you can borrow, and are refunded when you leave.</p>`],
+      ['Do I earn a return on my savings?', `<p>Yes. Each year the committee recommends a dividend on shares and interest on deposits, and members approve them at the Annual General Meeting. The financial year runs January to December.</p>`],
+      ['Can I withdraw my deposits?', `<p>Not while you are a member. Deposits secure your loans and those you guarantee, so they are refunded when you leave the Society.</p>`],
+      ['Can I pay outside payroll?', `<p>Yes. Pay by M-Pesa to Paybill <strong>${S.SACCO.paybill}</strong>, account <strong>${S.SACCO.account}</strong>, then submit the M-Pesa code in the member portal. Members not paid through Church payroll should set up a monthly standing order from their bank.</p>`],
+      ['Will I get statements?', `<p>You receive a statement of your shares, deposits and loans at least every three months, and can download one any time from the <a href="/portal/login">member portal</a>.</p>`],
+    ]],
+    ['Loans', [
+      ['When can I get a loan?', `<p>After <strong>six months</strong> of membership and regular saving. Savings paid in cash or by cheque outside payroll count once they have been with the SACCO for six months.</p>`],
+      ['How much can I borrow?', `<ul><li>Up to <strong>three times your deposits</strong>, less what you still owe.</li><li>Your loan repayments and savings together can’t take more than <strong>two-thirds of your basic pay</strong>.</li><li>No single loan can exceed 5% of the Society’s share capital and reserves.</li></ul><p>The member portal shows your exact limit for each loan.</p>`],
+      ['What do I need to apply?', `<p>A completed loan application, your two most recent payslips (or a letter from your employer), and guarantors if the loan is more than your own deposits.</p>`],
+      ['Can I have more than one loan?', `<p>Yes, as long as all your loans together stay within your limit. You can take one School Fees Loan per calendar year.</p>`],
+      ['How long can I take to repay?', `<p>Emergency and School Fees loans are repaid within 12 months. Repayments start the month after the loan is paid out. Ask the office about the period for other loans.</p>`],
+      ['Can I pay off my loan early?', `<p>Yes, in full or in part, on any business day.</p>`],
+      ['Can I extend my repayment period?', `<p>Only in exceptional cases, and the extension is treated as a new loan application.</p>`],
+    ]],
+    ['Guarantors', [
+      ['Do I need guarantors?', `<p>Only if the loan is more than your own deposits. Your deposits plus your guarantors’ pledges must cover the full loan.</p>`],
+      ['What should I know before guaranteeing a loan?', `<ul><li>The amount you pledge is locked from your deposits until the loan is repaid.</li><li>You can guarantee at most <strong>3 loans</strong>, and only for fellow members.</li><li>Members of the management, credit and supervisory committees can’t guarantee loans.</li><li>You are released when the borrower finds a replacement guarantor, or when their balance falls to within their own deposits.</li></ul>`],
+      ['What happens if a borrower misses repayments?', `<p>After one missed month the borrower gets a letter, copied to the guarantors. After two months the guarantors are warned. After three months in a row the loan is declared in default and recovered from the guarantors.</p>`],
+    ]],
+    ['Leaving and other questions', [
+      ['How do I leave the SACCO?', `<p>Give <strong>60 days’</strong> written notice. Your own loans must be repaid, and any loans you guarantee need replacement guarantors. You then receive your deposits, interest and dividends, less anything you owe. Share capital can be transferred to another member (fee KES 500). Rejoining later carries a KES 5,000 fine.</p>`],
+      ['What if I retire or leave Church employment?', `<p>Retired members can stay in the Society. Members moving to another employer can transfer their shares to the new employer’s society once their loans are cleared. Please talk to the office about your situation.</p>`],
+      ['What happens to my savings if I die?', `<p>Your shares, deposits, interest and dividends, less any debts, are paid to the nominee you named. You can name or change nominees in writing, witnessed by two members, or update them in the member portal.</p>`],
+      ['How do I change my personal details?', `<p>Update your phone, email and nominees in the <a href="/portal/login">member portal</a>. To change your name, ID, employer or bank, visit the office with your documents.</p>`],
+      ['Where is the office?', `<p>${S.SACCO.office}. ${S.SACCO.hours}. Phone <a href="tel:${S.SACCO.phoneHref}">${S.SACCO.phone}</a>.</p>`],
+    ]],
+  ];
+  let n = 0;
+%>
 
-      <!-- Membership -->
-      <div class="accordion-item">
-        <button class="accordion-header">How do I become a member of the Sacco?</button>
-        <div class="accordion-body">
-          <ol>
-            <li>The Sacco draws its membership from employees of The Church of Jesus Christ of Latter-day Saints, members' spouses, and children above 18 years of existing members.</li>
-            <li>Willing persons working in the Church Institution are only required to have an introductory letter from their employer stating willingness of the employer to offer check-off facility to the employee.</li>
-            <li>The entrance form will need to be completed and signed by the applicant before submitting it to the Sacco.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-header">Is there a Registration Fee?</button>
-        <div class="accordion-body">
-          <p>Yes, a one-time registration fee is required when joining the Sacco. Please check with the office for the current rate.</p>
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-header">Do I get a return on my Savings in the Sacco?</button>
-        <div class="accordion-body">
-          <p>Yes, members earn dividends and interest rebates on their savings and deposits, distributed annually depending on the Sacco’s performance.</p>
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-header">When am I eligible for a loan from the Sacco after joining?</button>
-        <div class="accordion-body">
-          <p>Members become eligible for loans after consistently saving and meeting the minimum requirements set out in the Sacco by-laws.</p>
-        </div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-header">What do I need when applying for a loan?</button>
-        <div class="accordion-body">
-          <p>You will need a completed loan application form, proof of deposits, guarantors (if required), and any other documents requested by the Sacco.</p>
-        </div>
-      </div>
-
-      <!-- Keep repeating structure for all other questions -->
-      <% [
-        "How much loan can I qualify for?",
-        "How many loans can I be given by the Sacco/Can I apply for more than one loan?",
-        "Which Loan products are available for me?",
-        "Can I pay extra amounts outside payroll payments?",
-        "What is the maximum repayment period for a loan?",
-        "Must I have guarantors when applying for a loan?",
-        "What does a guarantor need to know before guaranteeing?",
-        "Can I pay off my loan in a lump sum?",
-        "Is it possible I extend the duration of my loan repayment?",
-        "What is the difference between Deposits and Share Capital?",
-        "Can I transfer my deposit to another member at the point I cease to be a member of the Sacco?",
-        "Can I continue being a member of the Sacco as an individual when I leave Catholic institution employment? How do I make my contributions?",
-        "Standing order",
-        "Why should I sign up for mobile banking (MSacco)?",
-        "When CBK reduces its base lending rate why is that the Sacco interest rate does not reduce?",
-        "How do I change my personal details in your database?",
-        "If I opened my account from Nairobi, can I access my account from any other Branch?",
-        "Is membership open to groups or chamas?",
-        "What is Category B Membership?",
-        "What is the relationship between Kirtland housing and Deseret Sacco?",
-        "How can I join Kirtland Housing cooperative?",
-        "Where are Deseret Sacco Offices located?",
-        "What is FOSA?",
-        "How fast does it take to issue/replace lost/renew expired ATM?",
-        "What happens when an ATM is used to withdraw money, money is not dispensed, and the transaction is recognized as a withdrawal and no funds were dispensed?",
-        "How do you register for mobile banking?",
-        "What do I do if I forget my Msacco PIN?",
-        "How much can one access through M-sacco per day and what are the charges?",
-        "Can I transfer money from my FOSA A/C to my bank account, or another person’s bank account?"
-      ].forEach(function(question) { %>
-        <div class="accordion-item">
-          <button class="accordion-header"><%= question %></button>
-          <div class="accordion-body">
-            <p>Answer coming from Sacco by-laws / management guidelines.</p>
+<section class="section">
+  <div class="container" style="max-width: 860px;">
+    <% for (const [group, items] of groups) { %>
+      <h2 class="h4 mb-3 mt-4"><%= group %></h2>
+      <div class="accordion faq" id="faq<%= n %>">
+        <% for (const [q, a] of items) { n++; %>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q<%= n %>" aria-expanded="false" aria-controls="q<%= n %>"><%= q %></button>
+            </h3>
+            <div id="q<%= n %>" class="accordion-collapse collapse">
+              <div class="accordion-body"><%- a %></div>
+            </div>
           </div>
-        </div>
-      <% }) %>
-
-    </div>
+        <% } %>
+      </div>
+    <% } %>
+    <p class="text-center text-muted mt-5 mb-0">Still have a question? <a href="/contact">Contact us</a>.</p>
   </div>
 </section>
-
-<script>
-  document.querySelectorAll(".accordion-header").forEach(button => {
-    button.addEventListener("click", () => {
-      const body = button.nextElementSibling;
-      button.classList.toggle("active");
-      body.style.maxHeight = body.style.maxHeight ? null : body.scrollHeight + "px";
-    });
-  });
-</script>
 
 <%- include('partials/footer') %>

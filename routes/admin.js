@@ -11,6 +11,7 @@ const CAN = {
   registerMember: ['clerk', 'manager'],
   approveMember: ['manager'],
   handleRequests: ['clerk', 'manager'],
+  answerMessages: ['clerk', 'manager'],
   recordPayment: ['clerk', 'manager'],
   approvePayment: ['manager', 'treasurer'],
   appraise: ['credit'],
@@ -73,7 +74,8 @@ async function queueCounts() {
     (SELECT COUNT(*) FROM loans WHERE status = 'recommended') AS recommended,
     (SELECT COUNT(*) FROM loans WHERE status = 'approved') AS approved,
     (SELECT COUNT(*) FROM loans WHERE status = 'guarantors') AS guarantors,
-    (SELECT COUNT(*) FROM members WHERE status = 'exiting') AS exiting`);
+    (SELECT COUNT(*) FROM members WHERE status = 'exiting') AS exiting,
+    (SELECT COUNT(*) FROM contact_messages WHERE status = 'new') AS messages`);
 }
 
 async function portfolio() {
@@ -384,6 +386,21 @@ router.post('/requests/:id', allow('handleRequests'), async (req, res) => {
   await audit(req.staff.name, approved ? 'Deduction change actioned' : 'Deduction change rejected', 'member', r.member_id, r.details);
   req.flash('success', approved ? 'Marked as done. Remember to update the payroll check-off schedule.' : 'Request rejected.');
   res.redirect('/admin/approvals');
+});
+
+// ---------- Messages from the public Contact page ----------
+router.get('/messages', async (req, res) => {
+  const show = req.query.show === 'answered' ? 'answered' : 'new';
+  const rows = await all(`SELECT c.*, s.name AS handler FROM contact_messages c LEFT JOIN staff s ON s.id = c.handled_by
+                          WHERE c.status = ? ORDER BY c.created_at DESC LIMIT 200`, show);
+  res.render('admin/messages', { title: 'Messages', rows, show });
+});
+
+router.post('/messages/:id/answered', allow('answerMessages'), async (req, res) => {
+  const { changes } = await run(`UPDATE contact_messages SET status = 'answered', handled_by = ?, handled_at = ? WHERE id = ? AND status = 'new'`,
+    req.staff.id, S.now(), idParam(req));
+  if (changes) await audit(req.staff.name, 'Answered contact message', 'message', idParam(req));
+  res.redirect('/admin/messages');
 });
 
 // ---------- Settings & audit ----------

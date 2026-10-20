@@ -1,43 +1,43 @@
-<script>
-  // Navbar scroll effect
-  window.addEventListener("scroll", function () {
-    const navbar = document.querySelector(".custom-navbar");
-    if (navbar) {
-      navbar.classList.toggle("scrolled", window.scrollY > 50);
-    }
-  });
-
-  // Scroll animations for fade-in and fade-up elements
-  const fadeElements = document.querySelectorAll('.fade-in, .fade-up');
-
-  const scrollOptions = {
-    threshold: 0.2,
-    rootMargin: "0px 0px -50px 0px"
-  };
-
-  const scrollObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('appear');
-      observer.unobserve(entry.target);
-    });
-  }, scrollOptions);
-
-  fadeElements.forEach(el => scrollObserver.observe(el));
-</script>
-<!-- AOS JS -->
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({
-    duration: 800, // animation duration
-    offset: 200,    // distance from the bottom to trigger
-    once: true      // animate only once
-  });
-</script>
-
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<footer class="bg-dark text-white text-center py-3 mt-5">
-  <p>&copy; 2025 Deseret SACCO. All rights reserved.</p>
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="d-flex align-items-center gap-2 mb-2"><img src="/img/logo.jpg" alt="" width="36" height="36" class="rounded"><strong>Deseret SACCO Society Ltd</strong></div>
+        <p class="small mb-0">A savings and credit co-operative for employees of The Church of Jesus Christ of Latter-day Saints in Kenya, registered in 2006.</p>
+      </div>
+      <div class="col-6 col-md-4">
+        <h6>Visit or call</h6>
+        <p class="small mb-1"><%= S.SACCO.office %></p>
+        <p class="small mb-1"><%= S.SACCO.postal %></p>
+        <p class="small mb-1"><a href="tel:<%= S.SACCO.phoneHref %>"><%= S.SACCO.phone %></a></p>
+        <p class="small mb-1"><a href="mailto:<%= S.SACCO.emails[0] %>"><%= S.SACCO.emails[0] %></a></p>
+        <p class="small mb-0"><%= S.SACCO.hours %></p>
+      </div>
+      <div class="col-6 col-md-4">
+        <h6>Pay by M-Pesa</h6>
+        <p class="small mb-1">Paybill <strong><%= S.SACCO.paybill %></strong></p>
+        <p class="small mb-3">Account <strong><%= S.SACCO.account %></strong></p>
+        <h6>Quick links</h6>
+        <p class="small mb-0"><a href="/portal/login">Member login</a> · <a href="/faqs">FAQs</a> · <a href="/resources">Forms</a></p>
+      </div>
+    </div>
+    <p class="small text-center mb-0 mt-4 pt-3 border-top border-secondary-subtle">&copy; <%= new Date().getFullYear() %> Deseret SACCO Society Limited. All rights reserved.</p>
+  </div>
 </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Navbar turns solid once you scroll past the top of the page.
+  const navbar = document.querySelector('.custom-navbar');
+  const setNav = () => navbar.classList.toggle('scrolled', window.scrollY > 50);
+  window.addEventListener('scroll', setNav);
+  setNav();
+
+  // Gentle fade-in as sections scroll into view.
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('appear'); observer.unobserve(entry.target); }
+  }), { threshold: 0.15 });
+  document.querySelectorAll('.fade-in, .fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

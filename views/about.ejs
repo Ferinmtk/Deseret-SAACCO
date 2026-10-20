@@ -1,12 +1,6 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { pageTitle: 'About Us' }) %>
 
-<!-- Hero Section -->
-<section class="about-hero text-white d-flex align-items-center" data-aos="fade-down">
-  <div class="container text-center">
-    <h1 class="display-4 fw-bold">About Deseret SACCO</h1>
-    <p class="lead">Empowering members through savings, credit and co-operative values since 2006.</p>
-  </div>
-</section>
+<%- include('partials/page-hero', { image: '/img/service.avif', heading: 'About Deseret SACCO', lead: 'Empowering members through savings, credit and co-operative values since 2006.' }) %>
 
 <section class="about-section py-5">
   <div class="container">
@@ -18,7 +12,7 @@
         <p>Deseret SACCO is a Savings and Credit Co-operative Society registered in 2006 under the Co-operative Societies Act of the Laws of Kenya. The Sacco primarily mobilizes savings and deposits and extends credit to its members, thereby empowering them economically and socially.</p>
         <p>We are guided by co-operative values, visionary leadership, and a commitment to transparency, democracy, and sustainable socio-economic empowerment.</p>
         <ul>
-          <li><strong>Office:</strong> Church Administration Office Building, Upper Hill Road, Nairobi</li>
+          <li><strong>Office:</strong> <%= S.SACCO.office %></li>
         </ul>
       </div>
       <div class="col-md-6 text-center" data-aos="zoom-in">

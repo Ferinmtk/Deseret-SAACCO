@@ -1,0 +1,28 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<div class="d-flex gap-2 mb-3">
+  <a href="?show=new" class="btn btn-sm <%= show === 'new' ? 'btn-primary' : 'btn-light' %>">New<%= counts.messages ? ' (' + counts.messages + ')' : '' %></a>
+  <a href="?show=answered" class="btn btn-sm <%= show === 'answered' ? 'btn-primary' : 'btn-light' %>">Answered</a>
+  <span class="ms-auto small text-muted align-self-center">From the Contact page on the public website</span>
+</div>
+<% for (const m of rows) { %>
+  <div class="card mb-3">
+    <div class="card-header">
+      <strong><%= m.name %></strong>
+      <span class="small text-muted"><a href="mailto:<%= m.email %>?subject=Your%20message%20to%20Deseret%20SACCO"><%= m.email %></a><%= m.phone ? ' · ' + m.phone : '' %></span>
+      <span class="ms-auto small text-muted"><%= S.fmtDate(m.created_at) %> <%= m.created_at.slice(11, 16) %></span>
+    </div>
+    <div class="card-body">
+      <p class="mb-3" style="white-space: pre-wrap;"><%= m.message %></p>
+      <% if (m.status === 'new' && can.answerMessages) { %>
+        <div class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-primary" href="mailto:<%= m.email %>?subject=Your%20message%20to%20Deseret%20SACCO"><i class="bi bi-reply"></i> Reply by email</a>
+          <form method="POST" action="/admin/messages/<%= m.id %>/answered"><button class="btn btn-sm btn-primary"><i class="bi bi-check2"></i> Mark as answered</button></form>
+        </div>
+      <% } else if (m.status === 'answered') { %>
+        <span class="small text-muted"><i class="bi bi-check2-circle"></i> Answered by <%= m.handler %> on <%= S.fmtDate(m.handled_at) %></span>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+<% if (!rows.length) { %><div class="card"><div class="empty"><i class="bi bi-inbox"></i><%= show === 'new' ? 'No new messages.' : 'Nothing answered yet.' %></div></div><% } %>
+<%- include('../partials/app-bottom') %>

@@ -1,42 +1,61 @@
-<%- include("partials/header") %>
+<%- include('partials/header', { pageTitle: 'Forms & Resources' }) %>
 
-<!-- Header Section -->
-<div class="resources-header">
-  <h1>Resources</h1>
-  <p>Access forms, downloads, circulars, news, and more</p>
-</div>
+<%- include('partials/page-hero', { image: '/img/services.avif', heading: 'Forms & Resources', lead: 'The forms you need, and where to get them.' }) %>
 
-<!-- Resources Grid -->
-<div class="resources-container">
-
-  <!-- Resource card 1 -->
-  <div class="resource-card">
-    <h3>Forms</h3>
-    <p>Download membership, loan application, and other SACCO forms.</p>
-    <a href="#">Download</a>
+<section class="section">
+  <div class="container" style="max-width: 960px;">
+    <div class="text-center">
+      <h2>Forms</h2>
+      <p class="intro">Several forms can now be done online in the member portal. The rest are available from the office.</p>
+    </div>
+    <div class="row g-3">
+      <% for (const [icon, name, text, where] of [
+        ['person-plus', 'Application for membership', 'For new members. Includes your nominated next of kin. Bring a copy of your ID and your employer’s introduction letter.', 'office'],
+        ['arrow-left-right', 'Authority to vary deductions', 'Change your monthly share contribution or loan repayment.', 'portal'],
+        ['cash-coin', 'Loan application', 'Apply for any loan, add guarantors and see your repayment before you submit.', 'portal'],
+        ['person-check', 'Guarantor consent', 'Accept or decline a request to guarantee a member’s loan.', 'portal'],
+        ['heart', 'Nominated next of kin', 'Name or change who receives your savings. Changes need two member witnesses.', 'portal'],
+        ['box-arrow-right', 'Withdrawal notice', '60 days’ written notice to leave the Society.', 'portal'],
+      ]) { %>
+        <div class="col-md-6">
+          <div class="simple-card d-flex gap-3 align-items-start">
+            <i class="bi bi-<%= icon %>" style="font-size: 1.6rem;"></i>
+            <div class="flex-grow-1">
+              <h3 class="h6 fw-bold mt-1 mb-1"><%= name %></h3>
+              <p class="small mb-2"><%= text %></p>
+              <% if (where === 'portal') { %>
+                <a href="/portal/login" class="small fw-semibold">Do it online in the member portal →</a>
+              <% } else { %>
+                <span class="small fw-semibold" style="color: var(--brand);">Collect from the office</span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
   </div>
+</section>
 
-  <!-- Resource card 2 -->
-  <div class="resource-card">
-    <h3>Downloads</h3>
-    <p>Access reports, financial statements, and other important files.</p>
-    <a href="#">View</a>
+<section class="section section-alt">
+  <div class="container" style="max-width: 960px;">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="simple-card">
+          <i class="bi bi-journal-text"></i>
+          <h3 class="h5">By-laws</h3>
+          <p>The Society’s registered by-laws set out the rules on membership, savings, loans and guarantors. Members can get a copy from the office.</p>
+          <a href="/faqs" class="small fw-semibold d-inline-block mt-2">Read the main rules in our FAQs →</a>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="simple-card">
+          <i class="bi bi-calendar-event"></i>
+          <h3 class="h5">Annual General Meeting</h3>
+          <p>Held within four months of the end of each financial year (January to December). Members receive at least 15 days’ notice.</p>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
-  <!-- Resource card 3 -->
-  <div class="resource-card">
-    <h3>Circulars</h3>
-    <p>Stay updated with official SACCO circulars and announcements.</p>
-    <a href="#">Read</a>
-  </div>
-
-  <!-- Resource card 4 -->
-  <div class="resource-card">
-    <h3>News</h3>
-    <p>Read the latest updates, events, and news about our SACCO.</p>
-    <a href="#">Explore</a>
-  </div>
-
-</div>
-
-<%- include("partials/footer") %>
+<%- include('partials/footer') %>

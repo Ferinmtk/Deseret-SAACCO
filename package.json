@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ferinmtk/Deseret-SAACCO.git"
+    "url": "git+https://github.com/Ferinmtk/deseret-sacco.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Ferinmtk/Deseret-SAACCO/issues"
+    "url": "https://github.com/Ferinmtk/deseret-sacco/issues"
   },
-  "homepage": "https://github.com/Ferinmtk/Deseret-SAACCO#readme",
+  "homepage": "https://github.com/Ferinmtk/deseret-sacco#readme",
   "description": "",
   "dependencies": {
     "@vercel/functions": "^3.10.1",
