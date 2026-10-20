@@ -24,7 +24,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto align-items-lg-center">
-        <% for (const [href, text] of [['/', 'Home'], ['/about', 'About Us'], ['/services', 'Services & Products'], ['/join', 'Join Us'], ['/contact', 'Contact Us']]) { %>
+        <% for (const [href, text] of [['/', 'Home'], ['/about', 'About'], ['/services', 'Services'], ['/join', 'Join'], ['/contact', 'Contact']]) { %>
           <li class="nav-item"><a class="nav-link <%= path === href ? 'active' : '' %>" href="<%= href %>"><%= text %></a></li>
         <% } %>
         <li class="nav-item"><a class="btn btn-light btn-sm ms-lg-3 mt-2 mt-lg-0 portal-btn" href="/portal/login"><i class="bi bi-person-circle"></i> Member login</a></li>
