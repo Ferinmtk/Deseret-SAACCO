@@ -1,0 +1,28 @@
+<%- include('layout-top', { formTitle: 'Authority to Vary Deductions' }) %>
+<% const f = (label, span, cls = 'line') => `<div class="f s${span}"><label>${label}</label><div class="${cls}"></div></div>`; %>
+<h1>Authority to make deductions (variations)</h1>
+<p class="note">On loan recovery and share contributions. Members can also send this request online in the member portal (Profile › Change my monthly deductions).</p>
+
+<h2>Member</h2>
+<div class="grid"><%- f('Full name', 3) %><%- f('Member no.', 1) %><%- f('Staff / payroll no.', 2) %><%- f('Date', 2) %></div>
+
+<h2>Change requested</h2>
+<div class="grid">
+  <%- f('I would like to contribute (KES per month) for shares', 6) %>
+  <%- f('Vary my shares from (KES)', 3) %><%- f('to (KES) per month', 3) %>
+  <%- f('Increase my loan repayment from (KES)', 3) %><%- f('to (KES) per month', 3) %>
+  <%- f('With effect from', 3) %><%- f('Signature', 3, 'box') %>
+</div>
+
+<h2>If you are not paid through Church payroll</h2>
+<p class="decl">Please set up a standing order with your bank for your shares and any loan repayments:</p>
+<div class="pay">
+  <div><b>Standing order / bank deposit</b><br><%= S.SACCO.name %><br><%= S.SACCO.bank %>, <%= S.SACCO.branch %><br>Account <%= S.SACCO.account %> · SWIFT <%= S.SACCO.swift %></div>
+  <div><b>M-Pesa</b><br>Paybill <%= S.SACCO.paybill %><br>Account <%= S.SACCO.account %><br>Then send the M-Pesa message to <%= S.SACCO.smsNumber %></div>
+</div>
+
+<div class="office">
+  <h2>For society use only</h2>
+  <div class="grid"><%- f('Received by', 2) %><%- f('Date', 2) %><%- f('Payroll schedule updated (month)', 2) %></div>
+</div>
+<%- include('layout-bottom', { formCode: 'Form DS-02 · Deductions' }) %>
