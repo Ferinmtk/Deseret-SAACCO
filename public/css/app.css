@@ -211,3 +211,10 @@ tr.clickable { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .editable:target { animation: none; } }
 .nominee-pending { background: #fffaeb; border: 1px solid #fedf89; border-radius: 10px; padding: .75rem .9rem; }
 .howto { background: var(--brand-soft); border-radius: 10px; padding: .75rem .9rem; }
+
+/* M-Pesa prompt */
+.stk-card { border-color: rgba(6, 118, 71, .35); }
+.stk-card .card-header { background: #ecfdf3; color: #054f31; font-weight: 600; }
+.stk-phone-icon { width: 72px; height: 72px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; background: var(--brand-soft, #eaf0f5); color: var(--brand, #0a2030); }
+.stk-phone-icon.ok { background: #ecfdf3; color: #067647; }
+.stk-phone-icon.bad { background: #fef3f2; color: #b42318; }

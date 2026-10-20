@@ -1,8 +1,11 @@
+const crypto = require('crypto');
 const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireMember } = require('../lib/auth');
 const S = require('../lib/sacco');
 const { sendCsv } = require('../lib/csv');
+const M = require('../lib/mpesa');
+const { refresh } = require('./mpesa');
 const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 
 const router = express.Router();
@@ -152,11 +155,59 @@ router.get('/payments', async (req, res) => {
 
 router.get('/deposit', async (req, res) => {
   const loans = await S.memberLoans(req.member.id, ['disbursed']);
-  res.render('portal/deposit', { title: 'Make a payment', loans, preset: req.query });
+  res.render('portal/deposit', { title: 'Make a payment', loans, preset: req.query, mpesaLive: M.LIVE });
 });
 
 // Members pay through the Co-op Bank Paybill, then submit the M-Pesa code here instead of forwarding the SMS.
 // Staff match the code against the bank statement before it posts.
+// ---------- M-Pesa prompt (STK Push) ----------
+// The member picks an amount, gets a PIN prompt on their phone, and the payment posts once Safaricom confirms it.
+router.post('/mpesa', async (req, res) => {
+  const amount = parseInt(req.body.amount, 10);
+  const target = String(req.body.target || 'deposits');
+  const phone = M.normalisePhone(req.body.phone);
+  const loans = await S.memberLoans(req.member.id, ['disbursed']);
+  const loan = target.startsWith('loan:') ? loans.find(l => l.id === Number(target.slice(5))) : null;
+  const fail = msg => { req.flash('danger', msg); return res.redirect('/portal/deposit'); };
+  if (!(amount >= 1 && amount <= 150000) || (!S.ACCOUNTS[target] && !loan)) return fail('Enter an amount between KES 1 and KES 150,000.');
+  if (!phone) return fail('Enter a Safaricom number, for example 0722 123 456.');
+  if (await one(`SELECT 1 AS x FROM mpesa_requests WHERE member_id = ? AND status = 'pending' AND created_at > now() - interval '1 minute'`, req.member.id)) {
+    return fail('A prompt was just sent. Check your phone, or wait a minute before trying again.');
+  }
+  const split = JSON.stringify([loan ? { account: 'loan', loan_id: loan.id, amount } : { account: target, amount }]);
+  let checkout;
+  if (M.configured()) {
+    const host = process.env.PUBLIC_URL || `https://${req.get('host')}`;
+    checkout = await M.stkPush({ phone, amount, accountRef: req.member.member_no, description: 'SACCO payment',
+      callbackUrl: `${host}/mpesa/callback/${M.callbackToken()}` }).catch(() => ({ error: 'Could not reach M-Pesa. Please try again.' }));
+    if (checkout.error) return fail(checkout.error);
+  } else if (res.locals.demo) {
+    checkout = { checkoutRequestId: 'SIM-' + crypto.randomBytes(8).toString('hex'), simulated: true };
+  } else {
+    return fail('M-Pesa prompts aren’t switched on yet. Please pay by Paybill below.');
+  }
+  const r = await one(`INSERT INTO mpesa_requests (member_id, phone, amount, split, checkout_request_id, merchant_request_id, simulated, created_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+    req.member.id, phone, amount, split, checkout.checkoutRequestId, checkout.merchantRequestId || null, !!checkout.simulated, S.now());
+  await audit(fullName(req.member), 'Sent M-Pesa prompt', 'member', req.member.id, `${S.fmtKes(amount)} to ${phone.slice(0, 6)}***${phone.slice(-3)}`);
+  res.redirect('/portal/mpesa/' + r.id);
+});
+
+const myPrompt = req => one('SELECT * FROM mpesa_requests WHERE id = ? AND member_id = ?', Number(req.params.id) || 0, req.member.id);
+
+router.get('/mpesa/:id', async (req, res, next) => {
+  const r = await myPrompt(req);
+  if (!r) return next();
+  res.render('portal/mpesa-wait', { title: 'Check your phone', r, live: M.LIVE });
+});
+
+router.get('/mpesa/:id/status', async (req, res) => {
+  let r = await myPrompt(req);
+  if (!r) return res.status(404).json({});
+  r = await refresh(r);
+  res.json({ status: r.status, message: r.result_desc || '', receipt: r.receipt || '' });
+});
+
 router.post('/deposit', async (req, res) => {
   const amount = parseInt(req.body.amount, 10);
   const target = String(req.body.target || 'deposits');
