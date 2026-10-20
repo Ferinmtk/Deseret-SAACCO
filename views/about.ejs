@@ -24,8 +24,8 @@
     <div class="row mb-5" data-aos="fade-up">
       <div class="col">
         <h2 class="fw-bold">Our History</h2>
-        <p>Since inception, Deseret SACCO has prospered through visionary leaders, dedicated staff, committed membership, and supportive economic environments. We have continued to grow in diverse membership and inclusive service delivery to individuals, corporate institutions, and organized Church groups.</p>
-        <p>Through the years, we have responded to members' savings and credit needs by introducing various products. Today, Deseret SACCO is a leading progressive Sacco with a growing membership across Kenya and in the diaspora.</p>
+        <p>Deseret SACCO was registered in 2006 by employees of The Church of Jesus Christ of Latter-day Saints in Kenya who wanted a safe, affordable way to save together and borrow from one another. It has grown steadily since, guided by elected leaders, dedicated staff and committed members.</p>
+        <p>Over the years we have added products as members’ needs changed: holiday and family savings, school fees and emergency loans, and development loans for land, homes and businesses. Today members can also apply, pay and follow their accounts online.</p>
       </div>
     </div>
 
@@ -110,21 +110,21 @@
         <h2 class="fw-bold text-center mb-4">Board of Directors</h2>
         <div class="row g-3 text-center justify-content-center">
           <% const board = [
-            {name: "James M. Kyulu", role: "Chairman", img: "/img/directors/james-kyulu.jpg"},
-            {name: "Daniel M. Muthiani", role: "Vice Chairperson", img: "/img/directors/daniel-muthiani.jpg"},
-            {name: "Millicent A. Suchi", role: "Hon-Secretary", img: "/img/directors/millicent-suchi.webp"},
-            {name: "CPA Charles N. Gesimba", role: "Treasurer", img: "/img/charles.jpeg"},
-            {name: "Francis Kioko Mutua", role: "Board Member", img: "/img/directors/francis-mutua.jpg"},
-            {name: "CPA Maurice B. Nyagwoka", role: "Board Member", img: "/img/directors/maurice-nyagwoka.jpg"},
-            {name: "Paul M. Mwetu", role: "Board Member", img: "/img/directors/paul-mwetu.jpg"},
-            {name: "Liza Cheruto Ngimor", role: "Board Member", img: "/img/directors/liza-ngimor.webp"},
-            {name: "CPA Salim B. Mariita", role: "Board Member", img: "/img/salim-mariita.jpg"},
+            {name: "James M. Kyulu", role: "Chairman", img: "/img/board/placeholder-m.jpg"},
+            {name: "Daniel M. Muthiani", role: "Vice Chairperson", img: "/img/board/placeholder-m.jpg"},
+            {name: "Millicent A. Suchi", role: "Hon-Secretary", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Charles N. Gesimba", role: "Treasurer", img: "/img/board/charles-gesimba.jpg", photo: true},
+            {name: "Francis Kioko Mutua", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "CPA Maurice B. Nyagwoka", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "Paul M. Mwetu", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "Liza Cheruto Ngimor", role: "Board Member", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Salim B. Mariita", role: "Board Member", img: "/img/board/salim-mariita.jpg", photo: true},
           ]; %>
 
           <% board.forEach(member => { %>
             <div class="col-6 col-md-4 col-lg-3">
               <div class="member-card">
-                <img src="<%= member.img %>" alt="<%= member.name %>" class="member-img" loading="lazy">
+                <img src="<%= member.img %>" alt="<%= member.photo ? member.name : 'Photo coming soon' %>" class="member-img" loading="lazy">
                 <h3 class="member-name"><%= member.name %></h3>
                 <p class="member-role"><%= member.role %></p>
               </div>
@@ -140,15 +140,15 @@
         <h2 class="fw-bold text-center mb-4">Supervisory Committee</h2>
         <div class="row g-3 text-center justify-content-center">
           <% const committee = [
-            {name: "Fredrick Shamola Bulemi", role: "Chairperson", img: "/img/committee/fredrick-bulemi.jpg"},
-            {name: "CPA Catherine Nthenya John", role: "Secretary", img: "/img/committee/catherine-john.webp"},
-            {name: "CPA Salim B. Mariita", role: "Member", img: "/img/salim-mariita.jpg"},
+            {name: "Fredrick Shamola Bulemi", role: "Chairperson", img: "/img/board/placeholder-m.jpg"},
+            {name: "CPA Catherine Nthenya John", role: "Secretary", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Salim B. Mariita", role: "Member", img: "/img/board/salim-mariita.jpg", photo: true},
           ]; %>
 
           <% committee.forEach(member => { %>
             <div class="col-6 col-md-4">
               <div class="member-card">
-                <img src="<%= member.img %>" alt="<%= member.name %>" class="member-img" loading="lazy">
+                <img src="<%= member.img %>" alt="<%= member.photo ? member.name : 'Photo coming soon' %>" class="member-img" loading="lazy">
                 <h3 class="member-name"><%= member.name %></h3>
                 <p class="member-role"><%= member.role %></p>
               </div>

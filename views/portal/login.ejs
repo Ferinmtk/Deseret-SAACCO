@@ -8,6 +8,6 @@
     <div class="d-flex justify-content-between"><label class="form-label" for="password">Password</label><a href="/portal/forgot-password" class="small">Forgot password?</a></div>
     <input class="form-control mb-3" type="password" id="password" name="password" autocomplete="current-password" required>`,
   foot: `
-    <div class="demo-note mt-4"><strong>Demo:</strong> member <code>DS0001</code>, password <code>demo1234</code></div>
+    ${locals.demo ? '<div class="demo-note mt-4"><strong>Demo:</strong> member <code>DS0001</code>, password <code>demo1234</code></div>' : ''}
     <p class="text-center mt-4 mb-0 small text-muted">Not a member yet? <a href="/join">How to join</a> · Staff? <a href="/admin/login">Admin sign in</a></p>`
 }) %>

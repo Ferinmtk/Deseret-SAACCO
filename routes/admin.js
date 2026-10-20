@@ -2,6 +2,7 @@ const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireStaff } = require('../lib/auth');
 const S = require('../lib/sacco');
+const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 
 const router = express.Router();
 
@@ -31,11 +32,16 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const email = String(req.body.email || '').trim().toLowerCase();
+  const email = String(req.body.email || '').trim().toLowerCase().slice(0, 200);
+  const locked = await lockedFor('staff', email, req);
+  if (locked) return res.status(429).render('admin/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'}.`, email });
   const staff = await one('SELECT * FROM staff WHERE email = ?', email);
   if (!staff || !checkPassword(String(req.body.password || ''), staff.password_hash)) {
+    await recordFailure('staff', email, req);
+    await audit(email, 'Failed staff sign-in', 'staff', staff ? staff.id : null, req.ip);
     return res.status(401).render('admin/login', { error: 'Email or password is incorrect.', email });
   }
+  await clearFailures('staff', email);
   await req.startSession({ staffId: staff.id, staffRole: staff.role });
   await run('UPDATE staff SET last_login = ? WHERE id = ?', S.now(), staff.id);
   await audit(staff.name, 'Staff signed in', 'staff', staff.id);
@@ -187,12 +193,12 @@ router.post('/members/:id/decision', allow('approveMember'), async (req, res) =>
     const memberNo = await tx(async () => {
       const next = (await one(`SELECT COALESCE(MAX(CAST(substr(member_no, 3) AS INTEGER)), 0) + 1 AS n FROM members WHERE member_no IS NOT NULL`)).n;
       const no = 'DS' + String(next).padStart(4, '0');
-      await run(`UPDATE members SET status = 'active', member_no = ?, joined_at = ?, approved_by = ?, admission_minute = ?, password_hash = ? WHERE id = ?`,
+      await run(`UPDATE members SET status = 'active', member_no = ?, joined_at = ?, approved_by = ?, admission_minute = ?, password_hash = ?, must_change_password = true WHERE id = ?`,
         no, S.today(), req.staff.id, minute, hashPassword(m.id_number), m.id);
       return no;
     });
     await audit(req.staff.name, 'Approved member', 'member', m.id, `${memberNo} (minute ${minute})`);
-    req.flash('success', `Approved as ${memberNo}. Their first portal password is their ID number.`);
+    req.flash('success', `Approved as ${memberNo}. They sign in first with their ID number and must then choose a new password.`);
   } else {
     await run(`UPDATE members SET status = 'rejected', approved_by = ? WHERE id = ?`, req.staff.id, m.id);
     await audit(req.staff.name, 'Rejected member application', 'member', m.id, String(req.body.reason || ''));
@@ -382,9 +388,22 @@ router.post('/requests/:id', allow('handleRequests'), async (req, res) => {
   const r = await one(`SELECT * FROM requests WHERE id = ? AND status = 'pending'`, idParam(req));
   if (!r) return res.redirect('/admin/approvals');
   const approved = req.body.decision === 'approve';
-  await run('UPDATE requests SET status = ?, handled_by = ? WHERE id = ?', approved ? 'approved' : 'rejected', req.staff.id, r.id);
-  await audit(req.staff.name, approved ? 'Deduction change actioned' : 'Deduction change rejected', 'member', r.member_id, r.details);
-  req.flash('success', approved ? 'Marked as done. Remember to update the payroll check-off schedule.' : 'Request rejected.');
+  const isNominee = r.type === 'nominee_change';
+  await tx(async () => {
+    await run('UPDATE requests SET status = ?, handled_by = ? WHERE id = ?', approved ? 'approved' : 'rejected', req.staff.id, r.id);
+    // A confirmed nominee change replaces the member's nominees.
+    if (approved && isNominee) {
+      await run('DELETE FROM nominees WHERE member_id = ?', r.member_id);
+      for (const n of JSON.parse(r.details).nominees) {
+        await run('INSERT INTO nominees (member_id, name, relationship, id_number, phone, address, share_pct) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          r.member_id, n.name, n.relationship, n.id_number || null, n.phone || null, n.address || null, n.share_pct);
+      }
+    }
+  });
+  const what = isNominee ? 'Nominee change' : 'Deduction change';
+  await audit(req.staff.name, `${what} ${approved ? (isNominee ? 'confirmed' : 'actioned') : 'rejected'}`, 'member', r.member_id, r.details);
+  req.flash('success', !approved ? 'Request rejected. The member can see this in their portal.'
+    : isNominee ? 'Nominees updated. The member’s new nominees are now on file.' : 'Marked as done. Remember to update the payroll check-off schedule.');
   res.redirect('/admin/approvals');
 });
 

@@ -32,16 +32,30 @@
 <% } %>
 
 <% if (can.handleRequests) { %>
-  <h6 class="small-caps mb-2">Deduction changes (<%= requests.length %>)</h6>
+  <% const nomineeReqs = requests.filter(r => r.type === 'nominee_change'), deductionReqs = requests.filter(r => r.type !== 'nominee_change'); %>
+  <h6 class="small-caps mb-2">Nominee changes (<%= nomineeReqs.length %>) <span class="text-muted fw-normal text-lowercase">— confirm with both witnesses first (by-law 12)</span></h6>
   <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
-    <tbody><% for (const r of requests) { %>
+    <tbody><% for (const r of nomineeReqs) { %>
+      <tr><td><a href="/admin/members/<%= r.member_id %>?tab=kyc" class="fw-semibold"><%= r.name %></a><div class="small text-muted"><%= r.member_no %> · sent <%= S.fmtDate(r.created_at) %></div></td>
+        <td class="small"><div class="text-muted">Now: <%= r.d.previous.length ? r.d.previous.map(n => `${n.name} ${n.share_pct}%`).join(', ') : 'none' %></div>
+          <div><strong>New:</strong> <%= r.d.nominees.map(n => `${n.name} (${n.relationship}) ${n.share_pct}%`).join(', ') %></div>
+          <div class="text-muted">Witnesses: <%= r.d.witnesses.map(w => `${w.name} ${w.member_no}`).join(' and ') %></div></td>
+        <td class="text-end"><form method="POST" action="/admin/requests/<%= r.id %>" class="d-inline-flex gap-1">
+          <button name="decision" value="approve" class="btn btn-sm btn-primary">Confirm</button>
+          <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button></form></td></tr>
+    <% } %><% if (!nomineeReqs.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+  </table></div></div>
+
+  <h6 class="small-caps mb-2">Deduction changes (<%= deductionReqs.length %>)</h6>
+  <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
+    <tbody><% for (const r of deductionReqs) { %>
       <tr><td><a href="/admin/members/<%= r.member_id %>" class="fw-semibold"><%= r.name %></a><div class="small text-muted"><%= r.member_no %> · payroll <%= r.payroll_no || '—' %> · sent <%= S.fmtDate(r.created_at) %></div></td>
         <td class="small"><% if (r.d.shares_to) { %>Shares <%= S.fmtKes(r.d.shares_from) %> → <strong><%= S.fmtKes(r.d.shares_to) %></strong>/month<br><% } %>
           <% if (r.d.loan_to) { %>Loan repayment <%= S.fmtKes(r.d.loan_from) %> → <strong><%= S.fmtKes(r.d.loan_to) %></strong>/month<br><% } %>From <%= r.d.effective.slice(0, 7) %></td>
         <td class="text-end"><form method="POST" action="/admin/requests/<%= r.id %>" class="d-inline-flex gap-1">
           <button name="decision" value="approve" class="btn btn-sm btn-primary">Done</button>
           <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button></form></td></tr>
-    <% } %><% if (!requests.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+    <% } %><% if (!deductionReqs.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
   </table></div></div>
 <% } %>
 

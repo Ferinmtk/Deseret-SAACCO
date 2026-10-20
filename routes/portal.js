@@ -2,6 +2,7 @@ const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireMember } = require('../lib/auth');
 const S = require('../lib/sacco');
+const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 
 const router = express.Router();
 
@@ -21,11 +22,15 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const memberNo = String(req.body.memberNo || '').trim().toUpperCase();
+  const memberNo = String(req.body.memberNo || '').trim().toUpperCase().slice(0, 20);
+  const locked = await lockedFor('member', memberNo, req);
+  if (locked) return res.status(429).render('portal/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'}, or call the office.`, memberNo });
   const member = await one(`SELECT * FROM members WHERE member_no = ? AND status IN ('active','exiting')`, memberNo);
   if (!member || !checkPassword(String(req.body.password || ''), member.password_hash)) {
+    await recordFailure('member', memberNo, req);
     return res.status(401).render('portal/login', { error: 'Member number or password is incorrect.', memberNo });
   }
+  await clearFailures('member', memberNo);
   await req.startSession({ memberId: member.id, lastLogin: member.last_login });
   await run(`UPDATE members SET last_login = ? WHERE id = ?`, S.now(), member.id);
   await audit(fullName(member), 'Member signed in', 'member', member.id);
@@ -48,10 +53,27 @@ router.use(async (req, res, next) => {
   if (!member) { await req.endSession(); return res.redirect('/portal/login'); }
   req.member = member;
   res.locals.member = member;
+  // New members sign in with their ID number first and must choose their own password.
+  if (member.must_change_password && !['/change-password', '/logout'].includes(req.path)) return res.redirect('/portal/change-password');
   res.locals.pendingGuarantees = (await one(`SELECT COUNT(*) AS n FROM guarantees g JOIN loans l ON l.id = g.loan_id
     WHERE g.guarantor_id = ? AND g.status = 'pending' AND l.status = 'guarantors'`, member.id)).n;
   res.locals.path = req.originalUrl;
   next();
+});
+
+router.get('/change-password', (req, res) => res.render('portal/change-password', { title: 'Choose your password', error: null }));
+
+router.post('/change-password', async (req, res) => {
+  const fresh = String(req.body.next || ''), confirm = String(req.body.confirm || '');
+  const error = fresh.length < 8 ? 'Use at least 8 characters.'
+    : fresh !== confirm ? 'The two passwords don’t match.'
+    : fresh === req.member.id_number ? 'Choose something other than your ID number.'
+    : null;
+  if (error) return res.status(400).render('portal/change-password', { title: 'Choose your password', error });
+  await run('UPDATE members SET password_hash = ?, must_change_password = false WHERE id = ?', hashPassword(fresh), req.member.id);
+  await audit(fullName(req.member), 'Set first password', 'member', req.member.id);
+  req.flash('success', 'Password saved. Welcome to the member portal.');
+  res.redirect('/portal');
 });
 
 router.get('/', async (req, res) => {
@@ -296,49 +318,70 @@ router.post('/guarantees/:id', async (req, res) => {
 });
 
 router.get('/profile', async (req, res) => {
-  const nominees = await all('SELECT * FROM nominees WHERE member_id = ?', req.member.id);
-  const requests = await all(`SELECT * FROM requests WHERE member_id = ? ORDER BY created_at DESC LIMIT 5`, req.member.id);
+  const nominees = await all('SELECT * FROM nominees WHERE member_id = ? ORDER BY share_pct DESC, id', req.member.id);
+  const requests = await all(`SELECT * FROM requests WHERE member_id = ? AND type = 'deduction_change' ORDER BY created_at DESC LIMIT 5`, req.member.id);
+  const nomineeRequest = await one(`SELECT * FROM requests WHERE member_id = ? AND type = 'nominee_change' ORDER BY created_at DESC LIMIT 1`, req.member.id);
+  if (nomineeRequest) nomineeRequest.d = JSON.parse(nomineeRequest.details);
   const refundDue = req.member.exit_notice_at ? S.fmtDate(new Date(new Date(req.member.exit_notice_at).getTime() + setting('exit_notice_days') * 86400000).toISOString()) : null;
-  res.render('portal/profile', { title: 'Profile', nominees, requests, refundDue, noticeDays: setting('exit_notice_days') });
+  res.render('portal/profile', { title: 'Profile', nominees, requests, nomineeRequest, edit: String(req.query.edit || ''), refundDue, noticeDays: setting('exit_notice_days') });
 });
 
 router.post('/profile/contact', async (req, res) => {
   const phone = String(req.body.phone || '').replace(/\s/g, '');
   if (!/^0[17]\d{8}$/.test(phone)) {
     req.flash('danger', 'Enter a Kenyan mobile number like 0712345678.');
-    return res.redirect('/portal/profile');
+    return res.redirect('/portal/profile?edit=contact#contact');
   }
-  await run('UPDATE members SET phone = ?, email = ? WHERE id = ?', phone, String(req.body.email || '').trim(), req.member.id);
-  await audit(fullName(req.member), 'Updated contact details', 'member', req.member.id);
-  req.flash('success', 'Contact details updated.');
-  res.redirect('/portal/profile');
+  const email = String(req.body.email || '').trim().slice(0, 200);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    req.flash('danger', 'Enter a valid email address, or leave it empty.');
+    return res.redirect('/portal/profile?edit=contact#contact');
+  }
+  await run('UPDATE members SET phone = ?, email = ? WHERE id = ?', phone, email, req.member.id);
+  await audit(fullName(req.member), 'Updated contact details', 'member', req.member.id, `${phone} ${email}`);
+  req.flash('success', `Contact details saved. We’ll now use ${phone}${email ? ' and ' + email : ''} to reach you, and M-Pesa payments should come from ${phone}.`);
+  res.redirect('/portal/profile#contact');
 });
 
+// By-law 12: a nomination must be in writing and witnessed by two members. Saving sends a request;
+// the current nominees stay in force until the office confirms the change with the witnesses.
 router.post('/profile/nominees', async (req, res) => {
-  const names = [].concat(req.body.name || []);
-  const rows = names.map((name, i) => ({
-    name: String(name).trim(),
-    relationship: String([].concat(req.body.relationship)[i] || '').trim(),
-    phone: String([].concat(req.body.phone)[i] || '').trim(),
-    idNumber: String([].concat(req.body.id_number)[i] || '').trim(),
-    address: String([].concat(req.body.address)[i] || '').trim(),
-    share: parseInt([].concat(req.body.share_pct)[i], 10) || 0,
+  const pick = (k, i) => String([].concat(req.body[k])[i] || '').trim().slice(0, 120);
+  const rows = [].concat(req.body.name || []).map((name, i) => ({
+    name: String(name).trim().slice(0, 120), relationship: pick('relationship', i), phone: pick('phone', i),
+    id_number: pick('id_number', i), address: pick('address', i), share_pct: parseInt([].concat(req.body.share_pct)[i], 10) || 0,
   })).filter(n => n.name);
-  const total = rows.reduce((s, n) => s + n.share, 0);
-  if (!rows.length || total !== 100) {
-    req.flash('danger', `Nominee shares must add up to 100% (they add up to ${total}%).`);
-    return res.redirect('/portal/profile');
+  const total = rows.reduce((s, n) => s + n.share_pct, 0);
+  const witnessNos = [req.body.witness1, req.body.witness2].map(w => String(w || '').trim().toUpperCase());
+  const back = msg => { req.flash('danger', msg); return res.redirect('/portal/profile?edit=nominees#nominees'); };
+  if (!rows.length) return back('Add at least one nominee.');
+  if (rows.some(n => !n.relationship)) return back('Enter the relationship for each nominee.');
+  if (total !== 100) return back(`Nominee shares must add up to 100% (they add up to ${total}%).`);
+  const witnesses = [];
+  for (const no of witnessNos) {
+    const w = no && await one(`SELECT member_no, first_name, last_name FROM members WHERE member_no = ? AND status = 'active'`, no);
+    if (!w) return back(`${no || 'Each witness'} must be an active member number.`);
+    if (w.member_no === req.member.member_no) return back('You can’t witness your own nomination.');
+    witnesses.push({ member_no: w.member_no, name: `${w.first_name} ${w.last_name}` });
   }
+  if (witnesses[0].member_no === witnesses[1].member_no) return back('Choose two different witnesses.');
+  const previous = await all('SELECT name, relationship, share_pct FROM nominees WHERE member_id = ?', req.member.id);
   await tx(async () => {
-    await run('DELETE FROM nominees WHERE member_id = ?', req.member.id);
-    for (const n of rows) {
-      await run('INSERT INTO nominees (member_id, name, relationship, id_number, phone, address, share_pct) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        req.member.id, n.name, n.relationship, n.idNumber, n.phone, n.address, n.share);
-    }
+    // Only one change waits at a time; a new one replaces any earlier pending request.
+    await run(`DELETE FROM requests WHERE member_id = ? AND type = 'nominee_change' AND status = 'pending'`, req.member.id);
+    await run(`INSERT INTO requests (member_id, type, details, created_at) VALUES (?, 'nominee_change', ?, ?)`,
+      req.member.id, JSON.stringify({ nominees: rows, witnesses, previous }), S.now());
   });
-  await audit(fullName(req.member), 'Updated nominees', 'member', req.member.id);
-  req.flash('success', 'Nominees saved.');
-  res.redirect('/portal/profile');
+  await audit(fullName(req.member), 'Requested nominee change', 'member', req.member.id, rows.map(n => `${n.name} ${n.share_pct}%`).join(', '));
+  req.flash('success', `Your nominee change has been sent to the office. Until it is confirmed with your witnesses (${witnesses.map(w => w.name).join(' and ')}), your current nominees stay on file.`);
+  res.redirect('/portal/profile#nominees');
+});
+
+router.post('/profile/nominees/cancel', async (req, res) => {
+  const { changes } = await run(`DELETE FROM requests WHERE member_id = ? AND type = 'nominee_change' AND status = 'pending'`, req.member.id);
+  if (changes) await audit(fullName(req.member), 'Cancelled nominee change', 'member', req.member.id);
+  req.flash('success', 'Nominee change cancelled. Your current nominees are unchanged.');
+  res.redirect('/portal/profile#nominees');
 });
 
 router.post('/profile/password', async (req, res) => {

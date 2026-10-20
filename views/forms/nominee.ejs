@@ -1,0 +1,25 @@
+<%- include('layout-top', { formTitle: 'Change of Nominee' }) %>
+<% const f = (label, span, cls = 'line') => `<div class="f s${span}"><label>${label}</label><div class="${cls}"></div></div>`; %>
+<h1>Nomination / change of nominee</h1>
+<p class="note">By-law 12: a member may nominate one or more persons to receive their shares, deposits, interest and dividends on death. The nomination must be in writing and witnessed by two members. This form replaces any earlier nomination.</p>
+
+<h2>Member</h2>
+<div class="grid"><%- f('Full name', 3) %><%- f('Member no.', 1) %><%- f('ID / passport no.', 2) %></div>
+
+<h2>Nominees (shares must add up to 100%)</h2>
+<% for (let i = 1; i <= 3; i++) { %>
+  <div class="grid" style="margin-bottom:8px"><%- f(i + '. Full name', 3) %><%- f('Relationship', 1) %><%- f('ID / passport no.', 1) %><%- f('Share %', 1) %><%- f('Phone', 2) %><%- f('Address', 4) %></div>
+<% } %>
+
+<h2>Signatures</h2>
+<div class="grid">
+  <%- f('Member’s signature', 3, 'box') %><%- f('Date', 3, 'box') %>
+  <%- f('Witness 1: name and member no.', 3) %><%- f('Witness 1 signature', 3) %>
+  <%- f('Witness 2: name and member no.', 3) %><%- f('Witness 2 signature', 3) %>
+</div>
+
+<div class="office">
+  <h2>For society use only</h2>
+  <div class="grid"><%- f('Received by', 2) %><%- f('Date', 2) %><%- f('Entered in nominee register', 2) %></div>
+</div>
+<%- include('layout-bottom', { formCode: 'Form DS-03 · Nominee' }) %>
