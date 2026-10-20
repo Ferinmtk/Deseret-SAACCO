@@ -1,0 +1,31 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; %>
+<div class="row g-3 mb-3">
+  <% for (const b of buckets) { %>
+    <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k"><%= b.label %> late</div><div class="v num fs-5 <%= b.count && b.label !== '1–30 days' ? 'neg' : '' %>"><%= b.count %> loan<%= b.count === 1 ? '' : 's' %></div><div class="s"><%= k(b.amount) %> outstanding</div></div></div></div>
+  <% } %>
+</div>
+<div class="card">
+  <div class="card-header"><i class="bi bi-exclamation-triangle"></i> Delinquent loans list (By-law 73) <span class="ms-auto small text-muted">PAR30 <%= pf.par30.toFixed(1) %>% · PAR90 <%= pf.par90.toFixed(1) %>%</span>
+    <button class="btn btn-sm btn-outline-primary no-print" onclick="print()"><i class="bi bi-printer"></i> Print for committee</button></div>
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Borrower</th><th>Loan</th><th>Last paid</th><th class="text-end">Overdue</th><th class="text-end">Balance</th><th class="text-end">Deposits</th><th>Next step (BL64 XXVI)</th><th>Guarantors (exposed)</th></tr></thead>
+    <tbody>
+      <% for (const l of rows) { %>
+        <tr>
+          <td><a href="/admin/members/<%= l.member_id %>" class="fw-semibold text-reset"><%= l.name %></a><div class="small text-muted"><%= l.member_no %> · <a href="tel:<%= l.phone %>"><%= l.phone %></a></div></td>
+          <td><a href="/admin/loans/<%= l.id %>">#<%= l.id %> <%= l.product_name %></a><div class="small text-muted">since <%= S.fmtDate(l.disbursed_at) %></div></td>
+          <td class="small text-nowrap"><%= S.fmtDate(l.lastPaid) %></td>
+          <td class="text-end num neg fw-semibold"><%= k(l.state.arrears) %><div class="small text-muted fw-normal"><%= l.missed %> month<%= l.missed === 1 ? '' : 's' %></div></td>
+          <td class="text-end num"><%= k(l.state.outstanding) %></td>
+          <td class="text-end num"><%= k(l.shares) %></td>
+          <td><span class="pill <%= l.missed >= 3 ? 'pill-danger' : 'pill-warn' %>"><%= l.stage %></span></td>
+          <td class="small"><%= l.guarantors.map(g => `${g.name} (${k(g.amount * l.state.outstanding / l.total_payable)})`).join(', ') || 'None' %></td>
+        </tr>
+      <% } %>
+      <% if (!rows.length) { %><tr><td colspan="8"><div class="empty"><i class="bi bi-emoji-smile"></i>No loans in arrears.</div></td></tr><% } %>
+    </tbody>
+  </table></div>
+</div>
+<p class="small text-muted mt-2">By-law 64(XXVI): after 1 missed month write to the borrower and copy the guarantors; after 2, warn the guarantors; after 3 consecutive months the loan is in default and recovered from the guarantors. Guarantors also see these arrears in their portal.</p>
+<%- include('../partials/app-bottom') %>

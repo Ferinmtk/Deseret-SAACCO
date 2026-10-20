@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title ? title + ' · ' : '' %><%= area === 'admin' ? 'Deseret SACCO Admin' : 'Deseret SACCO Member Portal' %></title>
+  <link rel="icon" href="/img/logo.jpg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="app">
+<%
+  const portalNav = [
+    { label: 'My money' },
+    { href: '/portal', icon: 'house', text: 'Overview' },
+    { href: '/portal/accounts/deposits', icon: 'wallet2', text: 'Savings & shares', match: '/portal/accounts' },
+    { href: '/portal/payments', icon: 'receipt', text: 'Payments' },
+    { href: '/portal/deposit', icon: 'phone', text: 'Make a payment' },
+    { label: 'Borrowing' },
+    { href: '/portal/loans', icon: 'cash-stack', text: 'Loans' },
+    { href: '/portal/guarantees', icon: 'people', text: 'Guarantees', count: locals.pendingGuarantees },
+    { label: 'Account' },
+    { href: '/portal/profile', icon: 'person-gear', text: 'Profile & nominees' },
+  ];
+  const c = locals.counts || {};
+  const adminNav = [
+    { href: '/admin', icon: 'speedometer2', text: 'Dashboard', exact: true },
+    { href: '/admin/approvals', icon: 'inbox', text: 'My work',
+      count: { clerk: c.memberCodes + c.requests, credit: c.appraisal, manager: c.pendingMembers + c.pendingPayments + c.recommended + c.requests, treasurer: c.pendingPayments + c.approved, board: 0 }[locals.staff && staff.role] },
+    { label: 'Operations' },
+    { href: '/admin/members', icon: 'people', text: 'Members' },
+    { href: '/admin/payments', icon: 'receipt', text: 'Payments' },
+    { href: '/admin/loans', icon: 'cash-stack', text: 'Loans' },
+    { href: '/admin/arrears', icon: 'exclamation-triangle', text: 'Arrears' },
+    { href: '/admin/messages', icon: 'envelope', text: 'Messages', count: c.messages },
+    { label: 'Control' },
+    { href: '/admin/settings', icon: 'sliders', text: 'Products & rules' },
+    { href: '/admin/audit', icon: 'shield-check', text: 'Audit trail' },
+  ];
+  const nav = area === 'admin' ? adminNav : portalNav;
+  const current = locals.path || '';
+  const isActive = i => i.exact ? current.split('?')[0] === i.href : (current.split('?')[0] === i.href || (i.match && current.startsWith(i.match)) || (i.href !== '/portal' && i.href !== '/admin' && current.startsWith(i.href)));
+  const who = area === 'admin' ? staff : member;
+  const initials = area === 'admin' ? staff.name.split(' ').map(w => w[0]).join('').slice(0, 2) : member.first_name[0] + member.last_name[0];
+%>
+<div class="app-shell">
+  <aside class="app-side offcanvas-lg offcanvas-start no-print" tabindex="-1" id="sideNav">
+    <div class="offcanvas-body">
+      <a class="app-brand" href="<%= area === 'admin' ? '/admin' : '/portal' %>">
+        <img src="/img/logo.jpg" alt="">
+        <span>Deseret SACCO<small><%= area === 'admin' ? 'Staff admin' : 'Member portal' %></small></span>
+      </a>
+      <ul class="app-nav">
+        <% for (const i of nav) { %>
+          <% if (i.label) { %><li class="label"><%= i.label %></li><% } else { %>
+          <li><a href="<%= i.href %>" class="<%= isActive(i) ? 'active' : '' %>"><i class="bi bi-<%= i.icon %>"></i><%= i.text %><% if (i.count) { %><span class="count"><%= i.count %></span><% } %></a></li>
+          <% } %>
+        <% } %>
+      </ul>
+      <div class="app-side-foot">
+        <% if (area === 'admin') { %>
+          Signed in as <strong class="text-white"><%= roleLabel %></strong><br>
+          <a href="/admin/logout">Sign out</a>
+        <% } else { %>
+          Need help? <a href="tel:<%= S.SACCO.phoneHref %>">Call the office</a><br>
+          <a href="/portal/logout">Sign out</a>
+        <% } %>
+      </div>
+    </div>
+  </aside>
+  <main class="app-main">
+    <header class="app-top no-print">
+      <button class="btn btn-sm btn-light d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#sideNav" aria-label="Open menu"><i class="bi bi-list fs-5"></i></button>
+      <h1><%= title %></h1>
+      <div class="who">
+        <span class="d-none d-sm-inline text-end lh-sm">
+          <strong><%= area === 'admin' ? staff.name : member.first_name + ' ' + member.last_name %></strong><br>
+          <small class="text-muted"><%= area === 'admin' ? roleLabel : member.member_no %></small>
+        </span>
+        <span class="avatar"><%= initials %></span>
+      </div>
+    </header>
+    <div class="app-content">
+      <% if (flash) { %>
+        <div class="alert alert-<%= flash.type %> alert-dismissible fade show" role="alert">
+          <%= flash.text %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>

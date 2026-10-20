@@ -1,0 +1,118 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const k = S.fmtKes; const p = selected; const gNos = [].concat(form.guarantor_no || []); const gAmts = [].concat(form.guarantor_amount || []); %>
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+<form method="POST" action="/portal/loans/apply" class="row g-3" id="applyForm">
+  <div class="col-lg-7">
+    <div class="card mb-3">
+      <div class="card-header">1. Choose a loan</div>
+      <div class="card-body">
+        <div class="row g-2">
+          <% for (const x of products) { %>
+            <div class="col-sm-6">
+              <input type="radio" class="btn-check" name="product" id="p_<%= x.code %>" value="<%= x.code %>" <%= x.code === p.code ? 'checked' : '' %> <%= x.max ? '' : 'disabled' %>
+                data-max="<%= x.max %>" data-months="<%= x.max_months %>" data-guarantors="<%= x.min_guarantors %>" data-why="<%= x.reasons[0] || x.explain %>">
+              <label class="btn btn-outline-primary w-100 text-start" for="p_<%= x.code %>">
+                <span class="d-block"><%= x.name %></span>
+                <small class="fw-normal"><%= x.max ? 'Up to ' + k(x.max) : (x.reasons[0] || 'Not available') %></small>
+              </label>
+            </div>
+          <% } %>
+        </div>
+        <div class="small text-muted mt-2" id="why"></div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">2. Amount and period</div>
+      <div class="card-body row g-3">
+        <div class="col-sm-6"><label class="form-label">Amount (KES)</label><input class="form-control" type="number" name="amount" id="amount" min="1000" step="500" value="<%= form.amount || '' %>" required>
+          <div class="small text-muted mt-1">Maximum <span id="maxAmt"></span></div></div>
+        <div class="col-sm-6"><label class="form-label">Repay over (months)</label><input class="form-control" type="number" name="months" id="months" min="1" value="<%= form.months || '' %>" required>
+          <div class="small text-muted mt-1">Up to <span id="maxMonths"></span> months</div></div>
+        <div class="col-12"><label class="form-label">What is it for?</label><input class="form-control" name="purpose" maxlength="200" value="<%= form.purpose || '' %>" placeholder="e.g. Fees for Form 2, Term 1"></div>
+      </div>
+    </div>
+
+    <div class="card" id="gCard">
+      <div class="card-header">3. Guarantors <span class="ms-auto small text-muted" id="gNeed"></span></div>
+      <div class="card-body">
+        <p class="small text-muted" id="gWhen">You only need guarantors for the part above your own free deposits (<%= S.fmtKes(ownFree) %>). Each member can guarantee at most 3 loans.</p>
+        <p class="small text-muted">Ask members who know you. They’ll get a request in their portal showing the amount and your repayment record, and can accept or decline.</p>
+        <div id="gRows">
+          <% for (let i = 0; i < Math.max(gNos.length, 3); i++) { %>
+            <div class="row g-2 mb-2 g-row">
+              <div class="col-5"><input class="form-control g-no" name="guarantor_no" placeholder="Member no. e.g. DS0002" value="<%= gNos[i] || '' %>"></div>
+              <div class="col-4"><input class="form-control" type="number" name="guarantor_amount" placeholder="Amount" min="0" step="500" value="<%= gAmts[i] || '' %>"></div>
+              <div class="col-3 small d-flex align-items-center g-name text-muted"></div>
+            </div>
+          <% } %>
+        </div>
+        <button type="button" class="btn btn-sm btn-light" id="addG"><i class="bi bi-plus"></i> Add guarantor</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card position-sticky" style="top: 80px">
+      <div class="card-header"><i class="bi bi-calculator"></i> Your repayment</div>
+      <div class="card-body">
+        <div class="text-center mb-3"><div class="small-caps">Monthly installment</div><div class="num fs-2 fw-bold" id="qInst">—</div></div>
+        <div class="d-flex justify-content-between small py-1 border-top"><span>Interest over the loan</span><span class="num" id="qInt">—</span></div>
+        <div class="d-flex justify-content-between small py-1 border-top"><span>Total to repay</span><span class="num" id="qTot">—</span></div>
+        <div class="d-flex justify-content-between small py-1 border-top"><span>Processing fee (deducted)</span><span class="num" id="qFee">—</span></div>
+        <div class="d-flex justify-content-between small py-1 border-top border-bottom mb-3"><span>You receive</span><span class="num fw-bold" id="qNet">—</span></div>
+        <div class="form-check small mb-3">
+          <input class="form-check-input" type="checkbox" name="pledge" id="pledge" value="1" <%= form.pledge ? 'checked' : '' %> required>
+          <label class="form-check-label" for="pledge">I pledge my future salary to repay this loan and will submit my last 2 payslips (or an employer letter) to the office.</label>
+        </div>
+        <button class="btn btn-primary w-100">Submit application</button>
+        <p class="small text-muted mt-2 mb-0">After you submit: guarantors accept → credit officer appraises → manager approves → treasurer disburses. You can follow every step.</p>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  const fmt = n => 'KES ' + Math.round(n).toLocaleString('en-KE');
+  const $ = id => document.getElementById(id);
+  function sel() { return document.querySelector('input[name=product]:checked'); }
+  function syncProduct() {
+    const p = sel(); if (!p) return;
+    $('maxAmt').textContent = fmt(p.dataset.max); $('maxMonths').textContent = p.dataset.months;
+    $('amount').max = p.dataset.max; $('months').max = p.dataset.months;
+    $('why').textContent = p.dataset.why;
+    const need = +p.dataset.guarantors && (+$('amount').value || 0) > <%= ownFree %>;
+    $('gCard').style.display = need ? '' : 'none';
+    $('gNeed').textContent = need ? need + ' required' : '';
+    quote();
+  }
+  let t;
+  function quote() {
+    clearTimeout(t);
+    t = setTimeout(async () => {
+      const p = sel(), a = $('amount').value, m = $('months').value;
+      if (!p || !a || !m) return;
+      const q = await (await fetch(`/portal/api/quote?product=${p.value}&amount=${a}&months=${m}`)).json();
+      if (!q.installment) return;
+      $('qInst').textContent = fmt(q.installment); $('qInt').textContent = fmt(q.interest);
+      $('qTot').textContent = fmt(q.total); $('qFee').textContent = fmt(q.fee); $('qNet').textContent = fmt(a - q.fee);
+    }, 250);
+  }
+  async function lookup(input) {
+    const out = input.closest('.g-row').querySelector('.g-name');
+    if (!input.value.trim()) { out.textContent = ''; return; }
+    const r = await (await fetch('/portal/api/member/' + encodeURIComponent(input.value.trim()))).json();
+    out.innerHTML = r.found ? '<span class="pos"><i class="bi bi-check-circle"></i> ' + r.name.replace(/</g, '&lt;') + '</span>' : '<span class="neg">Not found</span>';
+  }
+  document.querySelectorAll('input[name=product]').forEach(r => r.addEventListener('change', syncProduct));
+  ['amount', 'months'].forEach(id => $(id).addEventListener('input', quote));
+  $('amount').addEventListener('input', syncProduct);
+  $('gRows').addEventListener('change', e => e.target.classList.contains('g-no') && lookup(e.target));
+  $('addG').addEventListener('click', () => {
+    const row = document.querySelector('.g-row').cloneNode(true);
+    row.querySelectorAll('input').forEach(i => i.value = ''); row.querySelector('.g-name').textContent = '';
+    $('gRows').appendChild(row);
+  });
+  document.querySelectorAll('.g-no').forEach(i => i.value && lookup(i));
+  syncProduct();
+</script>
+<%- include('../partials/app-bottom') %>

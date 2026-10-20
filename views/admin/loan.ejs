@@ -1,0 +1,92 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; const a = appraisal; const m = a.member; %>
+<a href="/admin/loans" class="small"><i class="bi bi-arrow-left"></i> Loans</a>
+<div class="d-flex flex-wrap align-items-center gap-2 my-2">
+  <h4 class="fw-bold mb-0"><%= loan.product_name %> · <%= k(loan.principal) %></h4>
+  <span class="pill pill-info"><%= S.STATUS_LABELS[loan.status] %></span>
+  <span class="text-muted small ms-2">for <a href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %> (<%= m.member_no %>)</a> · applied <%= S.fmtDate(loan.applied_at) %></span>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-8">
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Term</div><div class="v fs-5"><%= loan.months %> months</div><div class="s"><%= (loan.rate_monthly * 100).toFixed(1) %>%/mo <%= loan.method %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Installment</div><div class="v num fs-5"><%= k(loan.installment) %></div><div class="s">Total <%= k(loan.total_payable) %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Fee</div><div class="v num fs-5"><%= k(loan.fee) %></div><div class="s">Net payout <%= k(loan.principal - loan.fee) %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Purpose</div><div class="v fs-6"><%= loan.purpose || '—' %></div></div></div></div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-clipboard-check"></i> Appraisal checks <span class="ms-auto"><span class="pill <%= a.passed ? 'pill-ok' : 'pill-danger' %>"><%= a.checks.filter(c => c.ok).length %>/<%= a.checks.length %> passed</span></span></div>
+      <div class="card-body py-1">
+        <% for (const c of a.checks) { %>
+          <div class="check-row">
+            <i class="bi bi-<%= c.ok ? 'check-circle-fill pos' : 'x-circle-fill neg' %>"></i>
+            <div><div class="fw-semibold"><%= c.label %></div><div class="small text-muted"><%= c.detail %></div></div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-people"></i> Guarantors</div>
+      <div class="table-responsive"><table class="table">
+        <thead><tr><th>Guarantor</th><th class="text-end">Pledge</th><th class="text-end">Their deposits</th><th class="text-end">Already pledged</th><th>Loans</th><th>Response</th></tr></thead>
+        <tbody><% for (const g of a.guarantees) { %>
+          <tr><td><a href="/admin/members/<%= g.guarantor_id %>"><%= g.name %></a> <span class="small text-muted"><%= g.member_no %></span></td>
+            <td class="text-end num"><%= k(g.amount) %></td><td class="text-end num"><%= k(g.capacity.deposits) %></td>
+            <td class="text-end num"><%= k(g.capacity.exposure) %></td><td><%= g.capacity.count %>/<%= g.capacity.maxLoans %></td>
+            <td><span class="pill pill-<%= { accepted: 'ok', pending: 'warn', declined: 'danger' }[g.status] %>"><%= g.status %></span></td></tr>
+        <% } %>
+        <% if (!a.guarantees.length) { %><tr><td colspan="6" class="text-muted">No guarantors (secured by own deposits).</td></tr><% } %></tbody>
+      </table></div>
+    </div>
+
+    <% const actions = [
+      { show: loan.status === 'appraisal' && can.appraise, url: 'recommend', label: 'Recommend for approval', cls: 'primary', disabled: !a.passed },
+      { show: loan.status === 'recommended' && can.approveLoan, url: 'approve', label: 'Record credit committee approval', cls: 'primary', placeholder: 'Credit committee minute no. and date' },
+      { show: loan.status === 'approved' && can.disburse, url: 'disburse', label: 'Mark as disbursed (' + k(loan.principal - loan.fee) + ')', cls: 'primary' },
+    ].filter(x => x.show);
+    const canReject = can.rejectLoan && ['guarantors', 'appraisal', 'recommended'].includes(loan.status); %>
+    <% if (actions.length || canReject) { %>
+      <div class="card border-primary">
+        <div class="card-header"><i class="bi bi-pen"></i> Your decision</div>
+        <div class="card-body">
+          <% for (const x of actions) { %>
+            <form method="POST" action="/admin/loans/<%= loan.id %>/<%= x.url %>" class="mb-3">
+              <input class="form-control mb-2" name="note" placeholder="<%= x.placeholder || 'Note for the file (optional)' %>">
+              <button class="btn btn-<%= x.cls %>" <%= x.disabled ? 'disabled' : '' %>><%= x.label %></button>
+              <% if (x.disabled) { %><span class="small text-danger ms-2">Fix the failed checks first, or decline.</span><% } %>
+            </form>
+          <% } %>
+          <% if (canReject) { %>
+            <form method="POST" action="/admin/loans/<%= loan.id %>/reject" class="d-flex gap-2">
+              <input class="form-control" name="reason" placeholder="Reason the member will see" required>
+              <button class="btn btn-outline-danger text-nowrap">Decline</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+    <% } else if (['appraisal', 'recommended', 'approved'].includes(loan.status)) { %>
+      <div class="alert alert-light small"><i class="bi bi-lock"></i> Next step is for the <strong><%= { appraisal: 'Credit Officer', recommended: 'Manager (records the credit committee decision)', approved: 'Treasurer' }[loan.status] %></strong>. Each step must be done by a different person.</div>
+    <% } %>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-person"></i> Borrower snapshot</div>
+      <div class="card-body small">
+        <div class="d-flex justify-content-between py-1"><span>Deposits</span><strong class="num"><%= k(a.bal.deposits) %></strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Share capital</span><strong class="num"><%= k(a.bal.shares) %></strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Net monthly pay</span><strong class="num"><%= k(m.net_salary) %></strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Member since</span><strong><%= S.fmtDate(m.joined_at) %></strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Employer</span><strong class="text-end"><%= m.employer %></strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-signpost-split"></i> Trail</div>
+      <div class="card-body"><%- include('../partials/loan-timeline', { loan, events }) %></div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/app-bottom') %>

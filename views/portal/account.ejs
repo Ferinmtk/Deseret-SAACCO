@@ -1,0 +1,60 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const k = S.fmtKes; %>
+<div class="tabs-line">
+  <% for (const [a, label] of Object.entries(S.ACCOUNTS)) { %><a href="/portal/accounts/<%= a %>" class="<%= a === account ? 'active' : '' %>"><%= label %></a><% } %>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card"><div class="stat"><div class="k">Balance today</div><div class="v num"><%= k(balance) %></div>
+    <div class="s"><%= { shares: 'Can’t be withdrawn · transferable on exit · earns dividends', deposits: 'Non-withdrawable · secures your loans · earns interest', holiday: 'Withdraw for your planned holiday', family: 'Save towards family needs' }[account] %></div></div></div></div>
+  <% if (goal) { const pct = Math.min(100, Math.round(balance / goal.target * 100)); const monthsLeft = Math.max(S.monthsBetween(S.today(), goal.target_date), 1); %>
+    <div class="col-md-8"><div class="card"><div class="stat">
+      <div class="k">Goal: <%= k(goal.target) %> by <%= S.fmtDate(goal.target_date) %></div>
+      <div class="progress my-2" style="height:12px"><div class="progress-bar" style="width: <%= pct %>%"></div></div>
+      <div class="s"><%= pct %>% there. <% if (balance < goal.target) { %>Save about <strong><%= k(Math.ceil((goal.target - balance) / monthsLeft / 100) * 100) %>/month</strong> to make it.<% } else { %>Goal reached 🎉<% } %>
+        <a href="#goalForm" data-bs-toggle="collapse" class="ms-2">Edit goal</a></div>
+    </div></div></div>
+  <% } else if (['holiday', 'family'].includes(account)) { %>
+    <div class="col-md-8"><div class="card"><div class="stat"><div class="k">No goal yet</div><div class="s">Set a target and we’ll show how much to save each month. <a href="#goalForm" data-bs-toggle="collapse">Set a goal</a></div></div></div></div>
+  <% } %>
+</div>
+
+<% if (['holiday', 'family'].includes(account)) { %>
+  <form id="goalForm" class="collapse card card-body mb-3" method="POST" action="/portal/goals/<%= account %>">
+    <div class="row g-2 align-items-end">
+      <div class="col-sm-4"><label class="form-label">Target (KES)</label><input class="form-control" type="number" name="target" min="1000" step="500" value="<%= goal ? goal.target : '' %>" required></div>
+      <div class="col-sm-4"><label class="form-label">By</label><input class="form-control" type="date" name="target_date" value="<%= goal ? goal.target_date : '' %>" required></div>
+      <div class="col-sm-4"><button class="btn btn-primary w-100">Save goal</button></div>
+    </div>
+  </form>
+<% } %>
+
+<div class="card">
+  <form class="card-header flex-wrap gap-2" method="GET">
+    <span>Transactions</span>
+    <div class="ms-auto d-flex gap-2 flex-wrap">
+      <input type="date" class="form-control form-control-sm" name="from" value="<%= from %>" aria-label="From">
+      <input type="date" class="form-control form-control-sm" name="to" value="<%= to %>" aria-label="To">
+      <button class="btn btn-sm btn-outline-primary">Filter</button>
+      <a class="btn btn-sm btn-primary" target="_blank" href="?from=<%= from %>&to=<%= to %>&print=1"><i class="bi bi-printer"></i> Statement</a>
+    </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead><tr><th>Date</th><th>Details</th><th>Via</th><th class="text-end">Amount</th><th class="text-end">Balance</th></tr></thead>
+      <tbody>
+        <% for (const r of rows) { %>
+          <tr>
+            <td class="text-nowrap"><%= S.fmtDate(r.created_at) %></td>
+            <td><%= r.description %></td>
+            <td class="small text-muted"><%= r.channel ? (S.CHANNELS[r.channel] + ' · ' + r.reference) : 'SACCO' %></td>
+            <td class="text-end num <%= r.amount < 0 ? 'neg' : 'pos' %>"><%= r.amount < 0 ? '−' : '+' %><%= k(Math.abs(r.amount)).replace('KES ', '') %></td>
+            <td class="text-end num"><%= k(r.balance) %></td>
+          </tr>
+        <% } %>
+        <tr class="text-muted"><td colspan="4">Opening balance on <%= S.fmtDate(from) %></td><td class="text-end num"><%= k(opening) %></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/app-bottom') %>

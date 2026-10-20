@@ -1,24 +1,33 @@
 {
-  "name": "sacco-website",
+  "name": "deseret-sacco",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --env-file-if-exists=.env.local app.js",
+    "migrate": "node --env-file-if-exists=.env.local scripts/migrate.js",
+    "seed": "node --env-file-if-exists=.env.local seed.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ferinmtk/Deseret-SAACCO.git"
+    "url": "git+https://github.com/Ferinmtk/deseret-sacco.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Ferinmtk/Deseret-SAACCO/issues"
+    "url": "https://github.com/Ferinmtk/deseret-sacco/issues"
   },
-  "homepage": "https://github.com/Ferinmtk/Deseret-SAACCO#readme",
+  "homepage": "https://github.com/Ferinmtk/deseret-sacco#readme",
   "description": "",
   "dependencies": {
+    "@vercel/functions": "^3.10.1",
+    "connect-pg-simple": "^10.0.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-session": "^1.19.0",
+    "pg": "^8.23.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

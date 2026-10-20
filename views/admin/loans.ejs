@@ -1,0 +1,39 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; %>
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k">Loan book</div><div class="v num fs-5"><%= k(pf.book) %></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k">Active loans</div><div class="v num fs-5"><%= pf.loans.length %></div></div></div></div>
+  <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k">In pipeline</div><div class="v num fs-5"><%= columns.reduce((s, c) => s + c.rows.length, 0) %></div></div></div></div>
+  <div class="col-6 col-lg-3"><a class="stat-link" href="/admin/arrears"><div class="card"><div class="stat"><div class="k">PAR 30</div><div class="v num fs-5 <%= pf.par30 > 5 ? 'neg' : '' %>"><%= pf.par30.toFixed(1) %>%</div></div></div></a></div>
+</div>
+
+<h6 class="small-caps mb-2">Applications in progress</h6>
+<div class="kanban mb-4">
+  <% for (const c of columns) { %>
+    <div class="col-card">
+      <h6><%= c.label %> <span><%= c.rows.length %></span></h6>
+      <% for (const l of c.rows) { const age = S.daysBetween(l.applied_at, S.today()); %>
+        <a class="item" href="/admin/loans/<%= l.id %>">
+          <div class="d-flex justify-content-between"><strong><%= l.name %></strong><span class="small text-muted">#<%= l.id %></span></div>
+          <div class="small"><%= l.product_name %> · <span class="num"><%= k(l.principal) %></span></div>
+          <div class="d-flex justify-content-between small text-muted mt-1">
+            <span><i class="bi bi-people"></i> <%= l.accepted %>/<%= l.requested %></span>
+            <span class="<%= age > 7 ? 'neg' : '' %>"><%= age %>d old</span>
+          </div>
+        </a>
+      <% } %>
+      <% if (!c.rows.length) { %><div class="small text-muted mt-2">Nothing here.</div><% } %>
+    </div>
+  <% } %>
+</div>
+
+<h6 class="small-caps mb-2">Recently decided</h6>
+<div class="card"><div class="table-responsive"><table class="table table-hover">
+  <thead><tr><th>#</th><th>Member</th><th>Product</th><th class="text-end">Principal</th><th class="text-end">Balance</th><th>Status</th></tr></thead>
+  <tbody><% for (const l of recent) { %>
+    <tr class="clickable" data-href="/admin/loans/<%= l.id %>"><td><%= l.id %></td><td><%= l.name %></td><td><%= l.product_name %></td><td class="text-end num"><%= k(l.principal) %></td>
+      <td class="text-end num"><%= l.status === 'disbursed' ? k(l.state.outstanding) : '—' %></td>
+      <td><span class="pill pill-<%= l.status === 'rejected' ? 'danger' : l.state.arrears ? 'danger' : l.status === 'closed' ? 'muted' : 'ok' %>"><%= l.state.arrears ? l.state.daysInArrears + ' days in arrears' : S.STATUS_LABELS[l.status] %></span></td></tr>
+  <% } %></tbody>
+</table></div></div>
+<%- include('../partials/app-bottom') %>

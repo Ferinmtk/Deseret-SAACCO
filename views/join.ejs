@@ -1,12 +1,6 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { pageTitle: 'Join Us' }) %>
 
-<!-- HERO SECTION -->
-<section class="join-hero d-flex align-items-center text-white text-center" data-aos="fade-down">
-  <div class="container">
-    <h1 class="display-4 fw-bold">Join Deseret Sacco</h1>
-    <p class="lead">Become part of a trusted LDS financial family in Kenya.</p>
-  </div>
-</section>
+<%- include('partials/page-hero', { image: '/img/temple.jpg', heading: 'Join Deseret Sacco', lead: 'Become part of a trusted savings family for Church employees in Kenya.' }) %>
 
 <!-- WHY JOIN SECTION -->
 <section class="py-5 bg-light text-center">
@@ -40,7 +34,8 @@
         <h4 class="fw-bold">How to Join</h4>
         <ul>
           <li>Introduction letter from the institution (employer)</li>
-          <li>Duly signed application form</li>
+          <li>Application form — <a href="/join/apply">apply online</a> or collect one from the office — with a copy of your ID or passport</li>
+          <li>If you were in another SACCO: a letter showing you owe it nothing</li>
           <li>Registration fee: <strong>Kshs. 1,000</strong> (one-time, non-refundable)</li>
           <li>Share Capital: <strong>Kshs. 6,500</strong> (non-refundable, earns dividends, transferable upon withdrawal)</li>
           <li>Minimum monthly deposit contribution: <strong>Kshs. 1,000</strong></li>
@@ -123,11 +118,49 @@
   </div>
 </section>
 
-<!-- CTA -->
-<section class="text-center py-5 bg-success text-white" data-aos="zoom-in">
+<!-- PAYING -->
+<section class="section section-alt">
   <div class="container">
-    <h2 class="fw-bold mb-3">Ready to Become a Member?</h2>
-    <a href="/contact" class="btn btn-light btn-lg px-5">Apply Today</a>
+    <div class="text-center">
+      <h2>Paying your fees and contributions</h2>
+      <p class="intro">Church employees pay through payroll deductions. Everyone else can use M-Pesa or a standing order from their bank.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 fade-in">
+        <div class="simple-card">
+          <i class="bi bi-phone"></i>
+          <h3 class="h5">M-Pesa</h3>
+          <ul>
+            <li>Paybill <span class="fact"><%= S.SACCO.paybill %></span></li>
+            <li>Account <span class="fact"><%= S.SACCO.account %></span></li>
+            <li>Then send the M-Pesa message to <span class="fact"><%= S.SACCO.smsNumber %></span>, or submit the code in the member portal.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6 fade-in">
+        <div class="simple-card">
+          <i class="bi bi-bank"></i>
+          <h3 class="h5">Bank or standing order</h3>
+          <ul>
+            <li><%= S.SACCO.bank %>, <%= S.SACCO.branch %></li>
+            <li>Account <span class="fact"><%= S.SACCO.account %></span> · SWIFT <%= S.SACCO.swift %></li>
+            <li>Account name: <%= S.SACCO.name %></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="text-center py-5 bg-success text-white">
+  <div class="container">
+    <h2 class="fw-bold mb-2">Ready to Become a Member?</h2>
+    <p class="mb-4" style="color: #cfe0d8;">Apply online in about 10 minutes, then bring your ID copy and employer’s letter to the office.</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+      <a href="/join/apply" class="btn btn-light btn-lg px-4" style="color: var(--brand);">Apply online</a>
+      <a href="/contact" class="btn btn-outline-light btn-lg px-4">Contact the office</a>
+    </div>
   </div>
 </section>
 

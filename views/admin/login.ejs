@@ -1,0 +1,16 @@
+<%- include('../partials/auth-page', {
+  heading: 'Staff sign in', sub: 'For Deseret SACCO staff and board members.', action: '/admin/login',
+  pitch: 'Run the SACCO with two sets of eyes on every shilling.',
+  points: ['Every posting needs a second person to approve', 'Loan appraisal checks run automatically', 'Arrears and guarantor exposure at a glance', 'Full audit trail for the supervisory committee'],
+  body: `
+    <label class="form-label" for="email">Work email</label>
+    <input class="form-control mb-3" type="email" id="email" name="email" value="${S.esc(locals.email || '')}" autocomplete="username" required autofocus>
+    <label class="form-label" for="password">Password</label>
+    <input class="form-control mb-3" type="password" id="password" name="password" autocomplete="current-password" required>`,
+  foot: `
+    <div class="demo-note mt-4"><strong>Demo logins</strong> (password <code>demo1234</code>):<br>
+      <code>clerk@deseret.demo</code> · <code>credit@deseret.demo</code><br>
+      <code>manager@deseret.demo</code> · <code>treasurer@deseret.demo</code><br>
+      <code>board@deseret.demo</code></div>
+    <p class="text-center mt-4 mb-0 small text-muted"><a href="/portal/login">Member sign in</a></p>`
+}) %>

@@ -1,0 +1,50 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const k = S.fmtKes; const pillFor = l => l.status === 'disbursed' ? (l.state.arrears ? ['danger', k(l.state.arrears) + ' overdue'] : ['ok', 'Active']) : l.status === 'closed' ? ['muted', 'Fully paid'] : l.status === 'rejected' ? ['danger', 'Declined'] : ['info', S.STATUS_LABELS[l.status]]; %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <p class="text-muted mb-0">Your loans, what you can borrow, and our products.</p>
+  <a href="/portal/loans/apply" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Apply</a>
+</div>
+
+<div class="card mb-3">
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead><tr><th>Loan</th><th>Applied</th><th class="text-end">Amount</th><th class="text-end">Monthly</th><th class="text-end">Balance</th><th>Status</th></tr></thead>
+      <tbody>
+        <% for (const l of loans) { const [c, t] = pillFor(l); %>
+          <tr class="clickable" data-href="/portal/loans/<%= l.id %>">
+            <td><a href="/portal/loans/<%= l.id %>" class="fw-semibold text-reset"><%= l.product_name %></a><div class="small text-muted"><%= l.purpose %></div></td>
+            <td class="text-nowrap"><%= S.fmtDate(l.applied_at) %></td>
+            <td class="text-end num"><%= k(l.principal) %></td>
+            <td class="text-end num"><%= k(l.installment) %></td>
+            <td class="text-end num"><%= ['closed', 'rejected'].includes(l.status) ? '—' : k(l.state.outstanding) %></td>
+            <td><span class="pill pill-<%= c %>"><%= t %></span></td>
+          </tr>
+        <% } %>
+        <% if (!loans.length) { %><tr><td colspan="6"><div class="empty">You haven’t taken a loan yet.</div></td></tr><% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h6 class="small-caps mb-2">Loan products</h6>
+<div class="row g-3">
+  <% for (const p of products) { %>
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100"><div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between"><h6 class="fw-bold mb-1"><%= p.name %></h6><span class="pill pill-muted"><%= (p.rate_monthly * 100).toFixed(1) %>%/mo <%= p.method %></span></div>
+        <p class="small text-muted"><%= p.description %></p>
+        <ul class="small ps-3 mb-3">
+          <li>Up to <%= p.max_months %> months</li>
+          <li><%= p.max_salary_pct ? `Up to ${p.max_salary_pct}% of net pay` : `Up to ${p.multiplier}× your deposits` %></li>
+          <li><%= p.min_guarantors ? `${p.min_guarantors} guarantor${p.min_guarantors > 1 ? 's' : ''}` : 'No guarantors needed' %> · <%= p.fee_pct %>% processing fee</li>
+        </ul>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="small">You can borrow <strong class="num"><%= p.max ? k(p.max) : '—' %></strong></span>
+          <a href="/portal/loans/apply?product=<%= p.code %>" class="btn btn-sm <%= p.max ? 'btn-outline-primary' : 'btn-light disabled' %>">Apply</a>
+        </div>
+      </div></div>
+    </div>
+  <% } %>
+</div>
+<p class="small text-muted mt-3">Rates shown are sample figures until confirmed against the SACCO by-laws.</p>
+<%- include('../partials/app-bottom') %>

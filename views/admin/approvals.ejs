@@ -1,0 +1,65 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; const role = staff.role;
+   const myLoans = loans.filter(l => ({ credit: ['appraisal'], manager: ['recommended'], treasurer: ['approved'] }[role] || []).includes(l.status)); %>
+<p class="text-muted">Everything waiting for <strong><%= roleLabel %></strong>. Items you created yourself must be approved by someone else.</p>
+
+<% if (can.approveMember) { %>
+  <h6 class="small-caps mb-2">New members (<%= members.length %>)</h6>
+  <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
+    <tbody><% for (const m of members) { %>
+      <tr><td><a href="/admin/members/<%= m.id %>" class="fw-semibold"><%= m.first_name %> <%= m.last_name %></a><div class="small text-muted">ID <%= m.id_number %> · <%= m.employer %></div></td>
+        <td class="small"><%= m.source === 'online' ? 'Applied online' : 'Registered by ' + (m.maker || 'staff') %>, <%= S.fmtDate(m.created_at) %></td>
+        <td class="text-end"><a href="/admin/members/<%= m.id %>" class="btn btn-sm btn-outline-primary">Review</a></td></tr>
+    <% } %><% if (!members.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } %>
+
+<% const visiblePayments = can.approvePayment ? payments : payments.filter(p => p.submitted_by_member && role === 'clerk'); %>
+<% if (visiblePayments.length || can.approvePayment) { %>
+  <h6 class="small-caps mb-2">Payments to verify (<%= visiblePayments.length %>) <span class="text-muted fw-normal text-lowercase">— match each code or slip to the Co-op Bank statement</span></h6>
+  <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
+    <tbody><% for (const p of visiblePayments) { %>
+      <tr><td><strong><%= p.name %></strong> <span class="small text-muted"><%= p.member_no %></span><div class="small text-muted"><%= p.channel %> · <%= p.reference %> · by <%= p.maker %></div></td>
+        <td class="small"><%= p.split.map(x => (x.account === 'loan' ? 'Loan #' + x.loan_id : S.ACCOUNTS[x.account]) + ' ' + k(x.amount)).join(' · ') %></td>
+        <td class="text-end num fw-semibold"><%= k(p.amount) %></td>
+        <td class="text-end"><% if (p.created_by === staff.id) { %><span class="small text-muted">Yours — needs someone else</span><% } else { %>
+          <form method="POST" action="/admin/payments/<%= p.id %>/decision" class="d-inline-flex gap-1">
+            <button name="decision" value="approve" class="btn btn-sm btn-primary">Approve</button>
+            <button name="decision" value="reject" class="btn btn-sm btn-outline-danger" onclick="this.form.reason.value = prompt('Reason?') || ''; return !!this.form.reason.value">Reject</button>
+            <input type="hidden" name="reason"></form><% } %></td></tr>
+    <% } %><% if (!visiblePayments.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } %>
+
+<% if (can.handleRequests) { %>
+  <h6 class="small-caps mb-2">Deduction changes (<%= requests.length %>)</h6>
+  <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
+    <tbody><% for (const r of requests) { %>
+      <tr><td><a href="/admin/members/<%= r.member_id %>" class="fw-semibold"><%= r.name %></a><div class="small text-muted"><%= r.member_no %> · payroll <%= r.payroll_no || '—' %> · sent <%= S.fmtDate(r.created_at) %></div></td>
+        <td class="small"><% if (r.d.shares_to) { %>Shares <%= S.fmtKes(r.d.shares_from) %> → <strong><%= S.fmtKes(r.d.shares_to) %></strong>/month<br><% } %>
+          <% if (r.d.loan_to) { %>Loan repayment <%= S.fmtKes(r.d.loan_from) %> → <strong><%= S.fmtKes(r.d.loan_to) %></strong>/month<br><% } %>From <%= r.d.effective.slice(0, 7) %></td>
+        <td class="text-end"><form method="POST" action="/admin/requests/<%= r.id %>" class="d-inline-flex gap-1">
+          <button name="decision" value="approve" class="btn btn-sm btn-primary">Done</button>
+          <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button></form></td></tr>
+    <% } %><% if (!requests.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } %>
+
+<% if (['credit', 'manager', 'treasurer'].includes(role)) { %>
+  <h6 class="small-caps mb-2">Loans for you (<%= myLoans.length %>)</h6>
+  <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
+    <tbody><% for (const l of myLoans) { %>
+      <tr class="clickable" data-href="/admin/loans/<%= l.id %>"><td><strong><%= l.name %></strong><div class="small text-muted"><%= l.product_name %> · applied <%= S.fmtDate(l.applied_at) %></div></td>
+        <td class="text-end num"><%= k(l.principal) %></td><td class="text-end"><a class="btn btn-sm btn-outline-primary" href="/admin/loans/<%= l.id %>"><%= { credit: 'Appraise', manager: 'Review & approve', treasurer: 'Disburse' }[role] %></a></td></tr>
+    <% } %><% if (!myLoans.length) { %><tr><td class="text-muted">Nothing waiting.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } %>
+
+<% if (role === 'clerk') { %>
+  <div class="row g-3">
+    <div class="col-md-6"><a class="stat-link" href="/admin/members/new"><div class="card"><div class="stat"><div class="k">Register</div><div class="v fs-5"><i class="bi bi-person-plus"></i> New member</div></div></div></a></div>
+    <div class="col-md-6"><a class="stat-link" href="/admin/payments/new"><div class="card"><div class="stat"><div class="k">Record</div><div class="v fs-5"><i class="bi bi-receipt"></i> Bank / cash / check-off payment</div></div></div></a></div>
+  </div>
+<% } %>
+<% if (role === 'board') { %><div class="card"><div class="empty"><i class="bi bi-eye"></i>The board view is read-only. Use the dashboard, arrears and audit trail.</div></div><% } %>
+<%- include('../partials/app-bottom') %>

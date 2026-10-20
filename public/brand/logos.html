@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Deseret SACCO Logo Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  /* Layout: intro, sticky palette and filter bar, then a gallery grid of numbered concept tiles with a shortlist bar. */
+  :root {
+    --bg: #f5f6f3; --surface: #ffffff; --fg: #1c2420; --muted: #5e6a64; --line: #e1e6e2; --star: #d9a21b;
+    --p: #1e3a5f; --p-dark: #13263f; --a: #d9a21b;
+    --font: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 16px 110px; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 12px; font-weight: 800; letter-spacing: -0.01em; }
+  h2 { font-size: 1.15rem; margin: 0; font-weight: 800; }
+  p { margin: 0; }
+  .lede { color: var(--muted); max-width: 66ch; }
+  .eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .controls { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; margin-top: 20px; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pal, .filter { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 14px 6px 8px; font: 600 .88rem var(--font); cursor: pointer; }
+  .filter { padding: 6px 14px; }
+  .pal[aria-pressed="true"], .filter[aria-pressed="true"] { border-color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg); }
+  button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+  .sw { display: inline-flex; }
+  .sw i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -4px; }
+  .sw i:first-child { margin-left: 0; }
+  .palnote { color: var(--muted); font-size: .88rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-top: 24px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+  .tile.starred { border-color: var(--star); box-shadow: 0 0 0 2px rgba(217, 162, 27, .45); }
+  .tile[hidden] { display: none; }
+  .art { background: #f4f6f4; display: grid; place-items: center; padding: 26px 16px 18px; position: relative; }
+  .art .big { width: 112px; height: 112px; }
+  .num { position: absolute; top: 10px; left: 12px; font-size: .78rem; font-weight: 800; color: #5e6a64; }
+  .fav { position: absolute; top: 6px; right: 6px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+  .fav svg { width: 24px; height: 24px; fill: none; stroke: #8b968f; stroke-width: 1.8; }
+  .fav[aria-pressed="true"] svg { fill: var(--star); stroke: var(--star); }
+  .sizes { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  .appicon { width: 44px; height: 44px; border-radius: 22%; background: #fff; border: 1px solid #dfe4e0; display: grid; place-items: center; }
+  .appicon svg { width: 72%; height: 72%; }
+  .tab { display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #dfe4e0; border-radius: 7px 7px 0 0; padding: 5px 9px; font-size: .72rem; }
+  .tab svg { width: 16px; height: 16px; }
+  .info { padding: 14px 16px 16px; display: grid; gap: 4px; }
+  .info .tag { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .info p { color: var(--muted); font-size: .92rem; }
+  .lock { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .lock svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .lock b { font-size: 1rem; font-weight: 800; }
+  .shortlist { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--fg); color: #fff; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: center; font-weight: 600; }
+  .shortlist[hidden] { display: none; }
+  .shortlist button { border: 0; border-radius: 999px; padding: 8px 14px; font: 700 .88rem var(--font); background: #fff; color: var(--fg); cursor: pointer; }
+  .shortlist .copied { font-weight: 500; opacity: .85; font-size: .85rem; }
+  .fine { margin-top: 28px; color: var(--muted); font-size: .88rem; max-width: 72ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Brand · Deseret SACCO Society Ltd</p>
+  <h1>Logo concepts for Deseret SACCO</h1>
+  <p class="lede">22 directions to choose from. Each tile shows the mark, an app icon, a browser tab and the mark next to the name. Tap the star on the ones you like and send me their numbers. None uses Church imagery.</p>
+
+  <div class="controls">
+    <div class="row" role="group" aria-label="Colour palette">
+      <span class="eyebrow">Colours</span>
+      <button class="pal" id="pal-hive" aria-pressed="true" data-p="#1e3a5f" data-pd="#13263f" data-a="#d9a21b" data-note="Recommended: navy for trust, honey to stand out from Kenya’s green banks."><span class="sw"><i style="background:#1e3a5f"></i><i style="background:#d9a21b"></i></span>Navy &amp; honey</button>
+      <button class="pal" id="pal-forest" aria-pressed="false" data-p="#1f5c45" data-pd="#163f30" data-a="#d9a21b" data-note="Today’s green with honey. Close to Co-operative Bank’s green."><span class="sw"><i style="background:#1f5c45"></i><i style="background:#d9a21b"></i></span>Forest &amp; honey</button>
+      <button class="pal" id="pal-teal" aria-pressed="false" data-p="#0f5257" data-pd="#0a383c" data-a="#d9a21b" data-note="Calm teal with honey, between blue and green."><span class="sw"><i style="background:#0f5257"></i><i style="background:#d9a21b"></i></span>Teal &amp; honey</button>
+      <button class="pal" id="pal-plum" aria-pressed="false" data-p="#4a2545" data-pd="#321831" data-a="#e0a526" data-note="A bolder option: deep plum with honey. Distinctive, though less usual for finance."><span class="sw"><i style="background:#4a2545"></i><i style="background:#e0a526"></i></span>Plum &amp; honey</button>
+    </div>
+    <p class="palnote" id="palnote">Recommended: navy for trust, honey to stand out from Kenya’s green banks.</p>
+    <div class="row" role="group" aria-label="Show">
+      <span class="eyebrow">Show</span>
+      <button class="filter" data-f="all" aria-pressed="true">All</button>
+      <button class="filter" data-f="Letters" aria-pressed="false">Letters</button>
+      <button class="filter" data-f="People" aria-pressed="false">People &amp; care</button>
+      <button class="filter" data-f="Growth" aria-pressed="false">Growth</button>
+      <button class="filter" data-f="Kenya" aria-pressed="false">Kenyan</button>
+      <button class="filter" data-f="Hive" aria-pressed="false">Honeybee</button>
+      <button class="filter" data-f="Security" aria-pressed="false">Security &amp; home</button>
+      <button class="filter" data-f="starred" aria-pressed="false">★ Starred</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="fine">These are concept sketches for choosing a direction. The chosen one gets cleaned-up artwork, a one-colour version for rubber stamps and forms, and files for print, the website and the app.</p>
+</div>
+
+<div class="shortlist" id="shortlist" hidden>
+  <span id="shortText"></span>
+  <button type="button" id="copyBtn">Copy numbers</button>
+  <span class="copied" id="copied" aria-live="polite"></span>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="bee-body"><polygon points="50,34 72,47 72,73 50,86 28,73 28,47"/></clipPath>
+    <g id="m1"><rect x="6" y="6" width="88" height="88" rx="24" style="fill:var(--p)"/><text x="50" y="64" text-anchor="middle" style="font:800 44px 'Figtree','Segoe UI',sans-serif;letter-spacing:-2px;fill:#fff">DS</text><rect x="24" y="72" width="52" height="6" rx="3" style="fill:var(--a)"/></g>
+    <g id="m2"><circle cx="50" cy="50" r="44" style="fill:var(--p)"/><text x="45" y="74" text-anchor="middle" style="font:800 66px 'Figtree','Segoe UI',sans-serif;fill:#fff">d</text><circle cx="72" cy="30" r="9" style="fill:var(--a)"/></g>
+    <g id="m3"><polygon points="50,4 90,27 90,73 50,96 10,73 10,27" style="fill:var(--p)"/><path fill-rule="evenodd" d="M33 28 H54 L70 39 V61 L54 72 H33 Z M44 38 V62 H51 L60 56 V44 L51 38 Z" style="fill:#fff"/><polygon points="54,28 70,39 70,44 60,44 51,38 44,38 44,28" style="fill:var(--a)"/></g>
+    <g id="m4"><circle cx="24" cy="40" r="10" style="fill:var(--p)"/><path d="M8 88 V70 a16 16 0 0 1 32 0 V88 Z" style="fill:var(--p)"/><circle cx="76" cy="40" r="10" style="fill:var(--p)"/><path d="M60 88 V70 a16 16 0 0 1 32 0 V88 Z" style="fill:var(--p)"/><circle cx="50" cy="26" r="12" style="fill:var(--a)"/><path d="M30 88 V62 a20 20 0 0 1 40 0 V88 Z" style="fill:var(--a)"/></g>
+    <g id="m5"><circle cx="38" cy="40" r="20" style="fill:none;stroke:var(--p);stroke-width:8"/><circle cx="62" cy="40" r="20" style="fill:none;stroke:var(--p-dark);stroke-width:8"/><circle cx="50" cy="62" r="20" style="fill:none;stroke:var(--a);stroke-width:8"/></g>
+    <g id="m6"><path d="M12 56 C12 76 30 90 50 90 V76 C37 76 27 68 27 56 Z" style="fill:var(--p)"/><path d="M88 56 C88 76 70 90 50 90 V76 C63 76 73 68 73 56 Z" style="fill:var(--p)"/><rect x="48" y="36" width="4" height="40" rx="2" style="fill:var(--p-dark)"/><path d="M50 52 C39 52 31 44 31 33 C42 33 50 41 50 52 Z" style="fill:var(--a)"/><path d="M50 44 C50 33 58 25 69 25 C69 36 61 44 50 44 Z" style="fill:var(--a)"/></g>
+    <g id="m7"><path d="M50 88 C20 68 8 52 8 34 C8 20 19 11 31 11 C39 11 46 15 50 21 C54 15 61 11 69 11 C81 11 92 20 92 34 C92 52 80 68 50 88 Z" style="fill:var(--p)"/><rect x="35" y="30" width="30" height="6" rx="3" style="fill:#fff"/><circle cx="50" cy="54" r="13" style="fill:var(--a)"/><circle cx="50" cy="54" r="7" style="fill:none;stroke:#fff;stroke-width:2.5"/></g>
+    <g id="m8"><rect x="14" y="58" width="18" height="28" rx="5" style="fill:var(--p)"/><rect x="41" y="44" width="18" height="42" rx="5" style="fill:var(--p)"/><rect x="68" y="30" width="18" height="56" rx="5" style="fill:var(--p)"/><path d="M77 30 C77 16 86 8 96 6 C96 18 89 28 77 30 Z" style="fill:var(--a)"/></g>
+    <g id="m9"><rect x="18" y="74" width="64" height="12" rx="6" style="fill:var(--p-dark)"/><rect x="18" y="60" width="64" height="12" rx="6" style="fill:var(--p)"/><rect x="18" y="46" width="64" height="12" rx="6" style="fill:var(--p-dark)"/><circle cx="58" cy="24" r="14" style="fill:var(--a)"/><circle cx="58" cy="24" r="7" style="fill:none;stroke:#fff;stroke-width:2.5"/></g>
+    <g id="m10"><circle cx="50" cy="50" r="44" style="fill:var(--p)"/><polyline points="22,72 38,72 38,58 54,58 54,44 66,44" style="fill:none;stroke:#fff;stroke-width:7;stroke-linejoin:round;stroke-linecap:round"/><path d="M64 33 L80 44 L64 55 Z" style="fill:var(--a)"/></g>
+    <g id="m11"><polygon points="8,86 40,30 55,52 66,38 92,86" style="fill:var(--p)"/><polygon points="40,30 32,44 40,40 48,44" style="fill:#fff"/><path d="M48 86 C40 76 62 72 54 62 C50 57 56 54 58 52" style="fill:none;stroke:var(--a);stroke-width:4;stroke-linecap:round"/><circle cx="76" cy="20" r="8" style="fill:var(--a)"/></g>
+    <g id="m12"><g style="fill:var(--a)"><rect x="48" y="16" width="4" height="13" rx="2"/><rect x="48" y="16" width="4" height="13" rx="2" transform="rotate(-40 50 64)"/><rect x="48" y="16" width="4" height="13" rx="2" transform="rotate(40 50 64)"/><rect x="48" y="16" width="4" height="13" rx="2" transform="rotate(-75 50 64)"/><rect x="48" y="16" width="4" height="13" rx="2" transform="rotate(75 50 64)"/><path d="M24 64 A26 26 0 0 1 76 64 Z"/></g><rect x="8" y="64" width="84" height="7" rx="3.5" style="fill:var(--p)"/><rect x="22" y="77" width="56" height="6" rx="3" style="fill:var(--p);opacity:.55"/></g>
+    <g id="m13"><circle cx="74" cy="22" r="10" style="fill:var(--a)"/><path d="M50 88 V58 M50 64 L36 48 M50 60 L64 46" style="fill:none;stroke:var(--p-dark);stroke-width:6;stroke-linecap:round"/><ellipse cx="50" cy="44" rx="42" ry="11" style="fill:var(--p)"/><ellipse cx="48" cy="34" rx="28" ry="8" style="fill:var(--p)"/><rect x="12" y="86" width="76" height="5" rx="2.5" style="fill:var(--a)"/></g>
+    <g id="m14"><rect x="44" y="6" width="12" height="11" rx="4" style="fill:var(--a)"/><path d="M43 42 C43 31 45 24 46 17 H54 C55 24 57 31 57 42 Z" style="fill:var(--p)"/><circle cx="50" cy="64" r="28" style="fill:var(--p)"/><polyline points="25,64 33,56 41,64 50,56 59,64 67,56 75,64" style="fill:none;stroke:var(--a);stroke-width:3.5;stroke-linejoin:round"/></g>
+    <g id="m15"><circle cx="50" cy="50" r="44" style="fill:var(--p)"/><circle cx="50" cy="50" r="33" style="fill:none;stroke:#fff;stroke-width:7;stroke-dasharray:9 6"/><circle cx="50" cy="50" r="20" style="fill:none;stroke:var(--a);stroke-width:7;stroke-dasharray:7 5"/><circle cx="50" cy="50" r="8" style="fill:#fff"/></g>
+    <g id="m16"><path d="M50 22 C40 16 24 16 12 20 V82 C24 78 40 78 50 84 Z" style="fill:var(--p)"/><path d="M50 22 C60 16 76 16 88 20 V82 C76 78 60 78 50 84 Z" style="fill:var(--p-dark)"/><rect x="58" y="34" width="22" height="4" rx="2" style="fill:#fff;opacity:.8"/><rect x="58" y="44" width="22" height="4" rx="2" style="fill:#fff;opacity:.8"/><rect x="58" y="54" width="16" height="4" rx="2" style="fill:#fff;opacity:.8"/><polyline points="22,50 30,58 42,40" style="fill:none;stroke:var(--a);stroke-width:6;stroke-linecap:round;stroke-linejoin:round"/></g>
+    <g id="m17"><path d="M50 10 L90 44 H80 V88 H20 V44 H10 Z" style="fill:var(--p)"/><path d="M41 88 V68 a9 9 0 0 1 18 0 V88 Z" style="fill:var(--a)"/><circle cx="50" cy="46" r="7" style="fill:#fff"/></g>
+    <g id="m18"><path d="M10 66 Q50 16 90 66" style="fill:none;stroke:var(--p);stroke-width:7;stroke-linecap:round"/><g style="stroke:var(--p);stroke-width:3"><line x1="30" y1="49" x2="30" y2="64"/><line x1="40" y1="44" x2="40" y2="64"/><line x1="50" y1="42" x2="50" y2="64"/><line x1="60" y1="44" x2="60" y2="64"/><line x1="70" y1="49" x2="70" y2="64"/></g><rect x="6" y="63" width="88" height="7" rx="3.5" style="fill:var(--p)"/><path d="M14 84 q9 -6 18 0 t18 0 t18 0 t18 0" style="fill:none;stroke:var(--a);stroke-width:4;stroke-linecap:round"/></g>
+    <g id="m19"><path d="M50 6 L86 18 V44 C86 68 70 84 50 94 C30 84 14 68 14 44 V18 Z" style="fill:var(--p)"/><path d="M50 6 L86 18 V26 L50 14 L14 26 V18 Z" style="fill:var(--a)"/><circle cx="50" cy="45" r="10" style="fill:#fff"/><path d="M44 51 H56 L59 72 H41 Z" style="fill:#fff"/></g>
+    <g id="m20"><polygon points="27,52 43,61 43,79 27,88 11,79 11,61" style="fill:var(--p)"/><polygon points="54,36 70,45 70,63 54,72 38,63 38,45" style="fill:var(--p-dark)"/><polygon points="73,12 89,21 89,39 73,48 57,39 57,21" style="fill:var(--a)"/></g>
+    <g id="m21"><circle cx="31" cy="34" r="17" style="fill:var(--p);opacity:.35"/><circle cx="69" cy="34" r="17" style="fill:var(--p);opacity:.35"/><polygon points="50,34 72,47 72,73 50,86 28,73 28,47" style="fill:var(--a)"/><g clip-path="url(#bee-body)"><rect x="20" y="53" width="60" height="7" style="fill:var(--p)"/><rect x="20" y="67" width="60" height="7" style="fill:var(--p)"/></g><circle cx="50" cy="26" r="9" style="fill:var(--p)"/></g>
+    <g id="m22"><path d="M50 6 L59 41 L94 50 L59 59 L50 94 L41 59 L6 50 L41 41 Z" style="fill:var(--p)"/><path d="M50 37 L63 50 L50 63 L37 50 Z" style="fill:var(--a)"/></g>
+  </defs>
+</svg>
+
+<script>
+  // [id, name, group, idea]
+  const concepts = [
+    ['m1', 'DS badge', 'Letters', 'The initials in a rounded badge with a honey underline. Plain and confident; easiest to use on stamps, forms and signs.'],
+    ['m2', 'Little d', 'Letters', 'A friendly lowercase “d” whose dot is a coin. Modern and approachable, good for a mobile app.'],
+    ['m3', 'Hive D', 'Letters', 'An angular “D” inside a honeycomb cell. Combines the name with the meaning of Deseret.'],
+    ['m4', 'Members together', 'People', 'Three members side by side, the middle one lifted in honey. Members supporting each other.'],
+    ['m5', 'Linked rings', 'People', 'Three rings joined together: unity and partnership. Simple and timeless.'],
+    ['m6', 'Hands & seedling', 'People', 'Cupped hands caring for a new shoot: savings nurtured until they grow.'],
+    ['m7', 'Heart & coin', 'People', 'A heart with a coin slot: saving with care for your family. Warm and personal.'],
+    ['m8', 'Growing savings', 'Growth', 'Three rising bars that sprout a leaf: money saved month by month, growing.'],
+    ['m9', 'Coin on the stack', 'Growth', 'A new coin landing on a stack: every monthly contribution adds up.'],
+    ['m10', 'Step up', 'Growth', 'Steps rising to an arrow inside a circle: members moving up, one step at a time.'],
+    ['m11', 'The climb', 'Kenya', 'A peak with a winding path and the sun, recalling Mt Kenya: steady progress to a goal.'],
+    ['m12', 'Sunrise', 'Kenya', 'The sun rising over the horizon: a new day and a brighter future.'],
+    ['m13', 'Acacia', 'Kenya', 'The flat-topped acacia: shelter, strong roots and growth, unmistakably East African.'],
+    ['m14', 'Kibuyu', 'Kenya', 'The traditional gourd used to keep things safe: a home-grown symbol of saving.'],
+    ['m15', 'Kiondo', 'Kenya', 'The rings of a woven kiondo basket: many strands woven into one strong whole.'],
+    ['m16', 'Passbook', 'Growth', 'An open SACCO passbook with a tick: trusted records, every shilling accounted for.'],
+    ['m17', 'Home', 'Security', 'A home with a lit door: development loans that help members build.'],
+    ['m18', 'Bridge', 'Security', 'A bridge over water: loans that carry members across life’s gaps.'],
+    ['m19', 'Shield & key', 'Security', 'A shield with a keyhole: members’ money kept safe. Formal and secure.'],
+    ['m20', 'Growing comb', 'Hive', 'Honeycomb cells stepping upward: members joined together, savings growing.'],
+    ['m21', 'The bee', 'Hive', 'A modern bee from simple shapes. Deseret means honeybee.'],
+    ['m22', 'North star', 'Security', 'A guiding star: steady direction and sound advice for members’ money.'],
+  ];
+  const groupLabel = { Letters: 'Lettermark', People: 'People & care', Growth: 'Growth', Kenya: 'Kenyan', Hive: 'Honeybee', Security: 'Security & home' };
+  const mark = (id, cls) => `<svg ${cls ? `class="${cls}"` : ''} viewBox="0 0 100 100" aria-hidden="true"><use href="#${id}"/></svg>`;
+  const starSvg = '<svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>';
+  const pad = i => String(i + 1).padStart(2, '0');
+
+  let starred = new Set();
+  try { starred = new Set(JSON.parse(localStorage.getItem('deseret-stars') || '[]')); } catch (e) {}
+
+  document.getElementById('grid').innerHTML = concepts.map(([id, name, group, idea], i) => `
+    <article class="tile" data-id="${id}" data-group="${group}">
+      <div class="art">
+        <span class="num">${pad(i)}</span>
+        <button class="fav" type="button" aria-pressed="false" aria-label="Star ${name}">${starSvg}</button>
+        ${mark(id, 'big')}
+        <div class="sizes"><div class="appicon">${mark(id)}</div><div class="tab">${mark(id)}Deseret SACCO</div></div>
+      </div>
+      <div class="info">
+        <span class="tag">${groupLabel[group]}</span>
+        <h2>${pad(i)} · ${name}</h2>
+        <p>${idea}</p>
+        <div class="lock">${mark(id)}<b>Deseret SACCO</b></div>
+      </div>
+    </article>`).join('');
+
+  const tiles = [...document.querySelectorAll('.tile')];
+  const shortlist = document.getElementById('shortlist');
+  const numbers = () => concepts.map((c, i) => starred.has(c[0]) ? pad(i) : null).filter(Boolean);
+  let currentFilter = 'all';
+  const filters = [...document.querySelectorAll('.filter')];
+  function applyFilter(f) {
+    currentFilter = f;
+    filters.forEach(b => b.setAttribute('aria-pressed', b.dataset.f === f));
+    for (const t of tiles) t.hidden = f === 'all' ? false : f === 'starred' ? !starred.has(t.dataset.id) : t.dataset.group !== f;
+  }
+  function syncStars() {
+    for (const t of tiles) {
+      const on = starred.has(t.dataset.id);
+      t.classList.toggle('starred', on);
+      t.querySelector('.fav').setAttribute('aria-pressed', on);
+    }
+    const nums = numbers();
+    shortlist.hidden = !nums.length;
+    document.getElementById('shortText').textContent = `Your shortlist: ${nums.join(', ')}`;
+    try { localStorage.setItem('deseret-stars', JSON.stringify([...starred])); } catch (e) {}
+  }
+  tiles.forEach(t => t.querySelector('.fav').addEventListener('click', () => {
+    const id = t.dataset.id;
+    starred.has(id) ? starred.delete(id) : starred.add(id);
+    syncStars();
+    applyFilter(currentFilter);
+  }));
+  filters.forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.f)));
+  syncStars();
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const text = `Deseret SACCO logo shortlist: ${numbers().join(', ')} (${document.querySelector('.pal[aria-pressed="true"]').textContent.trim()})`;
+    const done = msg => { document.getElementById('copied').textContent = msg; };
+    try { navigator.clipboard.writeText(text).then(() => done('Copied. Paste it to me.'), () => done(text)); } catch (e) { done(text); }
+  });
+
+  const root = document.documentElement;
+  const pals = [...document.querySelectorAll('.pal')];
+  function applyPal(btn) {
+    root.style.setProperty('--p', btn.dataset.p);
+    root.style.setProperty('--p-dark', btn.dataset.pd);
+    root.style.setProperty('--a', btn.dataset.a);
+    pals.forEach(b => b.setAttribute('aria-pressed', b === btn));
+    document.getElementById('palnote').textContent = btn.dataset.note;
+    try { localStorage.setItem('deseret-palette', btn.id); } catch (e) {}
+  }
+  pals.forEach(b => b.addEventListener('click', () => applyPal(b)));
+  try { const saved = document.getElementById(localStorage.getItem('deseret-palette')); if (saved) applyPal(saved); } catch (e) {}
+</script>
+</body>
+</html>

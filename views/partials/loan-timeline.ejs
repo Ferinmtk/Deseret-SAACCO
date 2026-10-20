@@ -1,0 +1,20 @@
+<%
+  const order = ['applied', 'appraisal', 'recommended', 'approved', 'disbursed'];
+  const titles = { applied: 'Application sent', appraisal: 'Guarantors complete', recommended: 'Credit appraisal passed', approved: 'Approved by credit committee', disbursed: 'Money sent', closed: 'Fully repaid', rejected: 'Declined', 'guarantor accepted': 'Guarantor accepted', 'guarantor declined': 'Guarantor declined' };
+  const waiting = { guarantors: 'Waiting for guarantors to respond', appraisal: 'Credit officer is checking the application', recommended: 'Waiting for credit committee approval', approved: 'Treasurer is sending the money' }[loan.status];
+%>
+<ul class="timeline">
+  <% for (const e of events) { %>
+    <li class="<%= e.step === 'rejected' || e.step === 'guarantor declined' ? 'bad' : 'done' %>">
+      <span class="dot"><i class="bi bi-<%= e.step === 'rejected' || e.step === 'guarantor declined' ? 'x' : 'check' %>"></i></span>
+      <div class="t"><%= titles[e.step] || e.step %></div>
+      <div class="m"><%= S.fmtDate(e.created_at) %> · <%= e.actor %><%= e.note ? ' — ' + e.note : '' %></div>
+    </li>
+  <% } %>
+  <% if (waiting) { %>
+    <li class="current"><span class="dot"><i class="bi bi-hourglass-split"></i></span><div class="t"><%= waiting %></div><div class="m">Now</div></li>
+    <% for (const s of order.slice(order.indexOf(loan.status === 'guarantors' ? 'applied' : loan.status) + 2)) { %>
+      <li><span class="dot"></span><div class="t text-muted"><%= titles[s] %></div></li>
+    <% } %>
+  <% } %>
+</ul>
