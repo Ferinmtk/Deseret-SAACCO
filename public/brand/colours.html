@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Deseret SACCO Colour Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+  /* Layout: intro and findings, then one column per palette showing the logo, the website and the portal in that palette. */
+  :root { --bg: #f5f6f3; --surface: #fff; --fg: #1c2420; --muted: #5e6a64; --line: #e1e6e2; --font: 'Figtree', 'Segoe UI', system-ui, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); line-height: 1.55; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.15; margin: 0 0 10px; font-weight: 800; }
+  .lede { color: var(--muted); max-width: 70ch; margin: 0; }
+  .eyebrow { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin: 0 0 6px; }
+  .findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 24px 0 32px; }
+  .finding { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .finding b { display: block; font-size: 1.5rem; font-weight: 800; }
+  .finding span { color: var(--muted); font-size: .9rem; }
+  .bar { display: flex; height: 10px; border-radius: 99px; overflow: hidden; margin-top: 10px; }
+  .bar i { display: block; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+  .opt { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+  .opt.rec { border-color: var(--a); box-shadow: 0 0 0 2px var(--a); }
+  .head { padding: 18px 20px 6px; }
+  .head h2 { margin: 0; font-size: 1.3rem; font-weight: 800; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .badge { font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; background: var(--a); color: #1c2420; padding: 3px 9px; border-radius: 99px; }
+  .head p { margin: 6px 0 0; color: var(--muted); font-size: .93rem; }
+  .swatches { display: flex; gap: 8px; padding: 12px 20px; flex-wrap: wrap; }
+  .sw { display: grid; gap: 4px; font-size: .72rem; color: var(--muted); }
+  .sw i { width: 52px; height: 36px; border-radius: 8px; border: 1px solid rgba(0,0,0,.06); }
+  .score { padding: 0 20px 12px; font-size: .82rem; color: var(--muted); }
+  .score b { color: var(--fg); }
+
+  .stage { padding: 0 20px 20px; display: grid; gap: 14px; }
+  .label { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+
+  /* Logo row */
+  .logos { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: #f4f6f4; border-radius: 12px; padding: 16px; }
+  .lockup { display: flex; align-items: center; gap: 10px; }
+  .lockup svg { width: 46px; height: 46px; }
+  .lockup b { display: block; font-size: 1.15rem; font-weight: 800; line-height: 1; color: #1c2420; }
+  .lockup small { display: block; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: #5e6a64; margin-top: 3px; font-weight: 600; }
+  .appicon { width: 52px; height: 52px; border-radius: 12px; background: var(--p); display: grid; place-items: center; margin-left: auto; }
+  .appicon svg { width: 66%; height: 66%; }
+
+  /* Website mock */
+  .site { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .nav { background: var(--p); color: #fff; display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: .78rem; font-weight: 700; }
+  .nav svg { width: 22px; height: 22px; }
+  .nav .links { margin-left: auto; display: flex; gap: 10px; font-weight: 600; opacity: .9; }
+  .nav .links .on { color: var(--a); }
+  .hero { background: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.25)), var(--p-dark); color: #fff; padding: 22px 14px; text-align: center; }
+  .hero strong { display: block; font-size: 1.2rem; font-weight: 800; }
+  .hero span { font-size: .78rem; opacity: .85; }
+  .btns { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+  .btn { border-radius: 8px; padding: 7px 12px; font-size: .78rem; font-weight: 700; border: 0; }
+  .btn.solid { background: var(--a); color: #1c2420; }
+  .btn.ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; background: #fff; }
+  .card { border: 1px solid #e6ebe8; border-radius: 8px; padding: 8px; font-size: .7rem; color: #5e6a64; }
+  .card .ic { width: 18px; height: 18px; border-radius: 5px; background: var(--tint); display: grid; place-items: center; margin-bottom: 4px; }
+  .card .ic i { width: 8px; height: 8px; border-radius: 2px; background: var(--p); display: block; }
+  .card b { display: block; color: #1c2420; font-size: .76rem; }
+  .paybox { margin: 0 12px 12px; background: var(--p); color: #fff; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; font-size: .72rem; }
+  .paybox b { color: var(--a); font-size: .95rem; display: block; }
+
+  /* Portal mock */
+  .portal { display: grid; grid-template-columns: 96px 1fr; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #f4f6f5; min-height: 190px; }
+  .side { background: var(--p-dark); padding: 10px 8px; display: grid; align-content: start; gap: 4px; }
+  .side svg { width: 22px; height: 22px; margin: 2px 4px 8px; }
+  .side span { font-size: .66rem; color: rgba(255,255,255,.75); padding: 4px 6px; border-radius: 5px; }
+  .side span.on { background: rgba(255,255,255,.14); color: #fff; }
+  .main { padding: 10px; display: grid; gap: 8px; align-content: start; }
+  .worth { background: linear-gradient(135deg, var(--p), var(--p-dark)); color: #fff; border-radius: 8px; padding: 10px; }
+  .worth small { font-size: .6rem; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }
+  .worth b { display: block; font-size: 1.05rem; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .tile { background: #fff; border: 1px solid #e3e8e5; border-radius: 7px; padding: 6px 8px; font-size: .62rem; color: #64716b; }
+  .tile b { display: block; color: #1d2a24; font-size: .8rem; }
+  .meter { height: 5px; border-radius: 99px; background: #e8eeeb; margin-top: 4px; }
+  .meter i { display: block; height: 100%; border-radius: 99px; background: var(--p); }
+  .pill { justify-self: start; font-size: .6rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--tint); color: var(--p); }
+
+  .foot { margin-top: auto; padding: 14px 20px; border-top: 1px solid var(--line); font-size: .88rem; color: var(--muted); }
+  .verdict { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+  .verdict h2 { margin: 0 0 6px; font-size: 1.2rem; }
+  .verdict p { margin: 0; color: var(--muted); max-width: 75ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Brand · Deseret SACCO Society Ltd</p>
+  <h1>Colour options for Deseret SACCO</h1>
+  <p class="lede">Based on measuring the colours on 41 Kenyan SACCO websites and 38 banks, microfinance lenders, mobile-money apps and insurers. Each option below shows your Growing comb logo, the website and the member portal in that palette.</p>
+
+  <div class="findings">
+    <div class="finding"><b>46%</b><span>of SACCOs use green as their main colour (19 of 41), as do Co-op Bank, KCB and M-Pesa.</span>
+      <div class="bar"><i style="width:46%;background:#2e8b57"></i><i style="width:22%;background:#1e3a8a"></i><i style="width:7%;background:#c82331"></i><i style="width:7%;background:#daa528"></i><i style="width:7%;background:#17967e"></i><i style="width:11%;background:#c9cfcb"></i></div></div>
+    <div class="finding"><b>21</b><span>brands use blue or navy as their main colour, usually with an orange or red accent.</span></div>
+    <div class="finding"><b>0 of 79</b><span>brands use plum, purple or aubergine as their main colour. This is open territory.</span></div>
+    <div class="finding"><b>3 of 41</b><span>SACCOs use a teal (Kencream, Elimu, Smart Life). No bank does.</span></div>
+  </div>
+
+  <div class="options" id="options"></div>
+
+  <div class="verdict">
+    <h2>My recommendation</h2>
+    <p><strong>Plum &amp; honey</strong> if you want to be the only one: nobody in Kenyan finance uses plum, and honey on plum looks warm and premium. <strong>Teal &amp; honey</strong> if you want calm and safe while still standing apart from the green crowd. Whichever you choose, every logo file and the whole website switch over together.</p>
+  </div>
+</div>
+
+<script>
+  const options = [
+    { name: 'Plum & honey', badge: 'Most unique', rec: true, p: '#6b2d5c', pd: '#4a1d40', tint: '#f7eef4', a: '#d9a21b',
+      why: 'No Kenyan SACCO, bank or app uses plum. Warm, premium and memorable; honey on plum feels rich.',
+      score: 'White text on plum <b>9.7:1</b> · honey stands out on plum <b>4.2:1</b>', neighbour: 'Nearest look-alike: none. Zenka’s logo has a much darker aubergine with yellow.' },
+    { name: 'Aubergine & coral', badge: 'Bold & modern', p: '#4b2a63', pd: '#33194a', tint: '#f2edf7', a: '#e8735a',
+      why: 'Also unused. Coral gives it a younger, app-like energy; less traditional than honey.',
+      score: 'White text on aubergine <b>11.6:1</b> · dark text on coral <b>5.3:1</b>', neighbour: 'Nearest look-alike: Dhabiti SACCO uses coral as a small accent with navy.' },
+    { name: 'Teal & honey', badge: 'Your pick', p: '#0f5257', pd: '#0a383c', tint: '#e6f1f0', a: '#d9a21b',
+      why: 'Calm and trustworthy, clearly not the usual green. A safe way to stand out.',
+      score: 'White text on teal <b>8.9:1</b> · honey stands out on teal <b>3.9:1</b>', neighbour: 'Nearest look-alikes: Kencream (#17967e, greener and lighter) and Elimu (#00473b, darker green).' },
+  ];
+  const mix = (hex, amt) => '#' + [1, 3, 5].map(i => Math.round(255 * amt + parseInt(hex.slice(i, i + 2), 16) * (1 - amt)).toString(16).padStart(2, '0')).join('');
+  const cells = ['27,52 43,61 43,79 27,88 11,79 11,61', '54,36 70,45 70,63 54,72 38,63 38,45', '73,12 89,21 89,39 73,48 57,39 57,21'];
+  const comb = fills => `<svg viewBox="8 8 84 84" aria-hidden="true">${cells.map((c, i) => `<polygon points="${c}" fill="${fills[i]}"/>`).join('')}</svg>`;
+
+  document.getElementById('options').innerHTML = options.map(o => {
+    const light = comb([o.p, o.pd, o.a]);
+    const rev = comb([mix(o.p, .55), mix(o.p, .85), o.a]);
+    return `
+    <article class="opt ${o.rec ? 'rec' : ''}" style="--p:${o.p};--p-dark:${o.pd};--tint:${o.tint};--a:${o.a}">
+      <div class="head"><h2>${o.name} <span class="badge">${o.badge}</span></h2><p>${o.why}</p></div>
+      <div class="swatches">
+        ${[['Main', o.p], ['Dark', o.pd], ['Tint', o.tint], ['Accent', o.a]].map(([n, h]) => `<div class="sw"><i style="background:${h}"></i>${n}<br>${h}</div>`).join('')}
+      </div>
+      <div class="score">${o.score}</div>
+      <div class="stage">
+        <div>
+          <div class="label">Logo</div>
+          <div class="logos">
+            <div class="lockup">${light}<div><b>Deseret SACCO</b><small>Society Ltd · Est. 2006</small></div></div>
+            <div class="appicon">${rev}</div>
+          </div>
+        </div>
+        <div>
+          <div class="label">Website</div>
+          <div class="site">
+            <div class="nav">${rev}Deseret Sacco Limited<span class="links"><span class="on">Home</span><span>Services</span><span>Join</span></span></div>
+            <div class="hero"><strong>Save, borrow and grow together</strong><span>Serving members since 2006</span>
+              <div class="btns"><span class="btn solid">Apply online</span><span class="btn ghost">Member login</span></div></div>
+            <div class="cards">${['Save', 'Borrow', 'Belong'].map(t => `<div class="card"><div class="ic"><i></i></div><b>${t}</b>Monthly, simple.</div>`).join('')}</div>
+            <div class="paybox"><span>M-Pesa Paybill<b>400200</b></span><span>Account<b>01120098632300</b></span></div>
+          </div>
+        </div>
+        <div>
+          <div class="label">Member portal</div>
+          <div class="portal">
+            <div class="side">${rev}<span class="on">Overview</span><span>Savings</span><span>Loans</span><span>Guarantees</span></div>
+            <div class="main">
+              <div class="worth"><small>Your net position</small><b>KES 603,276</b></div>
+              <div class="tiles">
+                <div class="tile">Deposits<b>KES 492,000</b></div>
+                <div class="tile">Holiday goal<b>62%</b><div class="meter"><i style="width:62%"></i></div></div>
+              </div>
+              <span class="pill">On track</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot">${o.neighbour}</div>
+    </article>`;
+  }).join('');
+</script>
+</body>
+</html>
