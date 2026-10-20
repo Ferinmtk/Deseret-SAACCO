@@ -1,0 +1,107 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-person-vcard"></i> Membership</div>
+      <div class="card-body">
+        <dl class="row mb-0 small">
+          <dt class="col-5">Member number</dt><dd class="col-7"><%= member.member_no %></dd>
+          <dt class="col-5">Name</dt><dd class="col-7"><%= member.first_name %> <%= member.last_name %></dd>
+          <dt class="col-5">ID number</dt><dd class="col-7"><%= member.id_number %></dd>
+          <dt class="col-5">KRA PIN</dt><dd class="col-7"><%= member.kra_pin %></dd>
+          <dt class="col-5">Date of birth</dt><dd class="col-7"><%= S.fmtDate(member.date_of_birth) %></dd>
+          <dt class="col-5">Employer</dt><dd class="col-7"><%= member.employer || 'Not employed by the Church' %></dd>
+          <% if (member.department) { %><dt class="col-5">Department</dt><dd class="col-7"><%= member.department %> · <%= member.designation %></dd><% } %>
+          <dt class="col-5">Terms of service</dt><dd class="col-7 text-capitalize"><%= member.terms %><%= member.contract_end ? ' until ' + S.fmtDate(member.contract_end) : '' %></dd>
+          <dt class="col-5">Payroll number</dt><dd class="col-7"><%= member.payroll_no || '—' %></dd>
+          <dt class="col-5">Home ward / branch</dt><dd class="col-7"><%= member.ward || '—' %></dd>
+          <dt class="col-5">Bank</dt><dd class="col-7"><%= member.bank_name %> · <%= member.bank_branch %> · <%= member.bank_account %></dd>
+          <dt class="col-5">Member since</dt><dd class="col-7"><%= S.fmtDate(member.joined_at) %></dd>
+        </dl>
+        <p class="small text-muted mt-2 mb-0">To change your name, ID, employer or bank, visit the office with your documents.</p>
+      </div>
+    </div>
+    <form class="card mb-3" method="POST" action="/portal/profile/contact">
+      <div class="card-header"><i class="bi bi-telephone"></i> Contact details</div>
+      <div class="card-body row g-2">
+        <div class="col-sm-6"><label class="form-label">Mobile (M-Pesa)</label><input class="form-control" name="phone" value="<%= member.phone %>" required></div>
+        <div class="col-sm-6"><label class="form-label">Email</label><input class="form-control" type="email" name="email" value="<%= member.email || '' %>"></div>
+        <div class="col-12"><button class="btn btn-primary btn-sm">Save</button></div>
+      </div>
+    </form>
+    <form class="card" method="POST" action="/portal/profile/password">
+      <div class="card-header"><i class="bi bi-key"></i> Change password</div>
+      <div class="card-body row g-2">
+        <div class="col-12"><input class="form-control" type="password" name="current" placeholder="Current password" autocomplete="current-password" required></div>
+        <div class="col-sm-6"><input class="form-control" type="password" name="next" placeholder="New password (8+ characters)" autocomplete="new-password" required></div>
+        <div class="col-sm-6"><input class="form-control" type="password" name="confirm" placeholder="Repeat new password" autocomplete="new-password" required></div>
+        <div class="col-12"><button class="btn btn-primary btn-sm">Change password</button></div>
+      </div>
+    </form>
+  </div>
+
+  <div class="col-lg-6">
+    <form class="card mb-3" method="POST" action="/portal/profile/nominees">
+      <div class="card-header"><i class="bi bi-heart"></i> Nominees <span class="ms-auto small text-muted">Who receives your savings if you pass away</span></div>
+      <div class="card-body">
+        <div id="nomRows">
+          <% for (const n of (nominees.length ? nominees : [{}])) { %>
+            <div class="row g-2 mb-3 pb-2 border-bottom nom-row">
+              <div class="col-sm-5"><input class="form-control form-control-sm" name="name" placeholder="Full name" value="<%= n.name || '' %>"></div>
+              <div class="col-sm-4"><input class="form-control form-control-sm" name="relationship" placeholder="Relationship" value="<%= n.relationship || '' %>"></div>
+              <div class="col-sm-3"><input class="form-control form-control-sm" type="number" name="share_pct" placeholder="Share %" min="1" max="100" value="<%= n.share_pct || '' %>"></div>
+              <div class="col-sm-4"><input class="form-control form-control-sm" name="id_number" placeholder="ID / passport no." value="<%= n.id_number || '' %>"></div>
+              <div class="col-sm-4"><input class="form-control form-control-sm" name="phone" placeholder="Phone" value="<%= n.phone || '' %>"></div>
+              <div class="col-sm-4"><input class="form-control form-control-sm" name="address" placeholder="Address" value="<%= n.address || '' %>"></div>
+            </div>
+          <% } %>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+          <button type="button" class="btn btn-sm btn-light" onclick="const r=document.querySelector('.nom-row').cloneNode(true);r.querySelectorAll('input').forEach(i=>i.value='');document.getElementById('nomRows').appendChild(r)"><i class="bi bi-plus"></i> Add nominee</button>
+          <button class="btn btn-sm btn-primary ms-auto">Save nominees</button>
+        </div>
+        <p class="small text-muted mt-2 mb-0">Shares must add up to 100%. By-law 12 requires two member witnesses — the office will ask them to confirm. Without a nominee, your family may need court papers to claim your savings.</p>
+      </div>
+    </form>
+
+    <form class="card mb-3" id="deductions" method="POST" action="/portal/deductions">
+      <div class="card-header"><i class="bi bi-arrow-left-right"></i> Change my monthly deductions</div>
+      <div class="card-body">
+        <p class="small text-muted">Online version of the “Authority to make deductions (variations)” form.</p>
+        <div class="row g-2 small align-items-center mb-2">
+          <div class="col-4">Shares / deposits</div>
+          <div class="col-4"><input class="form-control form-control-sm" type="number" min="0" name="shares_from" placeholder="From KES"></div>
+          <div class="col-4"><input class="form-control form-control-sm" type="number" min="0" name="shares_to" placeholder="To KES"></div>
+          <div class="col-4">Loan repayment</div>
+          <div class="col-4"><input class="form-control form-control-sm" type="number" min="0" name="loan_from" placeholder="From KES"></div>
+          <div class="col-4"><input class="form-control form-control-sm" type="number" min="0" name="loan_to" placeholder="To KES"></div>
+          <div class="col-4">With effect from</div>
+          <div class="col-8"><input class="form-control form-control-sm" type="month" name="effective" required></div>
+        </div>
+        <button class="btn btn-sm btn-primary">Send request</button>
+        <% for (const r of requests) { const d = JSON.parse(r.details); %>
+          <div class="d-flex justify-content-between small border-top mt-2 pt-2">
+            <span><%= S.fmtDate(r.created_at) %> · <%= d.shares_to ? 'Shares → ' + S.fmtKes(d.shares_to) : '' %> <%= d.loan_to ? 'Loan → ' + S.fmtKes(d.loan_to) : '' %></span>
+            <span class="pill pill-<%= { pending: 'warn', approved: 'ok', rejected: 'danger' }[r.status] %>"><%= r.status === 'pending' ? 'With the office' : r.status %></span>
+          </div>
+        <% } %>
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-box-arrow-right"></i> Leaving the SACCO</div>
+      <div class="card-body small">
+        <% if (member.status === 'exiting') { %>
+          <div class="alert alert-info mb-2"><strong>Notice received <%= S.fmtDate(member.exit_notice_at) %>.</strong> Your notice period ends <strong><%= refundDue %></strong>; your deposits, interest and dividends (less anything you owe) are refunded after that.</div>
+          <p class="mb-0 text-muted">Your share capital can be transferred to another member. If you guarantee any loans, the borrowers must find replacement guarantors.</p>
+        <% } else { %>
+          <p>You can withdraw by giving <strong><%= noticeDays %> days’</strong> written notice (By-law 16). Your own loans must be repaid and any loans you guarantee must have new guarantors first. Share capital isn’t refunded but can be transferred to another member (By-law 23). Rejoining later carries a KES 5,000 fine.</p>
+          <form method="POST" action="/portal/profile/exit" onsubmit="return confirm('Give notice to leave Deseret SACCO? This starts the <%= noticeDays %>-day refund period.')">
+            <button class="btn btn-sm btn-outline-danger">Give notice to leave</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/app-bottom') %>

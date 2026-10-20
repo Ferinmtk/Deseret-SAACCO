@@ -1,9 +1,10 @@
 {
-  "name": "sacco-website",
+  "name": "deseret-sacco",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --no-warnings=ExperimentalWarning app.js",
+    "seed": "node --no-warnings=ExperimentalWarning seed.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,8 @@
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=22.5"
   }
 }

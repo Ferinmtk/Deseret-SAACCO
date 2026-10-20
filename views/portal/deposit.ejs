@@ -1,0 +1,53 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-phone"></i> Step 1 · Pay with M-Pesa</div>
+      <div class="card-body">
+        <ol class="mb-0">
+          <li>Go to <strong>Lipa na M-Pesa → Pay Bill</strong></li>
+          <li>Business number: <strong class="fs-5"><%= S.SACCO.paybill %></strong> <span class="text-muted small">(Co-op Bank)</span></li>
+          <li>Account number: <strong class="fs-5"><%= S.SACCO.account %></strong></li>
+          <li>Enter the amount and your M-Pesa PIN.</li>
+        </ol>
+      </div>
+    </div>
+    <form class="card" method="POST" action="/portal/deposit" id="codeForm">
+      <div class="card-header"><i class="bi bi-check2-square"></i> Step 2 · Tell us what it’s for</div>
+      <div class="card-body">
+        <p class="small text-muted">This replaces forwarding the M-Pesa SMS to <%= S.SACCO.smsNumber %>. The office matches your code to the bank statement, then it shows in your balance.</p>
+        <label class="form-label">M-Pesa code</label>
+        <input class="form-control mb-3 text-uppercase" name="code" maxlength="10" placeholder="e.g. TJK4X8B2QP" required>
+        <div class="row g-2">
+          <div class="col-sm-6"><label class="form-label">Amount paid (KES)</label><input class="form-control mb-3" type="number" name="amount" min="10" max="150000" value="<%= preset.amount || '' %>" required></div>
+          <div class="col-sm-6"><label class="form-label">Put it towards</label>
+            <select class="form-select mb-3" name="target">
+              <% for (const [a, label] of Object.entries(S.ACCOUNTS)) { %><option value="<%= a %>" <%= (preset.target || 'deposits') === a ? 'selected' : '' %>><%= label %></option><% } %>
+              <% for (const l of loans) { %><option value="loan:<%= l.id %>" <%= preset.target === 'loan:' + l.id ? 'selected' : '' %>>Repay <%= l.product_name %> (<%= S.fmtKes(l.state.arrears || l.installment) %> due)</option><% } %>
+            </select></div>
+        </div>
+        <button class="btn btn-primary w-100"><i class="bi bi-send"></i> Submit payment</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-bank"></i> Bank deposit or standing order</div>
+      <div class="card-body">
+        <p class="small text-muted">Members not paid through the Church payroll should set up a monthly standing order from their bank for shares and loan repayments.</p>
+        <dl class="row small mb-0">
+          <dt class="col-4">Account name</dt><dd class="col-8"><%= S.SACCO.name %></dd>
+          <dt class="col-4">Bank</dt><dd class="col-8"><%= S.SACCO.bank %></dd>
+          <dt class="col-4">Branch</dt><dd class="col-8"><%= S.SACCO.branch %></dd>
+          <dt class="col-4">Account no.</dt><dd class="col-8"><strong><%= S.SACCO.account %></strong></dd>
+          <dt class="col-4">SWIFT</dt><dd class="col-8"><%= S.SACCO.swift %></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-building"></i> Paid through payroll?</div>
+      <div class="card-body small">Church employees’ shares and loan repayments come off their salary every month (check-off). To change the amount, use <a href="/portal/profile#deductions">Change my deductions</a>.</div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/app-bottom') %>

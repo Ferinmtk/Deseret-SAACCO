@@ -1,0 +1,68 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const k = S.fmtKes; const st = loan.state; %>
+<a href="/portal/loans" class="small"><i class="bi bi-arrow-left"></i> All loans</a>
+<div class="row g-3 mt-1">
+  <div class="col-lg-8">
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Borrowed</div><div class="v num fs-5"><%= k(loan.principal) %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Monthly</div><div class="v num fs-5"><%= k(loan.installment) %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Repaid</div><div class="v num fs-5"><%= k(st.paid) %></div></div></div></div>
+      <div class="col-6 col-md-3"><div class="card"><div class="stat"><div class="k">Balance</div><div class="v num fs-5 <%= st.arrears ? 'neg' : '' %>"><%= k(st.outstanding) %></div></div></div></div>
+    </div>
+
+    <% if (st.arrears > 0) { %>
+      <div class="alert alert-danger d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span><strong><%= k(st.arrears) %> is overdue</strong> (<%= st.daysInArrears %> days). Your guarantors are notified when a loan falls behind.</span>
+        <a class="btn btn-sm btn-danger" href="/portal/deposit?target=loan:<%= loan.id %>&amount=<%= st.arrears %>">Pay now</a>
+      </div>
+    <% } else if (loan.status === 'rejected') { %>
+      <div class="alert alert-secondary"><strong>Declined:</strong> <%= loan.reject_reason %></div>
+    <% } %>
+
+    <% if (['disbursed', 'closed'].includes(loan.status)) { %>
+      <div class="card mb-3">
+        <div class="card-header"><i class="bi bi-calendar3"></i> Repayment schedule <span class="ms-auto small text-muted"><%= (loan.rate_monthly * 100).toFixed(1) %>% per month, <%= loan.method %> balance</span></div>
+        <div class="table-responsive" style="max-height: 420px">
+          <table class="table table-sm">
+            <thead class="sticky-top"><tr><th>#</th><th>Due</th><th class="text-end">Principal</th><th class="text-end">Interest</th><th class="text-end">Installment</th><th class="text-end">Balance after</th><th></th></tr></thead>
+            <tbody>
+              <% for (const r of schedule) { %>
+                <tr class="<%= r.status === 'overdue' ? 'table-danger' : '' %>">
+                  <td><%= r.no %></td><td class="text-nowrap"><%= S.fmtDate(r.due) %></td>
+                  <td class="text-end num"><%= r.principal.toLocaleString('en-KE') %></td><td class="text-end num"><%= r.interest.toLocaleString('en-KE') %></td>
+                  <td class="text-end num"><%= r.installment.toLocaleString('en-KE') %></td><td class="text-end num"><%= r.balance.toLocaleString('en-KE') %></td>
+                  <td><span class="pill pill-<%= { paid: 'ok', part: 'warn', overdue: 'danger', due: 'muted' }[r.status] %>"><%= { paid: 'Paid', part: 'Part paid', overdue: 'Overdue', due: 'Upcoming' }[r.status] %></span></td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="card mb-3"><div class="card-body small text-muted">
+        <i class="bi bi-info-circle"></i> Your repayment schedule appears once the loan is disbursed. Expected: <strong><%= k(loan.installment) %></strong> a month for <%= loan.months %> months (<%= k(loan.total_payable) %> in total). A processing fee of <%= k(loan.fee) %> is deducted at disbursement.
+      </div></div>
+    <% } %>
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-people"></i> Guarantors</div>
+      <div class="table-responsive"><table class="table">
+        <tbody>
+          <% for (const g of guarantors) { %>
+            <tr><td><%= g.name %> <span class="small text-muted"><%= g.member_no %></span></td><td class="text-end num"><%= k(g.amount) %></td>
+              <td class="text-end"><span class="pill pill-<%= { accepted: 'ok', pending: 'warn', declined: 'danger' }[g.status] %>"><%= { accepted: 'Accepted', pending: 'Waiting', declined: 'Declined' }[g.status] %></span></td></tr>
+          <% } %>
+          <% if (!guarantors.length) { %><tr><td class="text-muted">No guarantors on this loan.</td></tr><% } %>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-signpost-split"></i> Progress</div>
+      <div class="card-body"><%- include('../partials/loan-timeline', { loan, events }) %></div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/app-bottom') %>

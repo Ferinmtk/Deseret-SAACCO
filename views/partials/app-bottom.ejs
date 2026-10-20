@@ -1,0 +1,11 @@
+    </div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.querySelectorAll('tr[data-href]').forEach(tr => tr.addEventListener('click', e => {
+    if (!e.target.closest('a,button,form')) location.href = tr.dataset.href;
+  }));
+</script>
+</body>
+</html>
