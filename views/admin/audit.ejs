@@ -1,0 +1,10 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<form class="d-flex gap-2 mb-3" method="GET"><input class="form-control" style="max-width:360px" name="q" value="<%= q %>" placeholder="Search person, action or details"><button class="btn btn-outline-primary">Search</button></form>
+<div class="card"><div class="table-responsive"><table class="table table-sm">
+  <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead>
+  <tbody><% for (const a of rows) { %>
+    <tr><td class="text-nowrap small"><%= a.created_at %></td><td class="small fw-semibold"><%= a.actor %></td><td class="small"><%= a.action %><%= a.entity_id ? ` (${a.entity} #${a.entity_id})` : '' %></td><td class="small text-muted"><%= a.details || '' %></td></tr>
+  <% } %></tbody>
+</table></div></div>
+<p class="small text-muted mt-2">The audit trail can’t be edited from the app. Supervisory committee members can review it at any time.</p>
+<%- include('../partials/app-bottom') %>

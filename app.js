@@ -30,6 +30,7 @@ app.get('/contact', (req, res) => res.render('contact'));
 
 
 app.use('/portal', require('./routes/portal'));
+app.use('/admin', require('./routes/admin'));
 
 app.post('/join', (req, res) => {
   const { fullname, email, idNumber } = req.body;

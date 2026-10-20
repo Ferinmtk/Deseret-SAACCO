@@ -1,0 +1,57 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const v = k => S.esc(form[k] || ''); %>
+<a href="/admin/members" class="small"><i class="bi bi-arrow-left"></i> Members</a>
+<form class="mt-2" method="POST" style="max-width: 900px">
+  <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-person-plus"></i> 1. Application for membership <span class="ms-auto small text-muted">matches the paper form</span></div>
+    <div class="card-body row g-3">
+      <div class="col-sm-6"><label class="form-label">First name(s)</label><input class="form-control" name="first_name" value="<%- v('first_name') %>" required></div>
+      <div class="col-sm-6"><label class="form-label">Surname</label><input class="form-control" name="last_name" value="<%- v('last_name') %>" required></div>
+      <div class="col-sm-4"><label class="form-label">Date of birth</label><input class="form-control" type="date" name="date_of_birth" value="<%- v('date_of_birth') %>"></div>
+      <div class="col-sm-4"><label class="form-label">ID / passport no.</label><input class="form-control" name="id_number" value="<%- v('id_number') %>" required></div>
+      <div class="col-sm-4"><label class="form-label">KRA PIN</label><input class="form-control" name="kra_pin" value="<%- v('kra_pin') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Mobile (M-Pesa)</label><input class="form-control" name="phone" value="<%- v('phone') %>" placeholder="07XXXXXXXX" required></div>
+      <div class="col-sm-4"><label class="form-label">Office line</label><input class="form-control" name="office_phone" value="<%- v('office_phone') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Email</label><input class="form-control" type="email" name="email" value="<%- v('email') %>"></div>
+      <div class="col-sm-8"><label class="form-label">Present address</label><input class="form-control" name="address" value="<%- v('address') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Home ward / branch</label><input class="form-control" name="ward" value="<%- v('ward') %>"></div>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-briefcase"></i> Employment</div>
+    <div class="card-body row g-3">
+      <div class="col-sm-4"><label class="form-label">Terms of service</label>
+        <select class="form-select" name="terms" id="terms">
+          <% for (const t of ['permanent', 'contract', 'not employed']) { %><option value="<%= t %>" <%= form.terms === t ? 'selected' : '' %>><%= t === 'not employed' ? 'Not a Church employee (standing order)' : t[0].toUpperCase() + t.slice(1) %></option><% } %>
+        </select></div>
+      <div class="col-sm-4" id="contractEnd"><label class="form-label">Contract ends</label><input class="form-control" type="date" name="contract_end" value="<%- v('contract_end') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Payroll no.</label><input class="form-control" name="payroll_no" value="<%- v('payroll_no') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Employer</label><input class="form-control" name="employer" value="<%- form.employer !== undefined ? v('employer') : 'The Church of Jesus Christ of Latter-day Saints' %>"></div>
+      <div class="col-sm-4"><label class="form-label">Department</label><input class="form-control" name="department" value="<%- v('department') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Official designation</label><input class="form-control" name="designation" value="<%- v('designation') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Basic pay incl. permanent allowances (KES)</label><input class="form-control" type="number" name="net_salary" value="<%- v('net_salary') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Bank</label><input class="form-control" name="bank_name" value="<%- v('bank_name') %>"></div>
+      <div class="col-sm-2"><label class="form-label">Branch</label><input class="form-control" name="bank_branch" value="<%- v('bank_branch') %>"></div>
+      <div class="col-sm-2"><label class="form-label">Account no.</label><input class="form-control" name="bank_account" value="<%- v('bank_account') %>"></div>
+    </div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-heart"></i> 2. Nominated next of kin</div>
+    <div class="card-body row g-3">
+      <div class="col-sm-6"><label class="form-label">Full name</label><input class="form-control" name="nok_name" value="<%- v('nok_name') %>" required></div>
+      <div class="col-sm-3"><label class="form-label">Relationship</label><input class="form-control" name="nok_relationship" value="<%- v('nok_relationship') %>"></div>
+      <div class="col-sm-3"><label class="form-label">ID / PP no.</label><input class="form-control" name="nok_id" value="<%- v('nok_id') %>"></div>
+      <div class="col-sm-4"><label class="form-label">Phone</label><input class="form-control" name="nok_phone" value="<%- v('nok_phone') %>"></div>
+      <div class="col-sm-8"><label class="form-label">Address</label><input class="form-control" name="nok_address" value="<%- v('nok_address') %>"></div>
+    </div>
+  </div>
+  <div class="alert alert-light small"><i class="bi bi-info-circle"></i> Before submitting, check the signed form, a copy of the ID or passport, the employer’s introduction letter, and proof of no liability with any previous society (By-law 8). Entrance fee KES 1,000 and share capital KES 6,500 (325 shares × 20). A manager approves with the management committee minute number.</div>
+  <button class="btn btn-primary mb-4">Submit for approval</button>
+</form>
+<script>
+  const t = document.getElementById('terms'), c = document.getElementById('contractEnd');
+  const sync = () => c.style.display = t.value === 'contract' ? '' : 'none';
+  t.addEventListener('change', sync); sync();
+</script>
+<%- include('../partials/app-bottom') %>
