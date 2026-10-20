@@ -5,11 +5,11 @@
     <div class="card text-center" id="stkBox" data-status="<%= r.status %>">
       <div class="card-body p-4">
         <div id="stkPending" <%= r.status === 'pending' ? '' : 'hidden' %>>
-          <div class="stk-phone-icon mb-3"><i class="bi bi-phone-vibrate"></i></div>
+          <div class="mpesa-ping lg mb-3" aria-hidden="true"><span></span><span></span><i class="bi bi-phone-vibrate"></i></div>
           <h2 class="h4 fw-bold">Check your phone</h2>
           <p class="mb-1">We’ve sent a request for <strong><%= S.fmtKes(r.amount) %></strong> to <strong><%= masked %></strong>.</p>
           <p class="text-muted small">Enter your M-Pesa PIN on the prompt. This page updates by itself.</p>
-          <div class="spinner-border text-primary my-2" role="status"><span class="visually-hidden">Waiting for M-Pesa</span></div>
+          <div class="spinner-border my-2" style="color: var(--mpesa)" role="status"><span class="visually-hidden">Waiting for M-Pesa</span></div>
           <p class="small text-muted mb-0">No prompt? Make sure your phone is on and unlocked. It can take up to a minute.</p>
           <% if (r.simulated) { %><p class="small mt-2 mb-0"><span class="pill pill-warn">Demo</span> No real prompt is sent; it will confirm in a few seconds.</p><% } %>
         </div>

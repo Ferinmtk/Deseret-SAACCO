@@ -118,6 +118,8 @@ tr.clickable { cursor: pointer; }
 @media (max-width: 575px) { .quick { grid-template-columns: repeat(2, 1fr); } }
 .quick a { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .9rem .5rem; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); text-decoration: none; font-weight: 600; font-size: .85rem; position: relative; text-align: center; }
 .quick a:hover { border-color: var(--brand); color: var(--brand); }
+.quick a.quick-mpesa { background: var(--mpesa-dark, #007a3d); border-color: var(--mpesa-dark, #007a3d); color: #fff; }
+.quick a.quick-mpesa:hover { background: #00652f; color: #fff; }
 .quick .bi { font-size: 1.4rem; color: var(--brand); }
 .quick .count { position: absolute; top: 8px; right: 10px; background: var(--gold); color: var(--brand-dark); border-radius: 99px; font-size: .7rem; padding: 0 .45rem; }
 
@@ -212,9 +214,35 @@ tr.clickable { cursor: pointer; }
 .nominee-pending { background: #fffaeb; border: 1px solid #fedf89; border-radius: 10px; padding: .75rem .9rem; }
 .howto { background: var(--brand-soft); border-radius: 10px; padding: .75rem .9rem; }
 
-/* M-Pesa prompt */
-.stk-card { border-color: rgba(6, 118, 71, .35); }
-.stk-card .card-header { background: #ecfdf3; color: #054f31; font-weight: 600; }
-.stk-phone-icon { width: 72px; height: 72px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; background: var(--brand-soft, #eaf0f5); color: var(--brand, #0a2030); }
-.stk-phone-icon.ok { background: #ecfdf3; color: #067647; }
+/* M-Pesa: Safaricom's green, so members recognise it at a glance.
+   --mpesa is for fills and icons; --mpesa-dark passes contrast for white text (5.6:1). */
+:root { --mpesa: #00a651; --mpesa-dark: #007a3d; --mpesa-soft: #e8f7ee; }
+.mpesa-block { background: linear-gradient(135deg, var(--mpesa-dark), #00933f); color: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 30px rgba(0, 122, 61, .25); }
+.mpesa-block-head { display: flex; gap: 1.25rem; align-items: flex-start; padding: 1.5rem 1.5rem 1.1rem; }
+.mpesa-tag { display: inline-flex; align-items: center; gap: .35rem; background: #fff; color: var(--mpesa-dark); font-weight: 800; font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .6rem; border-radius: 6px; }
+.mpesa-tag.sm { font-size: .7rem; padding: .1rem .45rem; margin-right: .35rem; background: var(--mpesa); color: #fff; }
+.mpesa-title { font-size: clamp(1.2rem, 3.4vw, 1.5rem); font-weight: 700; margin: .55rem 0 .35rem; color: #fff; }
+.mpesa-lead { margin: 0; color: #dcf5e6; max-width: 720px; }
+.mpesa-test { margin: .6rem 0 0; font-size: .85rem; color: #fff; background: rgba(0, 0, 0, .18); display: inline-block; padding: .25rem .6rem; border-radius: 6px; }
+.mpesa-block-form { background: #fff; color: var(--ink, #14202b); padding: 1.1rem 1.5rem 1.4rem; }
+.btn-mpesa { --bs-btn-bg: var(--mpesa-dark); --bs-btn-border-color: var(--mpesa-dark); --bs-btn-color: #fff;
+  --bs-btn-hover-bg: #00652f; --bs-btn-hover-border-color: #00652f; --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #00652f; --bs-btn-active-border-color: #00652f; --bs-btn-active-color: #fff; font-weight: 700; }
+.mpesa-card { border-color: rgba(0, 166, 81, .35); }
+.mpesa-card .card-header { background: var(--mpesa-soft); color: #00512a; }
+
+/* Animated phone: it buzzes and sends out rings, like an incoming prompt */
+.mpesa-ping { position: relative; flex: none; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--mpesa-dark); font-size: 1.9rem; }
+.mpesa-ping.lg { width: 84px; height: 84px; font-size: 2.4rem; margin: 0 auto; background: var(--mpesa-soft); }
+.mpesa-ping i { animation: buzz 2.4s ease-in-out infinite; }
+.mpesa-ping span { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .7); animation: ring 2.4s ease-out infinite; }
+.mpesa-ping.lg span { border-color: rgba(0, 166, 81, .45); }
+.mpesa-ping span + span { animation-delay: 1.2s; }
+@keyframes buzz { 0%, 55%, 100% { transform: rotate(0); } 60%, 70%, 80% { transform: rotate(-12deg); } 65%, 75%, 85% { transform: rotate(12deg); } }
+@keyframes ring { from { transform: scale(1); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .mpesa-ping i, .mpesa-ping span { animation: none; } .mpesa-ping span { display: none; } }
+@media (max-width: 575.98px) { .mpesa-block-head { flex-direction: column; gap: .75rem; padding: 1.25rem 1.1rem 1rem; } .mpesa-block-form { padding: 1rem 1.1rem 1.2rem; } }
+
+.stk-phone-icon { width: 72px; height: 72px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; }
+.stk-phone-icon.ok { background: var(--mpesa-soft); color: var(--mpesa-dark); }
 .stk-phone-icon.bad { background: #fef3f2; color: #b42318; }
