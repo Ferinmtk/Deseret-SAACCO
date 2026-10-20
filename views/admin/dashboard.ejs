@@ -85,7 +85,7 @@
       <div class="table-responsive"><table class="table table-sm">
         <tbody>
           <% for (const a of activity) { %>
-            <tr><td class="text-nowrap small text-muted"><%= S.fmtDate(a.created_at) %></td><td class="small"><strong><%= a.actor %></strong> · <%= a.action %><span class="text-muted"><%= a.details ? ' — ' + a.details : '' %></span></td></tr>
+            <tr><td class="text-nowrap small text-muted"><%= S.fmtDate(a.created_at) %></td><td class="small"><strong><%= a.actor %></strong> · <%= a.action %><span class="text-muted"><%= a.details ? ': ' + a.details : '' %></span></td></tr>
           <% } %>
         </tbody>
       </table></div>

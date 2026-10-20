@@ -24,7 +24,7 @@ router.get('/login', (req, res) => {
 router.post('/login', async (req, res) => {
   const memberNo = String(req.body.memberNo || '').trim().toUpperCase().slice(0, 20);
   const locked = await lockedFor('member', memberNo, req);
-  if (locked) return res.status(429).render('portal/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'}, or call the office.`, memberNo });
+  if (locked) return res.status(429).render('portal/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'} or call the office.`, memberNo });
   const member = await one(`SELECT * FROM members WHERE member_no = ? AND status IN ('active','exiting')`, memberNo);
   if (!member || !checkPassword(String(req.body.password || ''), member.password_hash)) {
     await recordFailure('member', memberNo, req);
@@ -157,7 +157,7 @@ router.post('/deposit', async (req, res) => {
   const loans = await S.memberLoans(req.member.id, ['disbursed']);
   const loan = target.startsWith('loan:') ? loans.find(l => l.id === Number(target.slice(5))) : null;
   if (!(amount >= 10 && amount <= 150000) || (!S.ACCOUNTS[target] && !loan)) {
-    req.flash('danger', 'Enter the amount you paid (KES 10 – 150,000).');
+    req.flash('danger', 'Enter the amount you paid (KES 10 to 150,000).');
     return res.redirect('/portal/deposit');
   }
   if (!/^[A-Z0-9]{10}$/.test(code)) {
@@ -172,7 +172,7 @@ router.post('/deposit', async (req, res) => {
   await run(`INSERT INTO payments (member_id, amount, channel, reference, status, submitted_by_member, note, created_at) VALUES (?, ?, 'mpesa', ?, 'pending', true, ?, ?)`,
     req.member.id, amount, code, JSON.stringify(split), S.now());
   await audit(fullName(req.member), 'Submitted M-Pesa code', 'member', req.member.id, `${S.fmtKes(amount)} ${code}`);
-  req.flash('success', `Thanks — ${code} for ${S.fmtKes(amount)} is with the office for verification. You’ll see it in your balance once confirmed.`);
+  req.flash('success', `Thanks. ${code} for ${S.fmtKes(amount)} is with the office for verification. You’ll see it in your balance once confirmed.`);
   res.redirect('/portal/payments');
 });
 
@@ -225,6 +225,7 @@ router.post('/loans/apply', async (req, res) => {
     const g = await one(`SELECT * FROM members WHERE member_no = ? AND status = 'active'`, guarantorNos[i]);
     if (!g) return fail(`${guarantorNos[i]} is not an active member number.`);
     if (g.id === m.id) return fail('You can’t guarantee your own loan.');
+    if (g.official_role) return fail(`${guarantorNos[i]} is a SACCO official (${g.official_role}). Officials can’t guarantee loans (By-law 69).`);
     if (guarantors.some(x => x.id === g.id)) return fail(`${guarantorNos[i]} is listed twice.`);
     if (!(guarantorAmts[i] > 0)) return fail(`Enter how much ${guarantorNos[i]} should guarantee.`);
     guarantors.push({ ...g, amount: guarantorAmts[i] });
@@ -297,13 +298,17 @@ router.post('/guarantees/:id', async (req, res) => {
   if (!g || g.loan_status !== 'guarantors') return res.redirect('/portal/guarantees');
   const accept = req.body.decision === 'accept';
   if (accept) {
+    if (req.member.official_role) {
+      req.flash('danger', 'As a SACCO official you can’t guarantee loans (By-law 69). Please decline so the borrower can ask someone else.');
+      return res.redirect('/portal/guarantees');
+    }
     const cap = await S.guarantorCapacity(req.member.id);
     if (g.amount > cap.free) {
       req.flash('danger', `You only have ${S.fmtKes(cap.free)} free to guarantee.`);
       return res.redirect('/portal/guarantees');
     }
     if (cap.count >= cap.maxLoans) {
-      req.flash('danger', `You are already guaranteeing ${cap.count} loans — the limit is ${cap.maxLoans}.`);
+      req.flash('danger', `You are already guaranteeing ${cap.count} loans. The limit is ${cap.maxLoans}.`);
       return res.redirect('/portal/guarantees');
     }
   }
@@ -334,12 +339,12 @@ router.post('/profile/contact', async (req, res) => {
   }
   const email = String(req.body.email || '').trim().slice(0, 200);
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    req.flash('danger', 'Enter a valid email address, or leave it empty.');
+    req.flash('danger', 'Enter a valid email address or leave it empty.');
     return res.redirect('/portal/profile?edit=contact#contact');
   }
   await run('UPDATE members SET phone = ?, email = ? WHERE id = ?', phone, email, req.member.id);
   await audit(fullName(req.member), 'Updated contact details', 'member', req.member.id, `${phone} ${email}`);
-  req.flash('success', `Contact details saved. We’ll now use ${phone}${email ? ' and ' + email : ''} to reach you, and M-Pesa payments should come from ${phone}.`);
+  req.flash('success', `Contact details saved. We’ll now use ${phone}${email ? ' and ' + email : ''} to reach you. M-Pesa payments should come from ${phone}.`);
   res.redirect('/portal/profile#contact');
 });
 
@@ -424,9 +429,9 @@ router.get('/api/quote', async (req, res) => {
 });
 
 router.get('/api/member/:no', async (req, res) => {
-  const g = await one(`SELECT id, first_name, last_name FROM members WHERE member_no = ? AND status = 'active'`, req.params.no.toUpperCase());
+  const g = await one(`SELECT id, first_name, last_name, official_role FROM members WHERE member_no = ? AND status = 'active'`, req.params.no.toUpperCase());
   if (!g || g.id === req.member.id) return res.json({ found: false });
-  res.json({ found: true, name: `${g.first_name} ${g.last_name}` });
+  res.json({ found: true, name: `${g.first_name} ${g.last_name}`, official: !!g.official_role });
 });
 
 module.exports = router;

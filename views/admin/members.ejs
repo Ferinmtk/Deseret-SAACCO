@@ -15,7 +15,7 @@
     <tbody>
       <% for (const m of rows) { %>
         <tr class="clickable" data-href="/admin/members/<%= m.id %>">
-          <td><a class="fw-semibold text-reset" href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %></a><div class="small text-muted"><%= m.member_no || 'No number yet' %> · ID <%= m.id_number %></div></td>
+          <td><a class="fw-semibold text-reset" href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %></a><% if (m.official_role) { %> <span class="pill pill-info" title="<%= m.official_role %>"><i class="bi bi-award"></i> Official</span><% } %><div class="small text-muted"><%= m.member_no || 'No number yet' %> · ID <%= m.id_number %></div></td>
           <td class="small"><%= m.phone %></td><td class="small"><%= m.payroll_no %></td>
           <td class="text-end num"><%= k(m.bal.shares) %></td><td class="text-end num"><%= k(m.bal.deposits) %></td><td class="text-end num"><%= k(m.bal.holiday + m.bal.family) %></td>
           <td><span class="pill pill-<%= pill[m.status] %>"><%= m.status === 'pending' ? 'Awaiting approval' : m.status %></span></td>

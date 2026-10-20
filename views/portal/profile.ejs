@@ -79,7 +79,7 @@
           </div>
         <% } else if (nomineeRequest && nomineeRequest.status !== 'pending') { %>
           <div class="small text-muted mt-2"><i class="bi bi-<%= nomineeRequest.status === 'approved' ? 'check-circle text-success' : 'x-circle text-danger' %>"></i>
-            Your last change (<%= S.fmtDate(nomineeRequest.created_at) %>) was <%= nomineeRequest.status === 'approved' ? 'confirmed by the office' : 'not approved — please contact the office' %>.</div>
+            Your last change (<%= S.fmtDate(nomineeRequest.created_at) %>) was <%= nomineeRequest.status === 'approved' ? 'confirmed by the office' : 'not approved. Please contact the office' %>.</div>
         <% } %>
       </div>
 

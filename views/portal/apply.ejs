@@ -37,7 +37,7 @@
       <div class="card-header">3. Guarantors <span class="ms-auto small text-muted" id="gNeed"></span></div>
       <div class="card-body">
         <p class="small text-muted" id="gWhen">You only need guarantors for the part above your own free deposits (<%= S.fmtKes(ownFree) %>). Each member can guarantee at most 3 loans.</p>
-        <p class="small text-muted">Ask members who know you. They’ll get a request in their portal showing the amount and your repayment record, and can accept or decline.</p>
+        <p class="small text-muted">Ask members who know you. They’ll get a request in their portal showing the amount and your repayment record. They can accept or decline.</p>
         <div id="gRows">
           <% for (let i = 0; i < Math.max(gNos.length, 3); i++) { %>
             <div class="row g-2 mb-2 g-row">
@@ -82,7 +82,7 @@
     $('why').textContent = p.dataset.why;
     const need = +p.dataset.guarantors && (+$('amount').value || 0) > <%= ownFree %>;
     $('gCard').style.display = need ? '' : 'none';
-    $('gNeed').textContent = need ? need + ' required' : '';
+    $('gNeed').textContent = need ? 'At least ' + p.dataset.guarantors + ' required' : '';
     quote();
   }
   let t;
@@ -101,7 +101,10 @@
     const out = input.closest('.g-row').querySelector('.g-name');
     if (!input.value.trim()) { out.textContent = ''; return; }
     const r = await (await fetch('/portal/api/member/' + encodeURIComponent(input.value.trim()))).json();
-    out.innerHTML = r.found ? '<span class="pos"><i class="bi bi-check-circle"></i> ' + r.name.replace(/</g, '&lt;') + '</span>' : '<span class="neg">Not found</span>';
+    const name = r.found ? r.name.replace(/</g, '&lt;') : '';
+    out.innerHTML = !r.found ? '<span class="neg">Not found</span>'
+      : r.official ? '<span class="neg"><i class="bi bi-x-circle"></i> ' + name + ' is a SACCO official and can’t guarantee loans</span>'
+      : '<span class="pos"><i class="bi bi-check-circle"></i> ' + name + '</span>';
   }
   document.querySelectorAll('input[name=product]').forEach(r => r.addEventListener('change', syncProduct));
   ['amount', 'months'].forEach(id => $(id).addEventListener('input', quote));

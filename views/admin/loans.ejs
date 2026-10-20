@@ -14,7 +14,7 @@
       <h6><%= c.label %> <span><%= c.rows.length %></span></h6>
       <% for (const l of c.rows) { const age = S.daysBetween(l.applied_at, S.today()); %>
         <a class="item" href="/admin/loans/<%= l.id %>">
-          <div class="d-flex justify-content-between"><strong><%= l.name %></strong><span class="small text-muted">#<%= l.id %></span></div>
+          <div class="d-flex justify-content-between"><strong><%= l.name %><% if (l.official_role) { %> <span class="pill pill-info"><i class="bi bi-award"></i> Official</span><% } %></strong><span class="small text-muted">#<%= l.id %></span></div>
           <div class="small"><%= l.product_name %> · <span class="num"><%= k(l.principal) %></span></div>
           <div class="d-flex justify-content-between small text-muted mt-1">
             <span><i class="bi bi-people"></i> <%= l.accepted %>/<%= l.requested %></span>

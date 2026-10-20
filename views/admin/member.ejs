@@ -9,8 +9,30 @@
     <div class="text-muted small"><%= m.member_no || 'No member number yet' %> · ID <%= m.id_number %> · <%= m.phone %> · Joined <%= S.fmtDate(m.joined_at) %></div>
   </div>
   <span class="pill pill-<%= pill[m.status] %>"><%= m.status %></span>
+  <% if (m.official_role) { %><span class="pill pill-info"><i class="bi bi-award"></i> Official: <%= m.official_role %></span><% } %>
   <% if (can.recordPayment && m.member_no) { %><a href="/admin/payments/new?member=<%= m.member_no %>" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-plus"></i> Record payment</a><% } %>
 </div>
+
+<% if (m.status === 'active' || m.status === 'exiting') { %>
+  <div class="card mb-3"><div class="card-body d-flex flex-wrap gap-3 align-items-center">
+    <div class="flex-grow-1 small">
+      <strong><i class="bi bi-award"></i> Board or committee seat</strong>
+      <div class="text-muted"><%= m.official_role
+        ? 'As an official they can’t guarantee loans (By-law 69), and their loans get no better terms than any member’s (By-law 65). Their loans are flagged for the supervisory committee.'
+        : 'Mark this member if they sit on the board or a committee. Their savings and loans stay the same; the by-law checks for officials switch on.' %></div>
+      <% if (m.official_role && capacity.count) { %><div class="text-danger mt-1">They are still guaranteeing <%= capacity.count %> loan<%= capacity.count === 1 ? '' : 's' %> from before. Those borrowers need replacement guarantors.</div><% } %>
+    </div>
+    <% if (can.approveMember) { %>
+      <form method="POST" action="/admin/members/<%= m.id %>/official" class="d-flex gap-2">
+        <select class="form-select form-select-sm" name="role" aria-label="Seat" style="width: 200px">
+          <option value="">Not an official</option>
+          <% for (const r of S.OFFICIAL_ROLES) { %><option <%= m.official_role === r ? 'selected' : '' %>><%= r %></option><% } %>
+        </select>
+        <button class="btn btn-sm btn-outline-primary">Save</button>
+      </form>
+    <% } %>
+  </div></div>
+<% } %>
 
 <% if (m.status === 'pending') { %>
   <div class="card border-warning mb-3"><div class="card-body d-flex flex-wrap gap-3 align-items-center">

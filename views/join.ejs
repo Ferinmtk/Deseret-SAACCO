@@ -9,9 +9,9 @@
     <div class="row g-3">
       <% for (const [icon, title, text] of [
         ['heart', 'Faith-aligned finance', 'We operate by gospel principles of stewardship and service.'],
-        ['cash-coin', 'Affordable loans', 'Fair rates, and up to 6 years to repay development loans.'],
+        ['cash-coin', 'Affordable loans', 'Fair rates and up to 6 years to repay development loans.'],
         ['lightning-charge', 'Quick processing', 'Apply and follow your loan online; emergency loans are fast-tracked.'],
-        ['people', 'Grow together', 'Your savings earn interest and dividends, and you vote at the AGM.'],
+        ['people', 'Grow together', 'Your savings earn interest and dividends. You vote at the AGM.'],
       ]) { %>
         <div class="col-6 col-lg-3 fade-in"><div class="simple-card"><i class="bi bi-<%= icon %>"></i><h3 class="h6 fw-bold mt-2 mb-1"><%= title %></h3><p class="small"><%= text %></p></div></div>
       <% } %>
@@ -23,14 +23,14 @@
 <section class="py-5">
   <div class="container">
     <h2 class="fw-bold text-center mb-4">Membership</h2>
-    <p class="text-center">Deseret Sacco draws its membership from employees of the Church of Jesus Christ of Latter-day Saints in Kenya, members of the Church, their spouses and children, Corporate Institutions, and Groups/Chamas.</p>
+    <p class="text-center">Deseret Sacco draws its membership from employees of the Church of Jesus Christ of Latter-day Saints in Kenya, members of the Church, their spouses and children, Corporate Institutions and Groups/Chamas.</p>
     
     <div class="row mt-4">
       <div class="col-md-6" data-aos="fade-right">
         <h4 class="fw-bold">How to Join</h4>
         <ul>
           <li>Introduction letter from the institution (employer)</li>
-          <li>Application form — <a href="/join/apply">apply online</a> or collect one from the office — with a copy of your ID or passport</li>
+          <li>Application form (<a href="/join/apply">apply online</a> or collect one from the office) with a copy of your ID or passport</li>
           <li>If you were in another SACCO: a letter showing you owe it nothing</li>
           <li>Registration fee: <strong>Kshs. 1,000</strong> (one-time, non-refundable)</li>
           <li>Share Capital: <strong>Kshs. 6,500</strong> (non-refundable, earns dividends, transferable upon withdrawal)</li>
@@ -76,28 +76,43 @@
       <h2>Paying your fees and contributions</h2>
       <p class="intro">Church employees pay through payroll deductions. Everyone else can use M-Pesa or a standing order from their bank.</p>
     </div>
-    <div class="row g-4">
-      <div class="col-md-6 fade-in">
-        <div class="simple-card">
-          <i class="bi bi-phone"></i>
-          <h3 class="h5">M-Pesa</h3>
-          <ul>
-            <li>Paybill <span class="fact"><%= S.SACCO.paybill %></span></li>
-            <li>Account <span class="fact"><%= S.SACCO.account %></span></li>
-            <li>Then send the M-Pesa message to <span class="fact"><%= S.SACCO.smsNumber %></span>, or submit the code in the member portal.</li>
-          </ul>
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-7">
+        <div class="d-grid gap-4">
+          <div class="simple-card">
+            <i class="bi bi-phone"></i>
+            <h3 class="h5">M-Pesa</h3>
+            <ul>
+              <li>Paybill <span class="fact"><%= S.SACCO.paybill %></span></li>
+              <li>Account <span class="fact"><%= S.SACCO.account %></span></li>
+              <li>Then send the M-Pesa message to <span class="fact"><%= S.SACCO.smsNumber %></span> or submit the code in the member portal.</li>
+            </ul>
+          </div>
+          <div class="simple-card">
+            <i class="bi bi-bank"></i>
+            <h3 class="h5">Bank or standing order</h3>
+            <ul>
+              <li><%= S.SACCO.bank %>, <%= S.SACCO.branch %></li>
+              <li>Account <span class="fact"><%= S.SACCO.account %></span> · SWIFT <%= S.SACCO.swift %></li>
+              <li>Account name: <%= S.SACCO.name %></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="col-md-6 fade-in">
-        <div class="simple-card">
-          <i class="bi bi-bank"></i>
-          <h3 class="h5">Bank or standing order</h3>
-          <ul>
-            <li><%= S.SACCO.bank %>, <%= S.SACCO.branch %></li>
-            <li>Account <span class="fact"><%= S.SACCO.account %></span> · SWIFT <%= S.SACCO.swift %></li>
-            <li>Account name: <%= S.SACCO.name %></li>
-          </ul>
+      <div class="col-lg-5">
+        <div class="stmt-stack stmt-scene" data-lands-at="1100" data-loop-ms="8000" aria-hidden="true">
+          <div class="stmt-toast"><span class="bi bi-check-lg"></span><div><b>Faith Muthoni accepted</b> your guarantor request for the School Fees Loan.<small>Sent to the credit officer · 2 of 2 guarantors</small></div></div>
+          <div class="stmt" data-scene-card>
+            <div class="stmt-top"><span class="stmt-who"><span class="stmt-av">GW</span>Grace’s deposits</span><span>Sample member</span></div>
+            <div class="stmt-big"><span data-count-from="245000" data-count-to="250000" data-count-delay="900">KES 245,000</span><small>Backs her loans · earns interest</small></div>
+            <div class="tx-list">
+              <div class="tx tx-new"><div>M-Pesa · Paybill <%= S.SACCO.paybill %><small>UJK4X8B2QP · just now</small></div><span>+5,000</span></div>
+              <div class="tx"><div>Check-off · October<small>Payroll deduction</small></div><span>+12,000</span></div>
+              <div class="tx"><div>Check-off · September<small>Payroll deduction</small></div><span>+12,000</span></div>
+            </div>
+          </div>
         </div>
+        <p class="text-center text-muted small mt-3 mb-0">Every payment shows up in the member portal.</p>
       </div>
     </div>
   </div>
@@ -114,5 +129,7 @@
     </div>
   </div>
 </section>
+
+<script src="/js/demos.js" defer></script>
 
 <%- include('partials/footer') %>

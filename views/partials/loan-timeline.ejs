@@ -8,7 +8,7 @@
     <li class="<%= e.step === 'rejected' || e.step === 'guarantor declined' ? 'bad' : 'done' %>">
       <span class="dot"><i class="bi bi-<%= e.step === 'rejected' || e.step === 'guarantor declined' ? 'x' : 'check' %>"></i></span>
       <div class="t"><%= titles[e.step] || e.step %></div>
-      <div class="m"><%= S.fmtDate(e.created_at) %> · <%= e.actor %><%= e.note ? ' — ' + e.note : '' %></div>
+      <div class="m"><%= S.fmtDate(e.created_at) %> · <%= e.actor %><%= e.note ? ': ' + e.note : '' %></div>
     </li>
   <% } %>
   <% if (waiting) { %>

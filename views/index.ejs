@@ -1,14 +1,52 @@
 <%- include('partials/header') %>
 
-<!-- HERO SECTION -->
-<section class="hero d-flex align-items-center text-white text-center">
+<!-- HERO: the family photo, with a phone showing a member paying by M-Pesa.
+     Her deposits and loan limit rise; it loops while the phone is on screen. -->
+<section class="hero text-white pay-scene" data-lands-at="4600" data-loop-ms="10000">
   <div class="container">
-    <p class="hero-eyebrow">Deseret SACCO Society Ltd · Since 2006</p>
-    <h1 class="display-3 fw-bold">Save, borrow and grow together</h1>
-    <p class="lead">The savings and credit co-operative for employees of The Church of Jesus Christ of Latter-day Saints in Kenya and their families.</p>
-    <div class="d-flex flex-wrap gap-2 justify-content-center mt-3">
-      <a href="/join/apply" class="btn btn-gold btn-lg">Join Us</a>
-      <a href="/portal/login" class="btn btn-outline-light btn-lg">Member login</a>
+    <div class="row g-4 g-lg-5 align-items-center">
+      <div class="col-lg-7 text-center text-lg-start">
+        <p class="hero-eyebrow">Deseret SACCO Society Ltd · Since 2006</p>
+        <h1 class="display-3 fw-bold">Save, borrow and grow together</h1>
+        <p class="lead">The savings and credit co-operative for employees of The Church of Jesus Christ of Latter-day Saints in Kenya and their families.</p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mt-3">
+          <a href="/join/apply" class="btn btn-gold btn-lg">Join Us</a>
+          <a href="/portal/login" class="btn btn-outline-light btn-lg">Member login</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="phone" data-scene-card aria-hidden="true">
+          <div class="phone-screen">
+            <div class="phone-punch"></div>
+            <div class="phone-status"><span>9:15</span><span>Safaricom · 4G <i class="bi bi-reception-4"></i></span></div>
+            <div class="phone-appbar">
+              <div class="phone-brand"><img src="/img/brand/logo-mark-reverse.svg" alt="">DESERET SACCO</div>
+              <div class="phone-label">Deposits</div>
+              <div class="phone-bal" data-count-from="245000" data-count-to="250000">KES 245,000</div>
+              <div class="phone-sub">Grace Wanjiru · DS0001</div>
+            </div>
+            <div class="phone-limit"><div>You can borrow up to<b data-count-from="735000" data-count-to="750000" data-count-delay="950">KES 735,000</b></div><span>3× deposits</span></div>
+            <div class="tx-list">
+              <div class="tx-head">Recent</div>
+              <div class="tx tx-new"><div>M-Pesa deposit<small>UJK4X8B2QP · just now</small></div><span>+5,000</span></div>
+              <div class="tx"><div>Check-off · October<small>Payroll deduction</small></div><span>+12,000</span></div>
+              <div class="tx"><div>Check-off · September<small>Payroll deduction</small></div><span>+12,000</span></div>
+            </div>
+            <div class="stk-scrim"></div>
+            <div class="stk">
+              <div class="stk-app">M-PESA</div>
+              <p>Do you want to pay Ksh5,000.00 to DESERET SACCO for account DS0001? Enter M-PESA PIN</p>
+              <div class="stk-pin"><i></i><i></i><i></i><i></i></div>
+              <div class="stk-acts"><span>CANCEL</span><span class="stk-ok">OK</span></div>
+            </div>
+            <div class="sms">
+              <div class="sms-from">MPESA<span>now</span></div>
+              <p>UJK4X8B2QP Confirmed. Ksh5,000.00 sent to DESERET SACCO for account DS0001 on 20/10/26 at 9:15 AM New M-PESA balance is Ksh12,430.50. Transaction cost, Ksh0.00.</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-note">Sample member. Pay <b>Ksh 5,000</b> and your loan limit goes up by <b>Ksh 15,000</b>.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -30,14 +68,14 @@
         <div class="simple-card">
           <i class="bi bi-cash-coin"></i>
           <h3 class="h5">Borrow</h3>
-          <p>After six months of saving, borrow up to three times your deposits — for school fees, emergencies, building or a family holiday.</p>
+          <p>After six months of saving, borrow up to three times your deposits for school fees, emergencies, building or a family holiday.</p>
         </div>
       </div>
       <div class="col-md-4 fade-in">
         <div class="simple-card">
           <i class="bi bi-people"></i>
           <h3 class="h5">Belong</h3>
-          <p>Owned and run by members. One member, one vote at the AGM, and an elected board and supervisory committee.</p>
+          <p>Owned and run by members. One member, one vote at the AGM and an elected board and supervisory committee.</p>
         </div>
       </div>
     </div>
@@ -95,5 +133,7 @@
     </div>
   </div>
 </section>
+
+<script src="/js/demos.js" defer></script>
 
 <%- include('partials/footer') %>

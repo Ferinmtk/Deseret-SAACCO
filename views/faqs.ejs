@@ -3,36 +3,36 @@
 <%
   const groups = [
     ['Membership', [
-      ['Who can join?', `<p>Employees of The Church of Jesus Christ of Latter-day Saints and its subsidiaries in Kenya, and their spouses. You must be 18 or over, live in Kenya, not belong to another SACCO, and have no conviction for fraud or dishonesty.</p><p>For membership of other family members or groups, please <a href="/contact">contact the office</a>.</p>`],
+      ['Who can join?', `<p>Employees of The Church of Jesus Christ of Latter-day Saints and its subsidiaries in Kenya and their spouses. You must be 18 or over, live in Kenya, not belong to another SACCO and have no conviction for fraud or dishonesty.</p><p>For membership of other family members or groups, please <a href="/contact">contact the office</a>.</p>`],
       ['What does it cost to join?', `<p>A one-time, non-refundable entrance fee of <strong>KES 1,000</strong>, plus share capital of <strong>KES 6,500</strong> (325 shares of KES 20 each).</p>`],
       ['What do I need to apply?', `<ul><li>The signed membership application form</li><li>A copy of your ID or passport</li><li>An introduction letter from your employer</li><li>If you were in another SACCO, a letter showing you owe it nothing</li></ul>`],
       ['Is there a minimum monthly deposit?', `<p>Yes, at least <strong>KES 1,000</strong> a month.</p>`],
     ]],
     ['Savings & payments', [
-      ['What is the difference between share capital and deposits?', `<p><strong>Share capital</strong> is your stake in the Society. It earns a dividend, stays with the SACCO while you are a member, and can only be transferred to another member.</p><p><strong>Deposits</strong> are your monthly savings. They earn interest, decide how much you can borrow, and are refunded when you leave.</p>`],
-      ['Do I earn a return on my savings?', `<p>Yes. Each year the committee recommends a dividend on shares and interest on deposits, and members approve them at the Annual General Meeting. The financial year runs January to December.</p>`],
+      ['What is the difference between share capital and deposits?', `<p><strong>Share capital</strong> is your stake in the Society. It earns a dividend, stays with the SACCO while you are a member and can only be transferred to another member.</p><p><strong>Deposits</strong> are your monthly savings. They earn interest, decide how much you can borrow and are refunded when you leave.</p>`],
+      ['Do I earn a return on my savings?', `<p>Yes. Each year the committee recommends a dividend on shares and interest on deposits. Members approve them at the Annual General Meeting. The financial year runs January to December.</p>`],
       ['Can I withdraw my deposits?', `<p>Not while you are a member. Deposits secure your loans and those you guarantee, so they are refunded when you leave the Society.</p>`],
       ['Can I pay outside payroll?', `<p>Yes. Pay by M-Pesa to Paybill <strong>${S.SACCO.paybill}</strong>, account <strong>${S.SACCO.account}</strong>, then submit the M-Pesa code in the member portal. Members not paid through Church payroll should set up a monthly standing order from their bank.</p>`],
-      ['Will I get statements?', `<p>You receive a statement of your shares, deposits and loans at least every three months, and can download one any time from the <a href="/portal/login">member portal</a>.</p>`],
+      ['Will I get statements?', `<p>You receive a statement of your shares, deposits and loans at least every three months. You can also download one any time from the <a href="/portal/login">member portal</a>.</p>`],
     ]],
     ['Loans', [
       ['When can I get a loan?', `<p>After <strong>six months</strong> of membership and regular saving. Savings paid in cash or by cheque outside payroll count once they have been with the SACCO for six months.</p>`],
       ['How much can I borrow?', `<ul><li>Up to <strong>three times your deposits</strong>, less what you still owe.</li><li>Your loan repayments and savings together can’t take more than <strong>two-thirds of your basic pay</strong>.</li><li>No single loan can exceed 5% of the Society’s share capital and reserves.</li></ul><p>The member portal shows your exact limit for each loan.</p>`],
-      ['What do I need to apply?', `<p>A completed loan application, your two most recent payslips (or a letter from your employer), and guarantors if the loan is more than your own deposits.</p>`],
+      ['What do I need to apply?', `<p>A completed loan application, your two most recent payslips (or a letter from your employer) and guarantors if the loan is more than your own deposits.</p>`],
       ['Can I have more than one loan?', `<p>Yes, as long as all your loans together stay within your limit. You can take one School Fees Loan per calendar year.</p>`],
       ['How long can I take to repay?', `<p>Emergency and School Fees loans are repaid within 12 months. Repayments start the month after the loan is paid out. Ask the office about the period for other loans.</p>`],
       ['Can I pay off my loan early?', `<p>Yes, in full or in part, on any business day.</p>`],
-      ['Can I extend my repayment period?', `<p>Only in exceptional cases, and the extension is treated as a new loan application.</p>`],
+      ['Can I extend my repayment period?', `<p>Only in exceptional cases. The extension is treated as a new loan application.</p>`],
     ]],
     ['Guarantors', [
       ['Do I need guarantors?', `<p>Only if the loan is more than your own deposits. Your deposits plus your guarantors’ pledges must cover the full loan.</p>`],
-      ['What should I know before guaranteeing a loan?', `<ul><li>The amount you pledge is locked from your deposits until the loan is repaid.</li><li>You can guarantee at most <strong>3 loans</strong>, and only for fellow members.</li><li>Members of the management, credit and supervisory committees can’t guarantee loans.</li><li>You are released when the borrower finds a replacement guarantor, or when their balance falls to within their own deposits.</li></ul>`],
+      ['What should I know before guaranteeing a loan?', `<ul><li>The amount you pledge is locked from your deposits until the loan is repaid.</li><li>You can guarantee at most <strong>3 loans</strong> and only for fellow members.</li><li>Members of the management, credit and supervisory committees can’t guarantee loans.</li><li>You are released when the borrower finds a replacement guarantor or when their balance falls to within their own deposits.</li></ul>`],
       ['What happens if a borrower misses repayments?', `<p>After one missed month the borrower gets a letter, copied to the guarantors. After two months the guarantors are warned. After three months in a row the loan is declared in default and recovered from the guarantors.</p>`],
     ]],
     ['Leaving & more', [
-      ['How do I leave the SACCO?', `<p>Give <strong>60 days’</strong> written notice. Your own loans must be repaid, and any loans you guarantee need replacement guarantors. You then receive your deposits, interest and dividends, less anything you owe. Share capital can be transferred to another member (fee KES 500). Rejoining later carries a KES 5,000 fine.</p>`],
+      ['How do I leave the SACCO?', `<p>Give <strong>60 days’</strong> written notice. Your own loans must be repaid. Any loans you guarantee need replacement guarantors. You then receive your deposits, interest and dividends, less anything you owe. Share capital can be transferred to another member (fee KES 500). Rejoining later carries a KES 5,000 fine.</p>`],
       ['What if I retire or leave Church employment?', `<p>Retired members can stay in the Society. Members moving to another employer can transfer their shares to the new employer’s society once their loans are cleared. Please talk to the office about your situation.</p>`],
-      ['What happens to my savings if I die?', `<p>Your shares, deposits, interest and dividends, less any debts, are paid to the nominee you named. You can name or change nominees in writing, witnessed by two members, or update them in the member portal.</p>`],
+      ['What happens to my savings if I die?', `<p>Your shares, deposits, interest and dividends, less any debts, are paid to the nominee you named. You can name or change nominees in writing (witnessed by two members) or update them in the member portal.</p>`],
       ['How do I change my personal details?', `<p>Update your phone, email and nominees in the <a href="/portal/login">member portal</a>. To change your name, ID, employer or bank, visit the office with your documents.</p>`],
       ['Where is the office?', `<p>${S.SACCO.office}. ${S.SACCO.hours}. Phone <a href="tel:${S.SACCO.phoneHref}">${S.SACCO.phone}</a>.</p>`],
     ]],
@@ -71,7 +71,7 @@
         <% } %>
       <% }) %>
     </div>
-    <p class="text-center text-muted" id="faqEmpty" hidden>No questions match that. Try another word, or ask us below.</p>
+    <p class="text-center text-muted" id="faqEmpty" hidden>No questions match that. Try another word or ask us below.</p>
 
     <div class="faq-help">
       <div>

@@ -6,6 +6,9 @@
   <span class="pill pill-info"><%= S.STATUS_LABELS[loan.status] %></span>
   <span class="text-muted small ms-2">for <a href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %> (<%= m.member_no %>)</a> · applied <%= S.fmtDate(loan.applied_at) %></span>
 </div>
+<% if (loan.official_role) { %>
+  <div class="alert alert-info small"><i class="bi bi-award"></i> <strong>Official’s loan (<%= loan.official_role %>).</strong> By-law 65: it must be on the same terms as any member’s loan. The supervisory committee reviews it.</div>
+<% } %>
 
 <div class="row g-3">
   <div class="col-xl-8">
@@ -56,7 +59,7 @@
             <form method="POST" action="/admin/loans/<%= loan.id %>/<%= x.url %>" class="mb-3">
               <input class="form-control mb-2" name="note" placeholder="<%= x.placeholder || 'Note for the file (optional)' %>">
               <button class="btn btn-<%= x.cls %>" <%= x.disabled ? 'disabled' : '' %>><%= x.label %></button>
-              <% if (x.disabled) { %><span class="small text-danger ms-2">Fix the failed checks first, or decline.</span><% } %>
+              <% if (x.disabled) { %><span class="small text-danger ms-2">Fix the failed checks first or decline.</span><% } %>
             </form>
           <% } %>
           <% if (canReject) { %>

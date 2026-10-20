@@ -61,7 +61,7 @@
   <h6 class="small-caps mb-2">History</h6>
   <div class="card"><div class="table-responsive"><table class="table table-sm table-stack">
     <tbody><% for (const g of past) { %><tr><td><%= g.borrower %></td><td><%= g.product_name %></td><td class="num text-end"><%= k(g.amount) %></td>
-      <td><span class="pill pill-muted"><%= g.status === 'declined' ? 'You declined' : g.loan_status === 'closed' ? 'Released — loan repaid' : 'Released — loan declined' %></span></td></tr><% } %></tbody>
+      <td><span class="pill pill-muted"><%= g.status === 'declined' ? 'You declined' : g.loan_status === 'closed' ? 'Released: loan repaid' : 'Released: loan declined' %></span></td></tr><% } %></tbody>
   </table></div></div>
 <% } %>
 <%- include('../partials/app-bottom') %>

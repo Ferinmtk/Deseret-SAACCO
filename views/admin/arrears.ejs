@@ -2,7 +2,7 @@
 <% const k = S.fmtKes; %>
 <div class="row g-3 mb-3">
   <% for (const b of buckets) { %>
-    <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k"><%= b.label %> late</div><div class="v num fs-5 <%= b.count && b.label !== '1–30 days' ? 'neg' : '' %>"><%= b.count %> loan<%= b.count === 1 ? '' : 's' %></div><div class="s"><%= k(b.amount) %> outstanding</div></div></div></div>
+    <div class="col-6 col-lg-3"><div class="card"><div class="stat"><div class="k"><%= b.label %> late</div><div class="v num fs-5 <%= b.count && b.label !== '1 to 30 days' ? 'neg' : '' %>"><%= b.count %> loan<%= b.count === 1 ? '' : 's' %></div><div class="s"><%= k(b.amount) %> outstanding</div></div></div></div>
   <% } %>
 </div>
 <div class="card">

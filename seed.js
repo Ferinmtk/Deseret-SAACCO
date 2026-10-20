@@ -33,17 +33,17 @@ async function seed() {
   // Values marked BL come from the registered by-laws (2006, as amended). Others are placeholders to confirm.
   await insertMany('settings', ['key', 'value', 'label'], [
     ['entry_fee', 1000, 'Entry fee, KES (BL9)'],
-    ['min_share_capital', 6500, 'Minimum share capital, KES — 325 shares × 20 (BL9)'],
+    ['min_share_capital', 6500, 'Minimum share capital, KES (325 shares × 20, BL9)'],
     ['share_value', 20, 'Value of one share, KES (BL9)'],
-    ['min_monthly_deposit', 1000, 'Minimum monthly deposit, KES (website — not in by-laws)'],
+    ['min_monthly_deposit', 1000, 'Minimum monthly deposit, KES (from the website, not in the by-laws)'],
     ['min_membership_months', 6, 'Months of membership before a loan (BL64 I)'],
     ['min_take_home_pct', 33.33, 'Minimum take-home after all deductions incl. savings, % of basic pay (BL64 XII)'],
     ['max_loans_guaranteed', 3, 'Maximum loans one member may guarantee (BL64 XIX, BL68)'],
     ['max_loan_pct_capital', 5, 'Largest single loan, % of society share capital & reserves (BL64 VI, BL76)'],
     ['exit_notice_days', 60, 'Withdrawal notice, days (BL16, BL24)'],
     ['default_after_months', 3, 'Missed months before a loan is declared in default (BL64 XXVI)'],
-    ['deposit_interest_pct', 8, 'Interest on deposits, last AGM % (placeholder — set by AGM, BL27)'],
-    ['dividend_pct', 10, 'Dividend on shares, last AGM % (placeholder — set by AGM, BL63)'],
+    ['deposit_interest_pct', 8, 'Interest on deposits, last AGM % (placeholder: set by AGM, BL27)'],
+    ['dividend_pct', 10, 'Dividend on shares, last AGM % (placeholder: set by AGM, BL63)'],
   ].map(([k, v, label]) => [k, String(v), label]));
 
   const productRows = [
@@ -142,7 +142,7 @@ async function seed() {
   addLoan(members[24], 'vacation', 50000, 12, daysAgo(12), 'recommended', [[members[26], 25000, 'accepted'], [members[27], 25000, 'accepted']]);
   addLoan(members[28], 'school', 70000, 12, daysAgo(18), 'approved', [[members[29], 35000, 'accepted'], [members[2], 35000, 'accepted']]);
   addLoan(members[4], 'development', 150000, 24, daysAgo(6), 'guarantors', [[members[6], 50000, 'accepted'], [members[8], 50000, 'pending'], [members[10], 50000, 'declined']]);
-  // Grace's earlier loan, fully paid — shows history.
+  // Grace's earlier loan, fully paid: shows history.
   const old = addLoan(grace, 'emergency', 30000, 6, S.addMonths(T, -30), 'closed', [[members[1], 30000, 'accepted']]);
 
   const loanIds = await insertMany('loans', ['member_id', 'product', 'principal', 'months', 'rate_monthly', 'method', 'installment', 'total_payable', 'fee',
@@ -157,7 +157,7 @@ async function seed() {
   const guaranteeRows = [];
   const eventRows = [];
   const notes = {
-    appraisal: ['System', 'Guarantors complete — sent to credit officer'],
+    appraisal: ['System', 'Guarantors complete: sent to credit officer'],
     recommended: [staffName[credit], 'Appraisal passed. Recommended for approval.'],
     approved: [staffName[manager], 'Approved by credit committee'],
     disbursed: [staffName[treasurer], 'Funds sent to member’s bank account'],
@@ -219,7 +219,10 @@ async function seed() {
 
   // One member has given notice to leave.
   await run(`UPDATE members SET status = 'exiting', exit_notice_at = ? WHERE id = ?`, S.addMonths(T, -1), members[27].id);
-  await run(`INSERT INTO audit (actor, action, entity, details) VALUES ('System', 'Demo data loaded', 'system', 'Sample data — not real members')`);
+  // Two fictional officials (neither guarantees anyone, as By-law 69 requires). One has a loan in the pipeline.
+  await run(`UPDATE members SET official_role = 'Board member' WHERE id = ?`, members[24].id);
+  await run(`UPDATE members SET official_role = 'Credit committee' WHERE id = ?`, members[7].id);
+  await run(`INSERT INTO audit (actor, action, entity, details) VALUES ('System', 'Demo data loaded', 'system', 'Sample data, not real members')`);
 }
 
 async function main() {
