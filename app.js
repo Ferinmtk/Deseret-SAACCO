@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const { sessionMiddleware } = require('./lib/auth');
-const { loadSettings } = require('./db');
+const { loadSettings, run } = require('./db');
 const S = require('./lib/sacco');
 
 // Set view engine
@@ -30,18 +30,24 @@ app.get('/', (req, res) => {
 app.get('/about', (req, res) => res.render('about'));
 app.get('/services', (req, res) => res.render('services'));
 app.get('/join', (req, res) => res.render('join'));
-app.get('/contact', (req, res) => res.render('contact'));
+app.get('/contact', (req, res) => res.render('contact', { sent: req.query.sent === '1' }));
+
+app.post('/contact', async (req, res) => {
+  const form = Object.fromEntries(['name', 'email', 'phone', 'message'].map(k => [k, String(req.body[k] || '').trim()]));
+  if (req.body.website) return res.redirect('/contact?sent=1#message'); // honeypot: quietly drop bot submissions
+  const error = !form.name ? 'Please enter your name.'
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) ? 'Please enter a valid email address.'
+    : form.message.length < 5 ? 'Please write your message.'
+    : null;
+  if (error) return res.status(400).render('contact', { error, form });
+  await run('INSERT INTO contact_messages (name, email, phone, message) VALUES (?, ?, ?, ?)',
+    form.name.slice(0, 100), form.email.slice(0, 200), form.phone.slice(0, 30), form.message.slice(0, 3000));
+  res.redirect('/contact?sent=1#message');
+});
 
 
 app.use('/portal', appMiddleware, require('./routes/portal'));
 app.use('/admin', appMiddleware, require('./routes/admin'));
-
-app.post('/join', (req, res) => {
-  const { fullname, email, idNumber } = req.body;
-  console.log(`New member: ${fullname}, ${email}, ID: ${idNumber}`);
-  res.send(`<h2>Thanks ${fullname}, your application has been received!</h2><a href="/">Back to Home</a>`);
-});
-
 
 app.get("/faqs", (req, res) => {
   res.render("faqs");

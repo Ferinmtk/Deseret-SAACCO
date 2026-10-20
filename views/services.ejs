@@ -1,155 +1,98 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { pageTitle: 'Services & Products' }) %>
 
-<!-- HERO SECTION -->
-<section class="services-hero d-flex align-items-center text-white text-center">
+<%- include('partials/page-hero', { image: '/img/service.avif', heading: 'Our Products & Services', lead: 'Savings accounts and loans designed around members’ real needs.' }) %>
+
+<!-- SAVINGS -->
+<section class="section">
   <div class="container">
-    <h1 class="display-4 fw-bold">Our Products & Services</h1>
-    <p class="lead">Explore our membership options, savings plans, and loan products designed for you.</p>
-  </div>
-</section>
-
-<!-- SERVICES SECTION -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <div class="row text-center g-4">
-
-      <!-- Membership -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#membershipModal">
-          <div class="card-body py-5">
-            <i class="bi bi-people-fill text-primary mb-4" style="font-size: 4rem;"></i>
-            <h4 class="fw-bold">Membership</h4>
-            <p>Join as an individual or corporate member to access Sacco benefits.</p>
-            <span class="btn btn-outline-primary mt-3">Learn More</span>
+    <div class="text-center">
+      <h2>Savings</h2>
+      <p class="intro">Every member holds share capital and saves monthly deposits. Your deposits are what you borrow against.</p>
+    </div>
+    <div class="row g-4">
+      <% for (const [icon, name, text] of [
+        ['shield-check', 'Share capital', 'KES 6,500 (325 shares of KES 20). It stays with the SACCO while you are a member and earns a dividend set at the AGM.'],
+        ['wallet2', 'Normal deposits', 'Your monthly savings, by payroll, M-Pesa or standing order. They earn interest each year and decide how much you can borrow.'],
+        ['sun', 'Holiday savings', 'Put money aside through the year for the festive season or a family trip.'],
+        ['house-heart', 'Family savings', 'Save towards family goals like school, a home or a wedding.'],
+      ]) { %>
+        <div class="col-md-6 col-lg-3 fade-in">
+          <div class="simple-card">
+            <i class="bi bi-<%= icon %>"></i>
+            <h3 class="h5"><%= name %></h3>
+            <p><%= text %></p>
           </div>
         </div>
-      </div>
-
-      <!-- Savings -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#savingsModal">
-          <div class="card-body py-5">
-            <i class="bi bi-piggy-bank-fill text-success mb-4" style="font-size: 4rem;"></i>
-            <h4 class="fw-bold">Savings</h4>
-            <p>Normal, Holiday, Group, and Family savings accounts.</p>
-            <span class="btn btn-outline-success mt-3">Learn More</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Loans -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-        <div class="card service-card h-100 shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#loansModal">
-          <div class="card-body py-5">
-            <i class="bi bi-cash-coin text-warning mb-4" style="font-size: 4rem;"></i>
-            <h4 class="fw-bold">Loans & Advances</h4>
-            <p>Emergency, Development, School Fees, Vacation, Salary Advance, and more.</p>
-            <span class="btn btn-outline-warning mt-3">Learn More</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Resources -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
-        <a href="/resources" class="text-decoration-none">
-          <div class="card service-card h-100 shadow-sm border-0">
-            <div class="card-body py-5">
-              <i class="bi bi-folder-fill text-danger mb-4" style="font-size: 4rem;"></i>
-              <h4 class="fw-bold">Resources</h4>
-              <p>Forms, downloads, circulars, news, and more.</p>
-              <span class="btn btn-outline-danger mt-3">Explore</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- FAQs -->
-      <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
-        <a href="/faqs" class="text-decoration-none">
-          <div class="card service-card h-100 shadow-sm border-0">
-            <div class="card-body py-5">
-              <i class="bi bi-question-circle-fill text-secondary mb-4" style="font-size: 4rem;"></i>
-              <h4 class="fw-bold">FAQs</h4>
-              <p>Common questions about membership, loans, and savings.</p>
-              <span class="btn btn-outline-secondary mt-3">View FAQs</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
+      <% } %>
     </div>
   </div>
 </section>
 
-<!-- MODALS -->
-<!-- Membership Modal -->
-<div class="modal fade" id="membershipModal" tabindex="-1" aria-labelledby="membershipModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Membership Options</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <h6>Individual Membership</h6>
-        <ul>
-          <li>Registration fee: Kshs. 1,000</li>
-          <li>Share Capital: Kshs. 6,500 (non-refundable, earns dividends)</li>
-          <li>Monthly deposits: Minimum Kshs. 1,000</li>
-        </ul>
-        <h6>Corporate Membership</h6>
-        <ul>
-          <li>Registration fee: Kshs. 5,000</li>
-          <li>Share Capital: Kshs. 30,000</li>
-          <li>Introductory letter/minutes & recommendation required</li>
-        </ul>
-      </div>
+<!-- LOANS -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="text-center">
+      <h2>Loans</h2>
+      <p class="intro">Members can borrow after six months of saving. Loans are secured by your deposits and, above that, by guarantors who are fellow members.</p>
     </div>
-  </div>
-</div>
+    <div class="row g-4">
+      <% for (const [name, text, facts] of [
+        ['Normal / Development Loan', 'For land, building, a business or other investment.', ['Up to 3× your deposits', 'Repay over up to 6 years']],
+        ['Emergency Loan', 'For hospital bills, funerals or court fines (not rent).', ['Fast-tracked', 'Repay within 12 months']],
+        ['School Fees Loan', 'Fees are paid straight to the school.', ['One per calendar year', 'Repay within 12 months']],
+        ['Top-Up Loan', 'Add to an existing loan when your needs change.', ['Treated as a new application', 'Clears your old balance first']],
+        ['Vacation Loan', 'Plan a holiday or family trip.', []],
+        ['Salary Advance', 'A short-term advance against your coming salary.', []],
+      ]) { %>
+        <div class="col-md-6 col-lg-4 fade-in">
+          <div class="simple-card">
+            <h3 class="h5 mt-0"><%= name %></h3>
+            <p class="<%= facts.length ? 'mb-3' : '' %>"><%= text %></p>
+            <% if (facts.length) { %><ul>
+              <% for (const f of facts) { %><li><%= f %></li><% } %>
+            </ul><% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
 
-<!-- Savings Modal -->
-<div class="modal fade" id="savingsModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Savings Accounts</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="row g-4 mt-2">
+      <div class="col-lg-6 fade-in">
+        <div class="simple-card">
+          <h3 class="h5 mt-0"><i class="bi bi-calculator fs-5 me-1"></i> How much can I borrow?</h3>
+          <ul>
+            <li>Up to <span class="fact">3 times your deposits</span>, less anything you still owe.</li>
+            <li>Your loan repayments and savings together can’t take more than <span class="fact">two-thirds of your basic pay</span>.</li>
+            <li>Members see their exact limit for each loan in the <a href="/portal/login">member portal</a>.</li>
+          </ul>
+        </div>
       </div>
-      <div class="modal-body">
-        <ul>
-          <li><strong>Normal Savings</strong>: Standard monthly deposits.</li>
-          <li><strong>Holiday Savings</strong>: Targeted for festive season needs.</li>
-          <li><strong>Group Savings</strong>: For Chamas and community groups.</li>
-          <li><strong>Family Savings</strong>: Designed for family goals.</li>
-        </ul>
+      <div class="col-lg-6 fade-in">
+        <div class="simple-card">
+          <h3 class="h5 mt-0"><i class="bi bi-people fs-5 me-1"></i> Guarantors</h3>
+          <ul>
+            <li>Needed only for the part of the loan above your own deposits.</li>
+            <li>Guarantors must be members, and each can guarantee <span class="fact">up to 3 loans</span>.</li>
+            <li>Guarantors are told if a repayment is missed.</li>
+          </ul>
+        </div>
       </div>
     </div>
+    <p class="text-center text-muted small mt-4 mb-0">For current interest rates, contact the office or sign in to the member portal.</p>
   </div>
-</div>
+</section>
 
-<!-- Loans Modal -->
-<div class="modal fade" id="loansModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Loan Products</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <ul>
-          <li>Normal Loans</li>
-          <li>Emergency Loans</li>
-          <li>Development Loans</li>
-          <li>Top Up Loans</li>
-          <li>School Fees Loans</li>
-          <li>Vacation Loans</li>
-          <li>Salary Advance Loan</li>
-        </ul>
-        <p>Affordable interest rates with flexible repayment periods up to 6 years.</p>
-      </div>
+<!-- NEXT STEPS -->
+<section class="section text-center">
+  <div class="container">
+    <h2 class="h3">Have a question?</h2>
+    <p class="intro mb-4">Most answers are in our FAQs. Forms are on the resources page.</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+      <a href="/faqs" class="btn btn-primary">Read the FAQs</a>
+      <a href="/resources" class="btn btn-outline-primary">Forms & resources</a>
+      <a href="/join" class="btn btn-outline-primary">How to join</a>
     </div>
   </div>
-</div>
+</section>
 
 <%- include('partials/footer') %>

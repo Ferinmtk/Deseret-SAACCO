@@ -1,4 +1,36 @@
 /* ===========================
+   BRAND
+   One green, one gold. Bootstrap's primary/success buttons use the brand green.
+=========================== */
+:root {
+  --brand: #1f5c45;
+  --brand-dark: #163f30;
+  --brand-soft: #e7f1ec;
+  --gold: #b8922a;
+  --ink: #1d2a24;
+  --muted: #5f6b65;
+  --bs-primary: #1f5c45;
+  --bs-primary-rgb: 31, 92, 69;
+  --bs-success: #1f5c45;
+  --bs-success-rgb: 31, 92, 69;
+  --bs-link-color: #1f5c45;
+  --bs-link-color-rgb: 31, 92, 69;
+  --bs-link-hover-color: #163f30;
+}
+.btn-primary, .btn-success {
+  --bs-btn-bg: var(--brand); --bs-btn-border-color: var(--brand);
+  --bs-btn-hover-bg: var(--brand-dark); --bs-btn-hover-border-color: var(--brand-dark);
+  --bs-btn-active-bg: var(--brand-dark); --bs-btn-active-border-color: var(--brand-dark);
+}
+.btn-outline-primary, .btn-outline-success {
+  --bs-btn-color: var(--brand); --bs-btn-border-color: var(--brand);
+  --bs-btn-hover-bg: var(--brand); --bs-btn-hover-border-color: var(--brand); --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--brand); --bs-btn-active-border-color: var(--brand);
+}
+.text-success, .text-primary { color: var(--brand) !important; }
+.bg-success { background-color: var(--brand) !important; }
+
+/* ===========================
    GLOBAL RESET & BASE STYLES
 =========================== */
 html, body {
@@ -17,8 +49,6 @@ html, body {
 body {
   overflow-x: hidden; /* Prevents horizontal scroll */
 }
-
-
 
 /* ===========================
    NAVBAR STYLES (Smaller)
@@ -57,15 +87,14 @@ body {
 }
 
 /* Hover color */
-.navbar-nav .nav-link:hover,
-.portal-link:hover {
-  color: #0dcaf0 !important;
+.navbar-nav .nav-link:hover {
+  color: #f0d78c !important;
 }
 
 /* Active link style */
 .nav-link.active,
 .portal-link.active {
-  color: #81b3e0 !important;
+  color: #f0d78c !important;
   font-weight: 800;
 }
 
@@ -82,7 +111,7 @@ body {
   transform-origin: center;
   width: 100%;  /* underline matches text */
   height: 2px;
-  background-color: #0dcaf0;
+  background-color: var(--gold);
   transition: transform 0.3s ease;
 }
 
@@ -97,9 +126,6 @@ body {
 .portal-link.active::after {
   transform: translateX(-50%) scaleX(1);
 }
-
-
-
 
 /* ===========================
    HERO SECTION (Homepage)
@@ -147,21 +173,6 @@ body {
   transform: translateY(0);
 }
 
-.about-hero h1, .about-hero p {
-  animation: slideInFromTop 3s ease-out forwards;
-}
-
-@keyframes slideInFromTop {
-  from {
-    opacity: 0;
-    transform: translateY(-90px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ===========================
    SECTION SPACING & FOOTER
 =========================== */
@@ -169,37 +180,21 @@ body {
   padding: 60px 20px;
 }
 
-footer {
-  background: #02d1af;
-  color: white;
-  padding: 20px;
-  text-align: center;
+/* Footer: real contact and payment details on every page */
+.site-footer {
+  background: #17211c;
+  color: #c9d4ce;
+  padding: 3rem 0 1.5rem;
+  margin-top: 0;
 }
+.site-footer h6 { color: #fff; font-weight: 700; margin-bottom: .6rem; }
+.site-footer strong { color: #fff; }
+.site-footer a { color: #c9d4ce; text-decoration: none; }
+.site-footer a:hover { color: #fff; text-decoration: underline; }
 
 /* ===========================
    ABOUT PAGE
 =========================== */
-.about-hero {
-  background: url('/img/service.avif') center/cover no-repeat;
-  height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-shadow: 0 3px 8px rgba(0,0,0,0.6);
-  color: white;
-  text-align: center;
-}
-
-.about-hero h1 {
-  font-size: 3rem;
-  font-weight: 700;
-}
-
-.about-hero p {
-  font-size: 1.25rem;
-  max-width: 700px;
-  margin: 0 auto;
-}
 
 .about-section h2, .about-section h3 {
   color: #004b23;
@@ -246,50 +241,10 @@ footer {
 /* ===========================
    SERVICES PAGE
 =========================== */
-.services-hero {
-  height: 60vh;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),
-              url('/img/service.avif') center/cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-.service-card {
-  background: #fff;
-  border-radius: 45px;
-  transition: all 1.5s ease;
-  cursor: pointer;
-  overflow: hidden;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-}
-
-.service-card:hover {
-  box-shadow: 0 0 95px rgba(0, 123, 255, 0.4);
-  transform: translateY(-30px);
-}
-
-.service-card .learn-more {
-  display: none;
-}
-
-.service-card:hover .learn-more {
-  display: inline-block;
-}
 
 /* ===========================
    JOIN PAGE
 =========================== */
-.join-hero {
-  height: 60vh;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
-              url('/img/temple.jpg') center/cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff;
-}
 
 .form-check-label {
   font-weight: 500;
@@ -302,23 +257,6 @@ footer {
 /* ===========================
    CONTACT PAGE
 =========================== */
-.contact-hero {
-  background: url("/img/contact.avif") no-repeat center/cover;
-  height: 60vh;
-  position: relative;
-}
-
-.contact-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.contact-hero .container {
-  position: relative;
-  z-index: 2;
-}
 
 form input, form textarea {
   border-radius: 8px;
@@ -345,135 +283,62 @@ form input, form textarea {
 }
 
 /* ===========================
-   FAQ SECTION
+   FAQ PAGE
 =========================== */
-.faq-section {
-  padding: 60px 20px;
-  background: #f8f9fa;
-}
-
-.faq-section .section-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 30px;
-  color: #004080;
-}
-
-.accordion {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.accordion-item {
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.accordion-header {
-  width: 100%;
-  text-align: left;
-  padding: 15px 20px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  background: #e9f2ff;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.accordion-header:hover {
-  background: #d6e8ff;
-}
-
-.accordion-header.active {
-  background: #004080;
-  color: #fff;
-}
-
-.accordion-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-  padding: 0 20px;
-}
-
-.accordion-body p,
-.accordion-body ol {
-  padding: 15px 0;
-  margin: 0;
-  color: #333;
-  line-height: 1.6;
-}
-
-
+.faq .accordion-button { font-weight: 600; }
+.faq .accordion-button:not(.collapsed) { color: var(--brand); background: var(--brand-soft); box-shadow: none; }
+.faq .accordion-button:focus { box-shadow: 0 0 0 .2rem rgba(31, 92, 69, .2); }
+.faq .accordion-body { color: #333; line-height: 1.65; }
+.faq .accordion-body p:last-child, .faq .accordion-body ul:last-child { margin-bottom: 0; }
 
 /* ===========================
-   RESOURCES PAGE
+   SHARED PAGE PIECES
 =========================== */
-.resources-header {
+/* Banner used at the top of every inner page: photo, dark overlay, white title */
+.page-hero {
+  position: relative;
+  min-height: 46vh;
+  padding: 7rem 0 3.5rem;
+  display: flex;
+  align-items: center;
   text-align: center;
-  padding: 2rem 1rem;
-  background: #234735;
-  color: white;
-}
-
-.resources-header h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.resources-header p {
-  font-size: 1.1rem;
-}
-
-.resources-container {
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.resource-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  padding: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.resource-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
-}
-
-.resource-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.8rem;
-  color: #234735;
-}
-
-.resource-card p {
-  font-size: 0.95rem;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.resource-card a {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border: 1px solid #e63946;
-  color: #e63946;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.resource-card a:hover {
-  background: #e63946;
   color: #fff;
+  background: center/cover no-repeat;
 }
+.page-hero::before { content: ""; position: absolute; inset: 0; background: rgba(15, 30, 23, 0.62); }
+.page-hero .container { position: relative; }
+.page-hero .lead { max-width: 720px; margin: 0 auto; }
+
+.section { padding: 4.5rem 0; }
+.section-alt { background: #f6f8f7; }
+.section h2 { font-weight: 700; color: var(--ink); }
+.section .intro { color: var(--muted); max-width: 640px; margin: .5rem auto 2.5rem; }
+
+/* Plain white card used across the site */
+.simple-card {
+  background: #fff;
+  border: 1px solid #e6ebe8;
+  border-radius: 14px;
+  padding: 1.75rem;
+  height: 100%;
+}
+.simple-card .bi { font-size: 2rem; color: var(--brand); }
+.simple-card h3, .simple-card h5 { font-weight: 700; margin: .75rem 0 .5rem; }
+.simple-card p { color: var(--muted); margin-bottom: 0; }
+.simple-card ul { color: var(--muted); padding-left: 1.1rem; margin-bottom: 0; }
+.simple-card .fact { font-weight: 700; color: var(--ink); }
+
+/* Numbered steps */
+.step-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--brand-soft); color: var(--brand);
+  display: grid; place-items: center; font-weight: 700; font-size: 1.1rem;
+  margin: 0 auto 1rem;
+}
+
+/* Payment details box */
+.pay-box { background: var(--brand); color: #fff; border-radius: 16px; padding: 2rem; }
+.pay-box .label { color: #b9d4c8; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+.pay-box .value { font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
+
+.portal-btn { font-weight: 600; color: var(--brand) !important; }

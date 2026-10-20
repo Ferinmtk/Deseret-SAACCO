@@ -9,6 +9,7 @@
      { show: can.approveLoan, n: counts.recommended, text: 'Loans to approve', href: '/admin/loans', icon: 'check2-square' },
      { show: can.disburse, n: counts.approved, text: 'Loans to disburse', href: '/admin/loans', icon: 'send' },
      { show: true, n: counts.guarantors, text: 'Loans waiting on guarantors', href: '/admin/loans', icon: 'people' },
+     { show: can.answerMessages, n: counts.messages, text: 'Messages from the website', href: '/admin/messages', icon: 'envelope' },
    ].filter(q => q.show); %>
 
 <% if (staff.role === 'board') { %><div class="demo-note mb-3"><i class="bi bi-eye"></i> Board / supervisory view: you can see everything but can’t change anything.</div><% } %>

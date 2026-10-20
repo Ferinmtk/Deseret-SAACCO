@@ -1,100 +1,69 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { pageTitle: 'Contact Us' }) %>
 
-<!-- CONTACT HERO -->
-<section class="contact-hero text-white d-flex align-items-center">
-  <div class="container text-center">
-    <h1 class="display-4 fw-bold">Contact Us</h1>
-    <p class="lead">We’re here to support your journey in savings, loans, and growth.</p>
-  </div>
-</section>
+<%- include('partials/page-hero', { image: '/img/contact.avif', heading: 'Contact Us', lead: 'We’re here to support your journey in savings, loans, and growth.' }) %>
 
-<!-- CONTACT INFO SECTION -->
-<section class="bg-light py-5 fade-up">
-  <div class="container text-center">
-    <h4 class="mb-4 fw-bold">Get in Touch</h4>
-    <div class="row justify-content-center">
-      <!-- Location -->
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 p-4 border-0">
-          <i class="bi bi-geo-alt-fill fs-1 text-success mb-3"></i>
-          <h5 class="fw-bold">Our Location</h5>
-          <p>Galleria Office & Business Park, Nairobi, Kenya</p>
+<section class="section">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="simple-card">
+          <i class="bi bi-geo-alt"></i>
+          <h3 class="h5">Visit us</h3>
+          <p><%= S.SACCO.office %><br><%= S.SACCO.postal %></p>
         </div>
       </div>
-      <!-- Email -->
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 p-4 border-0">
-          <i class="bi bi-envelope-fill fs-1 text-success mb-3"></i>
-          <h5 class="fw-bold">Email Us</h5>
-          <p>DeseretSacco@outlook.com <br> deseretsacco@gmail.com</p>
+      <div class="col-md-4">
+        <div class="simple-card">
+          <i class="bi bi-telephone"></i>
+          <h3 class="h5">Call us</h3>
+          <p><a href="tel:<%= S.SACCO.phoneHref %>"><%= S.SACCO.phone %></a><br><%= S.SACCO.hours %><br><span class="small">Closed on weekends and public holidays</span></p>
         </div>
       </div>
-      <!-- Phone -->
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 p-4 border-0">
-          <i class="bi bi-telephone-fill fs-1 text-success mb-3"></i>
-          <h5 class="fw-bold">Call Us</h5>
-          <p>+254 020 5029300</p>
+      <div class="col-md-4">
+        <div class="simple-card">
+          <i class="bi bi-envelope"></i>
+          <h3 class="h5">Email us</h3>
+          <p><% for (const e of S.SACCO.emails) { %><a href="mailto:<%= e %>"><%= e %></a><br><% } %></p>
         </div>
       </div>
     </div>
-    <p class="mt-3"><strong>Office Hours:</strong> Monday – Friday, 8:00am – 5:00pm <br> (Closed on weekends & holidays)</p>
-    <p class="mt-2"><strong>Postal Address:</strong> P.O. Box 46162 – 00100 GPO, Nairobi</p>
   </div>
 </section>
 
-<!-- MAP SECTION -->
-<section class="fade-up">
+<section class="section section-alt" id="message">
   <div class="container">
-    <div class="map-container position-relative mb-5 rounded shadow overflow-hidden">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7582037180745!2d36.7617333!3d-1.3258618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1a5a6d9bb4d3%3A0x6f0ed36e01937e20!2sGalleria%20Business%20Park!5e0!3m2!1sen!2ske!4v1720123456789"
-        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
-      <a href="https://www.google.com/maps/dir//Galleria+Business+Park,+Seminary+Rd,+Nairobi,+Kenya/"
-         target="_blank"
-         class="btn btn-success map-button position-absolute top-50 start-50 translate-middle">
-        Get Directions
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT FORM SECTION -->
-<section class="py-5 fade-up">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <h3 class="text-center mb-4 fw-bold">Send Us a Message</h3>
-        <form>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <input type="text" class="form-control shadow-sm" placeholder="Full Name" required>
-            </div>
-            <div class="col-md-6">
-              <input type="email" class="form-control shadow-sm" placeholder="Email Address" required>
-            </div>
-          </div>
-          <div class="mb-3">
-            <input type="text" class="form-control shadow-sm" placeholder="Phone (optional)">
-          </div>
-          <div class="mb-3">
-            <textarea class="form-control shadow-sm" rows="5" placeholder="Your Message..." required></textarea>
-          </div>
-          <button type="submit" class="btn btn-success w-100">Send Message</button>
-        </form>
+    <div class="row g-4 align-items-stretch">
+      <div class="col-lg-6">
+        <div class="simple-card">
+          <h2 class="h4 mb-1">Send us a message</h2>
+          <p class="mb-4">We reply within two working days. Please don’t send PINs, passwords or ID numbers.</p>
+          <% if (locals.sent) { %>
+            <div class="alert alert-success mb-0"><i class="bi bi-check-circle"></i> Thank you, your message has been sent. We’ll get back to you soon.</div>
+          <% } else { %>
+            <% if (locals.error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+            <form method="POST" action="/contact#message" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label" for="c-name">Full name</label><input class="form-control" id="c-name" name="name" value="<%= (locals.form || {}).name || '' %>" maxlength="100" required></div>
+                <div class="col-md-6"><label class="form-label" for="c-email">Email</label><input class="form-control" id="c-email" type="email" name="email" value="<%= (locals.form || {}).email || '' %>" maxlength="200" required></div>
+                <div class="col-12"><label class="form-label" for="c-phone">Phone <span class="text-muted">(optional)</span></label><input class="form-control" id="c-phone" name="phone" value="<%= (locals.form || {}).phone || '' %>" maxlength="30"></div>
+                <div class="col-12"><label class="form-label" for="c-msg">Message</label><textarea class="form-control" id="c-msg" name="message" rows="5" maxlength="3000" required><%= (locals.form || {}).message || '' %></textarea></div>
+                <!-- Left empty by people; bots tend to fill it in. -->
+                <div class="d-none" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+                <div class="col-12"><button class="btn btn-primary w-100">Send message</button></div>
+              </div>
+            </form>
+          <% } %>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="map-container h-100 position-relative" style="min-height: 360px;">
+          <iframe title="Map to Galleria Office & Business Park"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7582037180745!2d36.7617333!3d-1.3258618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1a5a6d9bb4d3%3A0x6f0ed36e01937e20!2sGalleria%20Business%20Park!5e0!3m2!1sen!2ske!4v1720123456789"
+            class="position-absolute top-0 start-0 w-100 h-100 border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+        <a href="https://www.google.com/maps/dir//Galleria+Business+Park,+Nairobi,+Kenya/" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm mt-2"><i class="bi bi-sign-turn-right"></i> Get directions</a>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- CALL TO ACTION SECTION -->
-<section class="bg-success text-white text-center py-5 fade-up">
-  <div class="container">
-    <h2 class="fw-bold mb-3">Become a Member Today</h2>
-    <p class="mb-4">Join Deseret SACCO Society Limited and secure your financial future with trusted savings and loan services.</p>
-    <a href="/join" class="btn btn-light btn-lg">Join Now</a>
   </div>
 </section>
 

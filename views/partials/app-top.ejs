@@ -34,6 +34,7 @@
     { href: '/admin/payments', icon: 'receipt', text: 'Payments' },
     { href: '/admin/loans', icon: 'cash-stack', text: 'Loans' },
     { href: '/admin/arrears', icon: 'exclamation-triangle', text: 'Arrears' },
+    { href: '/admin/messages', icon: 'envelope', text: 'Messages', count: c.messages },
     { label: 'Control' },
     { href: '/admin/settings', icon: 'sliders', text: 'Products & rules' },
     { href: '/admin/audit', icon: 'shield-check', text: 'Audit trail' },
@@ -63,7 +64,7 @@
           Signed in as <strong class="text-white"><%= roleLabel %></strong><br>
           <a href="/admin/logout">Sign out</a>
         <% } else { %>
-          Need help? <a href="tel:0722520639">Call the office</a><br>
+          Need help? <a href="tel:<%= S.SACCO.phoneHref %>">Call the office</a><br>
           <a href="/portal/logout">Sign out</a>
         <% } %>
       </div>
