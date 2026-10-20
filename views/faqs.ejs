@@ -1,7 +1,5 @@
 <%- include('partials/header', { pageTitle: 'FAQs' }) %>
 
-<%- include('partials/page-hero', { image: '/img/saving.avif', heading: 'Frequently Asked Questions', lead: 'Answers based on the Society’s registered by-laws.' }) %>
-
 <%
   const groups = [
     ['Membership', [
@@ -10,7 +8,7 @@
       ['What do I need to apply?', `<ul><li>The signed membership application form</li><li>A copy of your ID or passport</li><li>An introduction letter from your employer</li><li>If you were in another SACCO, a letter showing you owe it nothing</li></ul>`],
       ['Is there a minimum monthly deposit?', `<p>Yes, at least <strong>KES 1,000</strong> a month.</p>`],
     ]],
-    ['Savings and payments', [
+    ['Savings & payments', [
       ['What is the difference between share capital and deposits?', `<p><strong>Share capital</strong> is your stake in the Society. It earns a dividend, stays with the SACCO while you are a member, and can only be transferred to another member.</p><p><strong>Deposits</strong> are your monthly savings. They earn interest, decide how much you can borrow, and are refunded when you leave.</p>`],
       ['Do I earn a return on my savings?', `<p>Yes. Each year the committee recommends a dividend on shares and interest on deposits, and members approve them at the Annual General Meeting. The financial year runs January to December.</p>`],
       ['Can I withdraw my deposits?', `<p>Not while you are a member. Deposits secure your loans and those you guarantee, so they are refunded when you leave the Society.</p>`],
@@ -31,7 +29,7 @@
       ['What should I know before guaranteeing a loan?', `<ul><li>The amount you pledge is locked from your deposits until the loan is repaid.</li><li>You can guarantee at most <strong>3 loans</strong>, and only for fellow members.</li><li>Members of the management, credit and supervisory committees can’t guarantee loans.</li><li>You are released when the borrower finds a replacement guarantor, or when their balance falls to within their own deposits.</li></ul>`],
       ['What happens if a borrower misses repayments?', `<p>After one missed month the borrower gets a letter, copied to the guarantors. After two months the guarantors are warned. After three months in a row the loan is declared in default and recovered from the guarantors.</p>`],
     ]],
-    ['Leaving and other questions', [
+    ['Leaving & more', [
       ['How do I leave the SACCO?', `<p>Give <strong>60 days’</strong> written notice. Your own loans must be repaid, and any loans you guarantee need replacement guarantors. You then receive your deposits, interest and dividends, less anything you owe. Share capital can be transferred to another member (fee KES 500). Rejoining later carries a KES 5,000 fine.</p>`],
       ['What if I retire or leave Church employment?', `<p>Retired members can stay in the Society. Members moving to another employer can transfer their shares to the new employer’s society once their loans are cleared. Please talk to the office about your situation.</p>`],
       ['What happens to my savings if I die?', `<p>Your shares, deposits, interest and dividends, less any debts, are paid to the nominee you named. You can name or change nominees in writing, witnessed by two members, or update them in the member portal.</p>`],
@@ -42,25 +40,82 @@
   let n = 0;
 %>
 
-<section class="section">
-  <div class="container" style="max-width: 860px;">
-    <% for (const [group, items] of groups) { %>
-      <h2 class="h4 mb-3 mt-4"><%= group %></h2>
-      <div class="accordion faq" id="faq<%= n %>">
-        <% for (const [q, a] of items) { n++; %>
-          <div class="accordion-item">
-            <h3 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q<%= n %>" aria-expanded="false" aria-controls="q<%= n %>"><%= q %></button>
-            </h3>
-            <div id="q<%= n %>" class="accordion-collapse collapse">
-              <div class="accordion-body"><%- a %></div>
-            </div>
-          </div>
-        <% } %>
-      </div>
-    <% } %>
-    <p class="text-center text-muted mt-5 mb-0">Still have a question? <a href="/contact">Contact us</a>.</p>
+<!-- Slim green header with search; no stock photo -->
+<section class="faq-hero">
+  <div class="container text-center">
+    <h1 class="fw-bold mb-2">How can we help?</h1>
+    <p class="mb-4">Answers to common questions, based on the Society’s by-laws.</p>
+    <div class="faq-search mx-auto">
+      <i class="bi bi-search"></i>
+      <input type="search" id="faqSearch" class="form-control form-control-lg" placeholder="Search questions, e.g. guarantor, school fees" aria-label="Search questions" autocomplete="off">
+    </div>
   </div>
 </section>
+
+<section class="faq-body">
+  <div class="container" style="max-width: 820px;">
+    <div class="faq-tabs" role="tablist" id="faqTabs">
+      <% groups.forEach(([group], i) => { %>
+        <button type="button" role="tab" class="faq-tab <%= i === 0 ? 'active' : '' %>" data-topic="<%= i %>" aria-selected="<%= i === 0 %>"><%= group %></button>
+      <% }) %>
+    </div>
+    <p class="faq-results small text-muted" id="faqResults" hidden></p>
+
+    <div class="faq-list">
+      <% groups.forEach(([group, items], i) => { %>
+        <% for (const [q, a] of items) { %>
+          <details class="faq-item" data-topic="<%= i %>" <%= i === 0 ? '' : 'hidden' %>>
+            <summary><%= q %><i class="bi bi-plus-lg"></i></summary>
+            <div class="faq-answer"><%- a %></div>
+          </details>
+        <% } %>
+      <% }) %>
+    </div>
+    <p class="text-center text-muted" id="faqEmpty" hidden>No questions match that. Try another word, or ask us below.</p>
+
+    <div class="faq-help">
+      <div>
+        <strong>Still have a question?</strong>
+        <div class="small text-muted"><%= S.SACCO.hours %></div>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="tel:<%= S.SACCO.phoneHref %>" class="btn btn-outline-primary"><i class="bi bi-telephone"></i> Call <%= S.SACCO.phone %></a>
+        <a href="/contact#message" class="btn btn-primary"><i class="bi bi-chat-dots"></i> Message us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Topic tabs show one group at a time; searching looks across every group.
+  const tabs = [...document.querySelectorAll('.faq-tab')];
+  const items = [...document.querySelectorAll('.faq-item')];
+  const search = document.getElementById('faqSearch');
+  const results = document.getElementById('faqResults');
+  const empty = document.getElementById('faqEmpty');
+  let topic = '0';
+
+  function render() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const item of items) {
+      const match = q ? item.textContent.toLowerCase().includes(q) : item.dataset.topic === topic;
+      item.hidden = !match;
+      if (match) shown++;
+      if (!q) item.open = false;
+    }
+    document.getElementById('faqTabs').hidden = !!q;
+    results.hidden = !q;
+    results.textContent = `${shown} question${shown === 1 ? '' : 's'} match “${search.value.trim()}”`;
+    empty.hidden = !q || shown > 0;
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    topic = tab.dataset.topic;
+    tabs.forEach(t => { t.classList.toggle('active', t === tab); t.setAttribute('aria-selected', t === tab); });
+    render();
+  }));
+  search.addEventListener('input', render);
+</script>
 
 <%- include('partials/footer') %>
