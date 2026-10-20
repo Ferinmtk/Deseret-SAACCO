@@ -5,7 +5,7 @@
     <div class="card text-center" id="stkBox" data-status="<%= r.status %>">
       <div class="card-body p-4">
         <div id="stkPending" <%= r.status === 'pending' ? '' : 'hidden' %>>
-          <div class="mpesa-ping lg mb-3" aria-hidden="true"><span></span><span></span><i class="bi bi-phone-vibrate"></i></div>
+          <div class="mpesa-ping lg mb-3" aria-hidden="true"><span></span><span></span><img src="/img/pay/mpesa.png" alt=""></div>
           <h2 class="h4 fw-bold">Check your phone</h2>
           <p class="mb-1">We’ve sent a request for <strong><%= S.fmtKes(r.amount) %></strong> to <strong><%= masked %></strong>.</p>
           <p class="text-muted small">Enter your M-Pesa PIN on the prompt. This page updates by itself.</p>

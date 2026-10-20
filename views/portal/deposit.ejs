@@ -3,9 +3,8 @@
   <div class="col-12">
     <form class="mpesa-block" method="POST" action="/portal/mpesa">
       <div class="mpesa-block-head">
-        <div class="mpesa-ping" aria-hidden="true"><span></span><span></span><i class="bi bi-phone-vibrate"></i></div>
+        <div class="mpesa-ping" aria-hidden="true"><span></span><span></span><img src="/img/pay/mpesa.png" alt=""></div>
         <div>
-          <div class="mpesa-tag"><i class="bi bi-phone"></i> M-Pesa</div>
           <h2 class="mpesa-title">Pay with M-Pesa. Get prompted on your phone.</h2>
           <p class="mpesa-lead">Choose the amount and we’ll send a payment prompt to your phone. Enter your M-Pesa PIN and it goes straight into your account, with no code to type in.</p>
           <% if (!mpesaLive) { %><p class="mpesa-test"><i class="bi bi-cone-striped"></i> Test mode: this uses Safaricom’s test Paybill, so use KES 1.</p><% } %>
@@ -29,7 +28,7 @@
   </div>
   <div class="col-lg-6">
     <div class="card mb-3 mpesa-card">
-      <div class="card-header"><span class="mpesa-tag sm"><i class="bi bi-phone"></i> M-Pesa</span> Step 1 · Pay by Paybill</div>
+      <div class="card-header"><img src="/img/pay/mpesa.png" alt="M-Pesa" class="mpesa-logo-sm"> Step 1 · Pay by Paybill</div>
       <div class="card-body">
         <ol class="mb-0">
           <li>Go to <strong>Lipa na M-Pesa → Pay Bill</strong></li>
