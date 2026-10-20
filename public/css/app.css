@@ -165,7 +165,7 @@ tr.clickable { cursor: pointer; }
 
 /* Sign-in pages */
 .auth-wrap { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
-.auth-art { background: linear-gradient(160deg, rgba(22,63,48,.92), rgba(10, 32, 48,.85)), url('/img/temple.jpg') center/cover; color: #fff; padding: 3rem; display: flex; flex-direction: column; justify-content: space-between; }
+.auth-art { background: linear-gradient(160deg, rgba(6, 19, 29, .9), rgba(10, 32, 48, .82)), url('/img/hero/about-1920.jpg') center 30%/cover; color: #fff; padding: 3rem; display: flex; flex-direction: column; justify-content: space-between; }
 .auth-art h2 { font-weight: 700; font-size: 2rem; max-width: 26rem; }
 .auth-art ul { list-style: none; padding: 0; margin: 1.5rem 0 0; }
 .auth-art li { display: flex; gap: .6rem; margin-bottom: .7rem; color: #dcebe4; }

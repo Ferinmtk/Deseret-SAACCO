@@ -145,7 +145,7 @@ body {
   min-height: 100vh;
   min-height: 100svh;
   padding: 6rem 0 3rem;
-  background: url("/img/hero.jpeg") center/cover no-repeat;
+  background: url("/img/hero/home-1920.jpg") center 30%/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,7 +325,13 @@ form input, form textarea {
   align-items: center;
   text-align: center;
   color: #fff;
-  background: center/cover no-repeat;
+  background-image: var(--hero-lg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+@media (max-width: 768px) {
+  .page-hero { background-image: var(--hero-sm); }
+  .hero { background-image: url("/img/hero/home-960.jpg"); }
 }
 .page-hero::before { content: ""; position: absolute; inset: 0; background: rgba(6, 19, 29, 0.62); }
 .page-hero .container { position: relative; }
