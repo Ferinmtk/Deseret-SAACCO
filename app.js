@@ -113,6 +113,12 @@ app.get("/faqs", (req, res) => {
   res.render("faqs");
 });
 
+// Printable versions of the paper forms (print or save as PDF from the browser; PDFs are also in /forms).
+app.get('/forms/:name', (req, res, next) => {
+  if (!['membership', 'deductions', 'nominee'].includes(req.params.name)) return next();
+  res.render('forms/' + req.params.name);
+});
+
 app.get("/resources", (req, res) => {
   res.render("resources");
 });

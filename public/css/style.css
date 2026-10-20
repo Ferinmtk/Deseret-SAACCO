@@ -237,6 +237,7 @@ body {
 /* Board and committee cards: round photo, name, role */
 .member-card { background: #fff; border: 1px solid #e3e8ee; border-radius: 14px; padding: 1.25rem .75rem; height: 100%; }
 .about-section .member-img, .member-img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; object-position: center top; background: var(--brand-soft); box-shadow: none !important; }
+.about-section .member-initials, .member-initials { display: inline-grid; place-items: center; background: var(--brand); color: var(--gold); font-family: 'Poppins', 'Segoe UI', sans-serif; font-weight: 700; font-size: 1.6rem; letter-spacing: .04em; }
 .member-name { font-size: .98rem; font-weight: 700; margin: .75rem 0 .15rem; color: var(--ink); }
 .member-role { font-size: .85rem; color: var(--muted); margin: 0; }
 @media (max-width: 575.98px) { .about-section .member-img { width: 76px; height: 76px; } .member-name { font-size: .9rem; } }

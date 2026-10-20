@@ -1,0 +1,61 @@
+<%- include('layout-top', { formTitle: 'Application for Membership' }) %>
+<% const f = (label, span, cls = 'line') => `<div class="f s${span}"><label>${label}</label><div class="${cls}"></div></div>`; %>
+<h1>Application for Membership</h1>
+<p class="note">Complete this form in BLOCK LETTERS. You can also apply online at deseret-sacco.vercel.app/join/apply.</p>
+<p class="decl">To the Hon. Secretary, <%= S.SACCO.name %>, <%= S.SACCO.postal %>. I hereby apply for membership and agree to conform to the Society’s by-laws and any amendment thereof.</p>
+
+<h2>1. Applicant</h2>
+<div class="grid">
+  <div class="f s2"><label>Title</label><div class="checks"><span>Mr</span><span>Mrs</span><span>Miss</span><span>Ms</span></div></div>
+  <%- f('Full name', 4) %>
+  <%- f('Date of birth', 2) %><%- f('ID / passport no.', 2) %><%- f('KRA PIN', 2) %>
+  <%- f('Mobile number', 2) %><%- f('Office line', 2) %><%- f('Email address', 2) %>
+  <%- f('Present address', 4) %><%- f('Home ward / branch', 2) %>
+</div>
+
+<h2>2. Employment</h2>
+<div class="grid">
+  <div class="f s6"><label>Terms of service</label><div class="checks"><span>Permanent</span><span>Contract (ends ____/____/______)</span><span>Spouse / not employed by the Church</span></div></div>
+  <%- f('Employer', 2) %><%- f('Department', 2) %><%- f('Official designation', 2) %>
+  <%- f('Payroll number', 2) %><%- f('Bank', 2) %><%- f('Branch and account no.', 2) %>
+</div>
+
+<h2>3. Authority to deduct</h2>
+<div class="grid">
+  <%- f('I authorise a monthly deduction of KES (minimum 1,000)', 3) %><%- f('With effect from (month)', 3) %>
+</div>
+<p class="note">Church employees: deducted from salary (check-off). Others: by standing order or M-Pesa (details below).</p>
+
+<div class="keep">
+<h2>4. Nominated next of kin</h2>
+<p class="decl">In the event of my death while a member, I instruct the Society to pay all amounts due to me, less any debts to the Society, to the person named below. I may change the nominee by filling in a new Change of Nominee form.</p>
+<div class="grid">
+  <%- f('Full name', 4) %><%- f('ID / passport no.', 2) %>
+  <%- f('Relationship', 2) %><%- f('Phone', 2) %><%- f('Address', 2) %>
+  <%- f('Witness name (a member)', 3) %><%- f('Witness member no. and signature', 3) %>
+</div>
+</div>
+
+<div class="keep">
+<h2>5. Declaration</h2>
+<p class="decl">I confirm the information above is true. I agree that the Society may keep and use these details to run my membership, as allowed by the Data Protection Act, 2019.</p>
+<div class="grid">
+  <%- f('Signature of applicant', 3, 'box') %><%- f('Date', 3, 'box') %>
+</div>
+</div>
+
+<p class="note" style="margin-top:8px"><strong>Attach:</strong> copy of ID or passport · introduction letter from your employer · if you were in another SACCO, a letter showing you owe it nothing. <strong>Fees:</strong> entrance fee KES 1,000 (non-refundable) and share capital KES 6,500 (325 shares of KES 20).</p>
+<div class="pay">
+  <div><b>M-Pesa</b><br>Paybill <%= S.SACCO.paybill %> · Account <%= S.SACCO.account %><br>Send the M-Pesa message to <%= S.SACCO.smsNumber %></div>
+  <div><b>Bank / standing order</b><br><%= S.SACCO.bank %>, <%= S.SACCO.branch %><br>Account <%= S.SACCO.account %> · SWIFT <%= S.SACCO.swift %></div>
+</div>
+
+<div class="office">
+  <h2>For society use only</h2>
+  <div class="grid">
+    <%- f('Date of admission', 2) %><%- f('Membership no.', 2) %><%- f('First deduction due', 2) %>
+    <%- f('Management committee minute no. / date', 3) %><%- f('Chairman’s signature', 3) %>
+    <%- f('Date of withdrawal', 2) %><%- f('Date of refund', 2) %><%- f('Voucher no. / date', 2) %>
+  </div>
+</div>
+<%- include('layout-bottom', { formCode: 'Form DS-01 · Membership' }) %>
