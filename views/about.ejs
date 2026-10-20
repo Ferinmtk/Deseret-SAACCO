@@ -110,22 +110,21 @@
         <h2 class="fw-bold text-center mb-4">Board of Directors</h2>
         <div class="row g-3 text-center justify-content-center">
           <% const board = [
-            {name: "James M. Kyulu", role: "Chairman"},
-            {name: "Daniel M. Muthiani", role: "Vice Chairperson"},
-            {name: "Millicent A. Suchi", role: "Hon-Secretary"},
-            {name: "CPA Charles N. Gesimba", role: "Treasurer", img: "/img/charles.jpeg"},
-            {name: "Francis Kioko Mutua", role: "Board Member"},
-            {name: "CPA Maurice B. Nyagwoka", role: "Board Member"},
-            {name: "Paul M. Mwetu", role: "Board Member"},
-            {name: "Liza Cheruto Ngimor", role: "Board Member"},
-            {name: "CPA Salim B. Mariita", role: "Board Member", img: "/img/salim-mariita.jpg"},
+            {name: "James M. Kyulu", role: "Chairman", img: "/img/board/placeholder-m.jpg"},
+            {name: "Daniel M. Muthiani", role: "Vice Chairperson", img: "/img/board/placeholder-m.jpg"},
+            {name: "Millicent A. Suchi", role: "Hon-Secretary", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Charles N. Gesimba", role: "Treasurer", img: "/img/board/charles-gesimba.jpg", photo: true},
+            {name: "Francis Kioko Mutua", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "CPA Maurice B. Nyagwoka", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "Paul M. Mwetu", role: "Board Member", img: "/img/board/placeholder-m.jpg"},
+            {name: "Liza Cheruto Ngimor", role: "Board Member", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Salim B. Mariita", role: "Board Member", img: "/img/board/salim-mariita.jpg", photo: true},
           ]; %>
 
           <% board.forEach(member => { %>
             <div class="col-6 col-md-4 col-lg-3">
               <div class="member-card">
-                <% if (member.img) { %><img src="<%= member.img %>" alt="<%= member.name %>" class="member-img" loading="lazy">
-                <% } else { %><div class="member-img member-initials" aria-hidden="true"><%= member.name.replace(/^CPA\s+/, '').split(/\s+/).filter(w => /^[A-Z]/.test(w)).map(w => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join('') %></div><% } %>
+                <img src="<%= member.img %>" alt="<%= member.photo ? member.name : 'Photo coming soon' %>" class="member-img" loading="lazy">
                 <h3 class="member-name"><%= member.name %></h3>
                 <p class="member-role"><%= member.role %></p>
               </div>
@@ -141,16 +140,15 @@
         <h2 class="fw-bold text-center mb-4">Supervisory Committee</h2>
         <div class="row g-3 text-center justify-content-center">
           <% const committee = [
-            {name: "Fredrick Shamola Bulemi", role: "Chairperson"},
-            {name: "CPA Catherine Nthenya John", role: "Secretary"},
-            {name: "CPA Salim B. Mariita", role: "Member", img: "/img/salim-mariita.jpg"},
+            {name: "Fredrick Shamola Bulemi", role: "Chairperson", img: "/img/board/placeholder-m.jpg"},
+            {name: "CPA Catherine Nthenya John", role: "Secretary", img: "/img/board/placeholder-f.jpg"},
+            {name: "CPA Salim B. Mariita", role: "Member", img: "/img/board/salim-mariita.jpg", photo: true},
           ]; %>
 
           <% committee.forEach(member => { %>
             <div class="col-6 col-md-4">
               <div class="member-card">
-                <% if (member.img) { %><img src="<%= member.img %>" alt="<%= member.name %>" class="member-img" loading="lazy">
-                <% } else { %><div class="member-img member-initials" aria-hidden="true"><%= member.name.replace(/^CPA\s+/, '').split(/\s+/).filter(w => /^[A-Z]/.test(w)).map(w => w[0]).filter((c, i, a) => i === 0 || i === a.length - 1).join('') %></div><% } %>
+                <img src="<%= member.img %>" alt="<%= member.photo ? member.name : 'Photo coming soon' %>" class="member-img" loading="lazy">
                 <h3 class="member-name"><%= member.name %></h3>
                 <p class="member-role"><%= member.role %></p>
               </div>
