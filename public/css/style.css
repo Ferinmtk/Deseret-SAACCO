@@ -3,19 +3,19 @@
    One green, one gold. Bootstrap's primary/success buttons use the brand green.
 =========================== */
 :root {
-  --brand: #1f5c45;
-  --brand-dark: #163f30;
-  --brand-soft: #e7f1ec;
-  --gold: #b8922a;
-  --ink: #1d2a24;
-  --muted: #5f6b65;
-  --bs-primary: #1f5c45;
-  --bs-primary-rgb: 31, 92, 69;
-  --bs-success: #1f5c45;
-  --bs-success-rgb: 31, 92, 69;
-  --bs-link-color: #1f5c45;
-  --bs-link-color-rgb: 31, 92, 69;
-  --bs-link-hover-color: #163f30;
+  --brand: #0a2030;
+  --brand-dark: #06151f;
+  --brand-soft: #eaf0f5;
+  --gold: #c68d3e;
+  --ink: #14202b;
+  --muted: #5e6b78;
+  --bs-primary: #0a2030;
+  --bs-primary-rgb: 10, 32, 48;
+  --bs-success: #0a2030;
+  --bs-success-rgb: 10, 32, 48;
+  --bs-link-color: #0a2030;
+  --bs-link-color-rgb: 10, 32, 48;
+  --bs-link-hover-color: #06151f;
 }
 .btn-primary, .btn-success {
   --bs-btn-bg: var(--brand); --bs-btn-border-color: var(--brand);
@@ -28,6 +28,15 @@
   --bs-btn-active-bg: var(--brand); --bs-btn-active-border-color: var(--brand);
 }
 .text-success, .text-primary { color: var(--brand) !important; }
+/* Gold button with navy text, for use on navy or photo backgrounds (5.8:1). */
+.btn-gold {
+  --bs-btn-bg: var(--gold); --bs-btn-border-color: var(--gold); --bs-btn-color: var(--brand);
+  --bs-btn-hover-bg: #eda547; --bs-btn-hover-border-color: #eda547; --bs-btn-hover-color: var(--brand);
+  --bs-btn-active-bg: #eda547; --bs-btn-active-border-color: #eda547; --bs-btn-active-color: var(--brand);
+  font-weight: 700;
+}
+h1, h2, h3, .display-3, .display-5 { font-family: 'Poppins', 'Segoe UI', sans-serif; }
+.brand-word { font-family: 'Poppins', 'Segoe UI', sans-serif; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
 .bg-success { background-color: var(--brand) !important; }
 
 /* ===========================
@@ -62,7 +71,7 @@ body {
 
 /* Dark background after scroll */
 .custom-navbar.scrolled {
-  background-color: rgba(35, 71, 53, 0.95);
+  background-color: rgba(10, 32, 48, 0.95);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); /* softer shadow */
 }
 
@@ -88,13 +97,13 @@ body {
 
 /* Hover color */
 .navbar-nav .nav-link:hover {
-  color: #f0d78c !important;
+  color: #eda547 !important;
 }
 
 /* Active link style */
 .nav-link.active,
 .portal-link.active {
-  color: #f0d78c !important;
+  color: #eda547 !important;
   font-weight: 800;
 }
 
@@ -182,14 +191,14 @@ body {
 
 /* Footer: real contact and payment details on every page */
 .site-footer {
-  background: #17211c;
-  color: #c9d4ce;
+  background: #06131d;
+  color: #c3ccd6;
   padding: 3rem 0 1.5rem;
   margin-top: 0;
 }
 .site-footer h6 { color: #fff; font-weight: 700; margin-bottom: .6rem; }
 .site-footer strong { color: #fff; }
-.site-footer a { color: #c9d4ce; text-decoration: none; }
+.site-footer a { color: #c3ccd6; text-decoration: none; }
 .site-footer a:hover { color: #fff; text-decoration: underline; }
 
 /* ===========================
@@ -197,7 +206,7 @@ body {
 =========================== */
 
 .about-section h2, .about-section h3 {
-  color: #004b23;
+  color: #0a2030;
   margin-bottom: 15px;
 }
 
@@ -213,7 +222,7 @@ body {
 }
 
 .about-section .bi {
-  color: #198754;
+  color: #0a2030;
   transition: transform 0.3s ease;
 }
 
@@ -272,13 +281,13 @@ form input, form textarea {
 .map-button {
   padding: 12px 24px;
   font-size: 1.1rem;
-  background-color: #004d40;
+  background-color: #06151f;
   border: none;
   transition: 0.3s;
 }
 
 .map-button:hover {
-  background-color: #00695c;
+  background-color: #0a2030;
   transform: scale(1.05);
 }
 
@@ -287,28 +296,28 @@ form input, form textarea {
 =========================== */
 .faq-hero { background: var(--brand); color: #fff; padding: 7.5rem 0 3rem; }
 .faq-hero h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); }
-.faq-hero p { color: #cfe0d8; }
+.faq-hero p { color: #cdd6df; }
 .faq-search { position: relative; max-width: 560px; }
 .faq-search .bi { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--muted); }
 .faq-search input { padding-left: 2.8rem; border: 0; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,.15); }
-.faq-search input:focus { box-shadow: 0 0 0 .25rem rgba(240, 215, 140, .6); }
+.faq-search input:focus { box-shadow: 0 0 0 .25rem rgba(237, 165, 71, .6); }
 
 .faq-body { padding: 2.5rem 0 4.5rem; }
 .faq-tabs { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .25rem; margin-bottom: 1.5rem; scrollbar-width: none; }
-.faq-tab { border: 1px solid #d9e2dd; background: #fff; color: var(--ink); border-radius: 999px; padding: .45rem 1.1rem; font-weight: 600; white-space: nowrap; }
+.faq-tab { border: 1px solid #d7dee6; background: #fff; color: var(--ink); border-radius: 999px; padding: .45rem 1.1rem; font-weight: 600; white-space: nowrap; }
 .faq-tab:hover { border-color: var(--brand); }
 .faq-tab.active { background: var(--brand); border-color: var(--brand); color: #fff; }
 
-.faq-item { border-bottom: 1px solid #e6ebe8; }
+.faq-item { border-bottom: 1px solid #e3e8ee; }
 .faq-item summary { list-style: none; cursor: pointer; padding: 1.1rem .25rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary .bi { color: var(--brand); transition: transform .2s ease; flex-shrink: 0; }
 .faq-item[open] summary .bi { transform: rotate(45deg); }
 .faq-item summary:hover { color: var(--brand); }
-.faq-answer { padding: 0 .25rem 1.2rem; color: #3b4741; line-height: 1.65; }
+.faq-answer { padding: 0 .25rem 1.2rem; color: #3a4653; line-height: 1.65; }
 .faq-answer p:last-child, .faq-answer ul:last-child { margin-bottom: 0; }
 
-.faq-help { margin-top: 3rem; background: #f6f8f7; border-radius: 14px; padding: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+.faq-help { margin-top: 3rem; background: #f5f7fa; border-radius: 14px; padding: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
 
 /* ===========================
    SHARED PAGE PIECES
@@ -324,19 +333,19 @@ form input, form textarea {
   color: #fff;
   background: center/cover no-repeat;
 }
-.page-hero::before { content: ""; position: absolute; inset: 0; background: rgba(15, 30, 23, 0.62); }
+.page-hero::before { content: ""; position: absolute; inset: 0; background: rgba(6, 19, 29, 0.62); }
 .page-hero .container { position: relative; }
 .page-hero .lead { max-width: 720px; margin: 0 auto; }
 
 .section { padding: 4.5rem 0; }
-.section-alt { background: #f6f8f7; }
+.section-alt { background: #f5f7fa; }
 .section h2 { font-weight: 700; color: var(--ink); }
 .section .intro { color: var(--muted); max-width: 640px; margin: .5rem auto 2.5rem; }
 
 /* Plain white card used across the site */
 .simple-card {
   background: #fff;
-  border: 1px solid #e6ebe8;
+  border: 1px solid #e3e8ee;
   border-radius: 14px;
   padding: 1.75rem;
   height: 100%;
@@ -357,7 +366,7 @@ form input, form textarea {
 
 /* Payment details box */
 .pay-box { background: var(--brand); color: #fff; border-radius: 16px; padding: 2rem; }
-.pay-box .label { color: #b9d4c8; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+.pay-box .label { color: #b7c3cf; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
 .pay-box .value { font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
 
 .portal-btn { font-weight: 600; color: var(--brand) !important; }
@@ -368,11 +377,11 @@ form input, form textarea {
 .apply-body { padding: 2.5rem 0 4.5rem; }
 .apply-note { display: flex; gap: .75rem; background: var(--brand-soft); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: var(--ink); }
 .apply-note .bi { color: var(--brand); font-size: 1.2rem; }
-.apply-form fieldset { border: 1px solid #e6ebe8; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; background: #fff; }
+.apply-form fieldset { border: 1px solid #e3e8ee; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; background: #fff; }
 .apply-form legend { float: none; width: auto; font-size: 1.1rem; font-weight: 700; margin-bottom: .75rem; display: flex; align-items: center; gap: .6rem; }
 .apply-form legend span { width: 28px; height: 28px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: .9rem; }
 .apply-form .form-label { font-weight: 600; font-size: .92rem; }
 .apply-form .opt { font-weight: 400; color: var(--muted); font-size: .82rem; }
 .apply-form .hint { color: var(--muted); font-size: .92rem; margin-top: -.25rem; }
-.apply-form .form-control:focus, .apply-form .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(31, 92, 69, .15); }
+.apply-form .form-control:focus, .apply-form .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(10, 32, 48, .15); }
 .next-steps { display: grid; gap: .75rem; }
