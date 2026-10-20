@@ -2,6 +2,7 @@ const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireMember } = require('../lib/auth');
 const S = require('../lib/sacco');
+const { sendCsv } = require('../lib/csv');
 const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 
 const router = express.Router();
@@ -116,6 +117,12 @@ router.get('/accounts/:account', async (req, res, next) => {
   let running = opening + rows.reduce((s, r) => s + r.amount, 0);
   const closing = running;
   for (const r of rows) { r.balance = running; running -= r.amount; }
+  if (req.query.format === 'csv') {
+    return sendCsv(res, `deseret-sacco_${req.member.member_no}_${account}_${from}_to_${to}.csv`,
+      ['Date', 'Description', 'Channel', 'Reference', 'Amount', 'Balance'],
+      [[from, 'Opening balance', '', '', '', opening],
+        ...rows.slice().reverse().map(r => [String(r.created_at).slice(0, 10), r.description, r.channel ? S.CHANNELS[r.channel] : '', r.reference, r.amount, r.balance])]);
+  }
   const goal = await one('SELECT * FROM goals WHERE member_id = ? AND account = ?', req.member.id, account);
   const view = req.query.print ? 'portal/statement' : 'portal/account';
   res.render(view, { title: S.ACCOUNTS[account], account, rows, from, to, opening, closing, goal, balance: (await S.balances(req.member.id))[account] });

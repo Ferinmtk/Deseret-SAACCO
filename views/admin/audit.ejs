@@ -1,5 +1,5 @@
 <%- include('../partials/app-top', { area: 'admin' }) %>
-<form class="d-flex gap-2 mb-3" method="GET"><input class="form-control" style="max-width:360px" name="q" value="<%= q %>" placeholder="Search person, action or details"><button class="btn btn-outline-primary">Search</button></form>
+<form class="d-flex gap-2 mb-3" method="GET"><input class="form-control" style="max-width:360px" name="q" value="<%= q %>" placeholder="Search person, action or details"><button class="btn btn-outline-primary">Search</button><% if (can.export) { %><a class="btn btn-outline-primary" href="/admin/export/audit"><i class="bi bi-download"></i> Excel</a><% } %></form>
 <div class="card"><div class="table-responsive"><table class="table table-sm">
   <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead>
   <tbody><% for (const a of rows) { %>
