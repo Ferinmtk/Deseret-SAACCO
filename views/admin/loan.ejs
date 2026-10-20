@@ -6,6 +6,9 @@
   <span class="pill pill-info"><%= S.STATUS_LABELS[loan.status] %></span>
   <span class="text-muted small ms-2">for <a href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %> (<%= m.member_no %>)</a> · applied <%= S.fmtDate(loan.applied_at) %></span>
 </div>
+<% if (loan.official_role) { %>
+  <div class="alert alert-info small"><i class="bi bi-award"></i> <strong>Official’s loan (<%= loan.official_role %>).</strong> By-law 65: it must be on the same terms as any member’s loan. The supervisory committee reviews it.</div>
+<% } %>
 
 <div class="row g-3">
   <div class="col-xl-8">

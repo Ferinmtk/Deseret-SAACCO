@@ -225,6 +225,7 @@ router.post('/loans/apply', async (req, res) => {
     const g = await one(`SELECT * FROM members WHERE member_no = ? AND status = 'active'`, guarantorNos[i]);
     if (!g) return fail(`${guarantorNos[i]} is not an active member number.`);
     if (g.id === m.id) return fail('You can’t guarantee your own loan.');
+    if (g.official_role) return fail(`${guarantorNos[i]} is a SACCO official (${g.official_role}). Officials can’t guarantee loans (By-law 69).`);
     if (guarantors.some(x => x.id === g.id)) return fail(`${guarantorNos[i]} is listed twice.`);
     if (!(guarantorAmts[i] > 0)) return fail(`Enter how much ${guarantorNos[i]} should guarantee.`);
     guarantors.push({ ...g, amount: guarantorAmts[i] });
@@ -297,6 +298,10 @@ router.post('/guarantees/:id', async (req, res) => {
   if (!g || g.loan_status !== 'guarantors') return res.redirect('/portal/guarantees');
   const accept = req.body.decision === 'accept';
   if (accept) {
+    if (req.member.official_role) {
+      req.flash('danger', 'As a SACCO official you can’t guarantee loans (By-law 69). Please decline so the borrower can ask someone else.');
+      return res.redirect('/portal/guarantees');
+    }
     const cap = await S.guarantorCapacity(req.member.id);
     if (g.amount > cap.free) {
       req.flash('danger', `You only have ${S.fmtKes(cap.free)} free to guarantee.`);
@@ -424,9 +429,9 @@ router.get('/api/quote', async (req, res) => {
 });
 
 router.get('/api/member/:no', async (req, res) => {
-  const g = await one(`SELECT id, first_name, last_name FROM members WHERE member_no = ? AND status = 'active'`, req.params.no.toUpperCase());
+  const g = await one(`SELECT id, first_name, last_name, official_role FROM members WHERE member_no = ? AND status = 'active'`, req.params.no.toUpperCase());
   if (!g || g.id === req.member.id) return res.json({ found: false });
-  res.json({ found: true, name: `${g.first_name} ${g.last_name}` });
+  res.json({ found: true, name: `${g.first_name} ${g.last_name}`, official: !!g.official_role });
 });
 
 module.exports = router;
