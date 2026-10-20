@@ -249,3 +249,13 @@ tr.clickable { cursor: pointer; }
 .stk-phone-icon { width: 72px; height: 72px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 2rem; }
 .stk-phone-icon.ok { background: var(--mpesa-soft); color: var(--mpesa-dark); }
 .stk-phone-icon.bad { background: #fef3f2; color: #b42318; }
+
+/* Install the app */
+.install-card { display: flex; align-items: center; gap: .9rem; margin-bottom: 1rem; padding: .9rem 1rem; border-radius: 14px; background: var(--brand, #0a2030); color: #fff; }
+.install-card[hidden] { display: none; }
+.install-card img { border-radius: 12px; flex: none; }
+.install-card .small { color: #cdd6df; }
+.install-link { display: flex; align-items: center; gap: .4rem; width: 100%; margin-bottom: .6rem; padding: .5rem .7rem; border: 1px solid rgba(255, 255, 255, .25); border-radius: 8px; background: transparent; color: #fff; font-weight: 600; }
+.install-link[hidden] { display: none; }
+.install-link:hover { background: rgba(255, 255, 255, .08); }
+@media (max-width: 575.98px) { .install-card { flex-wrap: wrap; } .install-card .flex-grow-1 { flex-basis: calc(100% - 64px); } }

@@ -1,7 +1,22 @@
     </div>
   </main>
 </div>
+<% if (locals.member) { %>
+<div class="modal fade" id="iosInstall" tabindex="-1" aria-labelledby="iosInstallTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title h5" id="iosInstallTitle">Add to your iPhone</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-body">
+      <ol class="mb-0">
+        <li class="mb-2">In Safari, tap the <strong>Share</strong> button <i class="bi bi-box-arrow-up"></i> at the bottom of the screen.</li>
+        <li class="mb-2">Scroll down and tap <strong>Add to Home Screen</strong> <i class="bi bi-plus-square"></i>.</li>
+        <li>Tap <strong>Add</strong>. Deseret SACCO now opens from your home screen.</li>
+      </ol>
+    </div>
+  </div></div>
+</div>
+<% } %>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/install.js" defer></script>
 <script>
   // Every form that changes something carries the session's CSRF token.
   const csrf = document.querySelector('meta[name="csrf"]')?.content;

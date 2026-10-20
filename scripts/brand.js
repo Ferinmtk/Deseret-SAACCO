@@ -59,6 +59,9 @@ const files = {
   // App and phone home-screen icon: the mark on a navy rounded square
   'app-icon.svg': svg('0 0 100 100', `<rect width="100" height="100" rx="22" fill="${BRAND.navy}"/>` +
     `<g transform="translate(8 15) scale(0.72)">${mark({ hexFill: BRAND.navy, outline: BRAND.navy, hexStroke: '#ffffff' })}</g>`),
+  // Android "maskable" icon: full-bleed navy, mark kept inside the central safe zone so any icon shape crops cleanly
+  'app-icon-maskable.svg': svg('0 0 100 100', `<rect width="100" height="100" fill="${BRAND.navy}"/>` +
+    `<g transform="translate(19 24) scale(0.52)">${mark({ hexFill: BRAND.navy, outline: BRAND.navy, hexStroke: '#ffffff' })}</g>`),
 };
 for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(out, name), content);
 
@@ -67,6 +70,7 @@ const png = (src, size, name) =>
 png('app-icon.svg', 180, 'apple-touch-icon.png');
 png('app-icon.svg', 192, 'icon-192.png');
 png('app-icon.svg', 512, 'icon-512.png');
+png('app-icon-maskable.svg', 512, 'icon-maskable-512.png');
 png('logo-mark.svg', 32, 'favicon-32.png');
 execFileSync('magick', ['-background', 'none', '-density', '1200', path.join(out, 'logo-mark.svg'), '-resize', '48x48', '-gravity', 'center', '-extent', '48x48', '-define', 'icon:auto-resize=48,32,16', path.join(out, 'favicon.ico')]);
 console.log('Brand files written to', path.relative(process.cwd(), out));

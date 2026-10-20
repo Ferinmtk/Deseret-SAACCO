@@ -65,6 +65,7 @@
           Signed in as <strong class="text-white"><%= roleLabel %></strong><br>
           <a href="/admin/logout">Sign out</a>
         <% } else { %>
+          <button type="button" class="install-link" data-install hidden><i class="bi bi-phone"></i> Install the app</button>
           Need help? <a href="tel:<%= S.SACCO.phoneHref %>">Call the office</a><br>
           <a href="/portal/logout">Sign out</a>
         <% } %>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a2030">
+  <title>You're offline · Deseret SACCO</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; background: #0a2030; color: #fff; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; }
+    .box { max-width: 360px; }
+    img { width: 72px; height: 60px; }
+    h1 { font-size: 1.4rem; margin: 1rem 0 .5rem; }
+    p { color: #cdd6df; margin: 0 0 1.25rem; }
+    button { background: #c68d3e; color: #0a2030; border: 0; border-radius: 10px; padding: 12px 22px; font: 700 1rem system-ui, sans-serif; cursor: pointer; }
+    a { color: #eda547; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <img src="/img/brand/logo-mark-reverse.svg" alt="">
+    <h1>You’re offline</h1>
+    <p>Your balances need an internet connection, so they aren’t stored on this phone. Check your data or Wi-Fi and try again.</p>
+    <button onclick="location.reload()">Try again</button>
+    <p style="margin-top: 1.5rem; font-size: .9rem">Urgent? Call the office on <a href="tel:+254205029300">020 5029300</a>.</p>
+  </div>
+</body>
+</html>

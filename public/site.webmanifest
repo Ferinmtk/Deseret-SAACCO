@@ -1,12 +1,21 @@
 {
+  "id": "/portal",
   "name": "Deseret SACCO",
   "short_name": "Deseret SACCO",
-  "start_url": "/portal",
+  "description": "Your Deseret SACCO savings, loans and M-Pesa payments.",
+  "start_url": "/portal?source=app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0f5257",
+  "orientation": "portrait",
+  "background_color": "#0a2030",
+  "theme_color": "#0a2030",
   "icons": [
-    { "src": "/img/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/img/brand/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/img/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/brand/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Pay with M-Pesa", "short_name": "Pay", "url": "/portal/deposit?source=app", "icons": [{ "src": "/img/brand/icon-192.png", "sizes": "192x192" }] },
+    { "name": "My loans", "short_name": "Loans", "url": "/portal/loans?source=app", "icons": [{ "src": "/img/brand/icon-192.png", "sizes": "192x192" }] }
   ]
 }

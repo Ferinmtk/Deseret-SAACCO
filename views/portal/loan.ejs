@@ -1,6 +1,13 @@
 <%- include('../partials/app-top', { area: 'portal' }) %>
 <% const k = S.fmtKes; const st = loan.state; %>
-<a href="/portal/loans" class="small"><i class="bi bi-arrow-left"></i> All loans</a>
+<div class="d-flex flex-wrap align-items-center gap-2">
+  <a href="/portal/loans" class="small me-auto"><i class="bi bi-arrow-left"></i> All loans</a>
+  <% if (['disbursed', 'closed'].includes(loan.status)) { %>
+    <a class="btn btn-sm btn-outline-primary" href="/portal/loans/<%= loan.id %>/statement" target="_blank"><i class="bi bi-printer"></i> Loan statement</a>
+    <a class="btn btn-sm btn-outline-primary" href="/portal/loans/<%= loan.id %>/statement?format=csv"><i class="bi bi-download"></i> Schedule (Excel)</a>
+  <% } %>
+  <% if (canTopUp) { %><a class="btn btn-sm btn-primary" href="/portal/loans/apply?topup=<%= loan.id %>"><i class="bi bi-arrow-up-circle"></i> Top up this loan</a><% } %>
+</div>
 <div class="row g-3 mt-1">
   <div class="col-lg-8">
     <div class="row g-3 mb-3">
@@ -31,7 +38,7 @@
                   <td><%= r.no %></td><td class="text-nowrap"><%= S.fmtDate(r.due) %></td>
                   <td class="text-end num"><%= r.principal.toLocaleString('en-KE') %></td><td class="text-end num"><%= r.interest.toLocaleString('en-KE') %></td>
                   <td class="text-end num"><%= r.installment.toLocaleString('en-KE') %></td><td class="text-end num"><%= r.balance.toLocaleString('en-KE') %></td>
-                  <td><span class="pill pill-<%= { paid: 'ok', part: 'warn', overdue: 'danger', due: 'muted' }[r.status] %>"><%= { paid: 'Paid', part: 'Part paid', overdue: 'Overdue', due: 'Upcoming' }[r.status] %></span></td>
+                  <td><span class="pill pill-<%= { paid: 'ok', part: 'warn', overdue: 'danger', due: 'muted', cleared: 'ok' }[r.status] %>"><%= SCHEDULE_STATUS[r.status] %></span></td>
                 </tr>
               <% } %>
             </tbody>
