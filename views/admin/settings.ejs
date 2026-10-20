@@ -1,0 +1,40 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const ro = !can.settings; %>
+<div class="demo-note mb-3"><i class="bi bi-info-circle"></i> These are <strong>sample values</strong> until checked against the by-laws and the SACCO’s loan policy. Changes apply to new applications only and are written to the audit trail.</div>
+<form method="POST" action="/admin/settings">
+  <fieldset <%= ro ? 'disabled' : '' %>>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-cash-stack"></i> Loan products</div>
+    <div class="table-responsive"><table class="table align-middle">
+      <thead><tr><th>Product</th><th>Interest %/month</th><th>Method</th><th>Max months</th><th>× deposits</th><th>Guarantors</th><th>Fee %</th></tr></thead>
+      <tbody><% for (const p of products) { %>
+        <tr><td class="fw-semibold"><%= p.name %><%= p.max_salary_pct ? ` (max ${p.max_salary_pct}% of pay)` : '' %></td>
+          <td><input class="form-control form-control-sm" style="width:90px" type="number" step="0.01" name="p_<%= p.code %>_rate" value="<%= +(p.rate_monthly * 100).toFixed(2) %>"></td>
+          <td class="small"><%= p.method %></td>
+          <td><input class="form-control form-control-sm" style="width:80px" type="number" name="p_<%= p.code %>_months" value="<%= p.max_months %>"></td>
+          <td><input class="form-control form-control-sm" style="width:80px" type="number" step="0.5" name="p_<%= p.code %>_multiplier" value="<%= p.multiplier %>"></td>
+          <td><input class="form-control form-control-sm" style="width:70px" type="number" name="p_<%= p.code %>_guarantors" value="<%= p.min_guarantors %>"></td>
+          <td><input class="form-control form-control-sm" style="width:80px" type="number" step="0.1" name="p_<%= p.code %>_fee" value="<%= p.fee_pct %>"></td></tr>
+      <% } %></tbody>
+    </table></div>
+  </div>
+  <div class="card mb-3">
+    <div class="card-header"><i class="bi bi-sliders"></i> Membership & lending rules</div>
+    <div class="card-body row g-3">
+      <% for (const s of settings) { %>
+        <div class="col-md-6 col-xl-4"><label class="form-label"><%= s.label %></label><input class="form-control" type="number" step="any" name="s_<%= s.key %>" value="<%= s.value %>"></div>
+      <% } %>
+    </div>
+  </div>
+  <% if (!ro) { %><button class="btn btn-primary mb-4">Save changes</button><% } %>
+  </fieldset>
+</form>
+<div class="card">
+  <div class="card-header"><i class="bi bi-person-badge"></i> Staff & roles</div>
+  <div class="table-responsive"><table class="table">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Last sign-in</th></tr></thead>
+    <tbody><% for (const s of staffList) { %><tr><td><%= s.name %></td><td class="small"><%= s.email %></td><td><%= ROLE_LABELS[s.role] %></td><td class="small"><%= s.last_login ? S.fmtDate(s.last_login) : '—' %></td></tr><% } %></tbody>
+  </table></div>
+  <div class="card-body small text-muted border-top">Clerk records · Credit Officer appraises · Manager approves · Treasurer disburses · Board views. No one can approve their own entry.</div>
+</div>
+<%- include('../partials/app-bottom') %>

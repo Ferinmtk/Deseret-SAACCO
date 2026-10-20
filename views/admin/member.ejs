@@ -1,0 +1,93 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; const via = S.CHANNELS;
+   const pill = { active: 'ok', pending: 'warn', exiting: 'info', exited: 'muted', rejected: 'danger' }; %>
+<a href="/admin/members" class="small"><i class="bi bi-arrow-left"></i> Members</a>
+<div class="d-flex flex-wrap align-items-center gap-3 my-2">
+  <span class="avatar" style="width:52px;height:52px;font-size:1.1rem"><%= m.first_name[0] %><%= m.last_name[0] %></span>
+  <div>
+    <h4 class="mb-0 fw-bold"><%= m.first_name %> <%= m.last_name %></h4>
+    <div class="text-muted small"><%= m.member_no || 'No member number yet' %> · ID <%= m.id_number %> · <%= m.phone %> · Joined <%= S.fmtDate(m.joined_at) %></div>
+  </div>
+  <span class="pill pill-<%= pill[m.status] %>"><%= m.status %></span>
+  <% if (can.recordPayment && m.member_no) { %><a href="/admin/payments/new?member=<%= m.member_no %>" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-plus"></i> Record payment</a><% } %>
+</div>
+
+<% if (m.status === 'pending') { %>
+  <div class="card border-warning mb-3"><div class="card-body d-flex flex-wrap gap-3 align-items-center">
+    <div class="flex-grow-1"><strong>Awaiting approval.</strong> Registered by <%= maker ? maker.name : 'online application' %> on <%= S.fmtDate(m.created_at) %>.</div>
+    <% if (can.approveMember) { %>
+      <form method="POST" action="/admin/members/<%= m.id %>/decision" class="d-flex gap-2">
+        <input class="form-control form-control-sm" name="minute" placeholder="Committee minute no." style="width: 190px">
+        <button name="decision" value="approve" class="btn btn-primary btn-sm text-nowrap">Approve & issue number</button>
+        <button name="decision" value="reject" class="btn btn-outline-danger btn-sm" onclick="this.form.reason.value = prompt('Reason for rejecting?') || ''; return !!this.form.reason.value">Reject</button>
+        <input type="hidden" name="reason">
+      </form>
+    <% } else { %><span class="small text-muted">A manager must approve.</span><% } %>
+  </div></div>
+<% } %>
+
+<div class="row g-3 mb-3">
+  <% for (const [a, label] of Object.entries(S.ACCOUNTS)) { %>
+    <div class="col-6 col-lg"><div class="card"><div class="stat"><div class="k"><%= label %></div><div class="v num fs-5"><%= k(bal[a]) %></div></div></div></div>
+  <% } %>
+  <div class="col-6 col-lg"><div class="card"><div class="stat"><div class="k">Guarantee exposure</div><div class="v num fs-5"><%= k(capacity.exposure) %></div><div class="s"><%= capacity.count %>/<%= capacity.maxLoans %> loans</div></div></div></div>
+</div>
+
+<div class="tabs-line">
+  <% for (const [t, label] of [['accounts', 'Payments'], ['loans', 'Loans (' + loans.length + ')'], ['guarantees', 'Guarantees given (' + guarantees.length + ')'], ['kyc', 'KYC & nominees'], ['history', 'History']]) { %>
+    <a href="?tab=<%= t %>" class="<%= tab === t ? 'active' : '' %>"><%= label %></a>
+  <% } %>
+</div>
+
+<% if (tab === 'accounts') { %>
+  <div class="card"><div class="table-responsive"><table class="table table-sm table-hover">
+    <thead><tr><th>Date</th><th>Channel</th><th>Reference</th><th class="text-end">Amount</th><th>Status</th></tr></thead>
+    <tbody><% for (const p of payments) { %><tr><td><%= S.fmtDate(p.created_at) %></td><td><%= via[p.channel] %></td><td class="small"><%= p.reference %></td><td class="text-end num"><%= k(p.amount) %></td>
+      <td><span class="pill pill-<%= { posted: 'ok', pending: 'warn', rejected: 'danger' }[p.status] %>"><%= p.status %></span></td></tr><% } %>
+      <% if (!payments.length) { %><tr><td colspan="5" class="text-muted">No payments.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } else if (tab === 'loans') { %>
+  <div class="card"><div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>Loan</th><th>Applied</th><th class="text-end">Principal</th><th class="text-end">Balance</th><th class="text-end">Arrears</th><th>Status</th></tr></thead>
+    <tbody><% for (const l of loans) { %><tr class="clickable" data-href="/admin/loans/<%= l.id %>"><td><a class="text-reset fw-semibold" href="/admin/loans/<%= l.id %>">#<%= l.id %> <%= l.product_name %></a></td><td><%= S.fmtDate(l.applied_at) %></td>
+      <td class="text-end num"><%= k(l.principal) %></td><td class="text-end num"><%= k(l.state.outstanding) %></td><td class="text-end num <%= l.state.arrears ? 'neg' : '' %>"><%= l.state.arrears ? k(l.state.arrears) : '—' %></td>
+      <td><span class="pill pill-info"><%= S.STATUS_LABELS[l.status] %></span></td></tr><% } %>
+      <% if (!loans.length) { %><tr><td colspan="6" class="text-muted">No loans.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } else if (tab === 'guarantees') { %>
+  <div class="card"><div class="table-responsive"><table class="table">
+    <thead><tr><th>Borrower</th><th>Loan</th><th class="text-end">Pledged</th><th>Response</th><th>Loan status</th></tr></thead>
+    <tbody><% for (const g of guarantees) { %><tr><td><a href="/admin/members/<%= g.borrower_id %>"><%= g.borrower %></a></td><td><a href="/admin/loans/<%= g.loan_id %>">#<%= g.loan_id %> <%= g.product_name %></a></td>
+      <td class="text-end num"><%= k(g.amount) %></td><td><%= g.status %></td><td><%= S.STATUS_LABELS[g.loan_status] %></td></tr><% } %>
+      <% if (!guarantees.length) { %><tr><td colspan="5" class="text-muted">Not guaranteeing anyone.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } else if (tab === 'kyc') { %>
+  <div class="row g-3">
+    <div class="col-md-6"><div class="card"><div class="card-body"><dl class="row small mb-0">
+      <dt class="col-5">KRA PIN</dt><dd class="col-7"><%= m.kra_pin || '—' %></dd>
+      <dt class="col-5">Email</dt><dd class="col-7"><%= m.email || '—' %></dd>
+      <dt class="col-5">Date of birth</dt><dd class="col-7"><%= S.fmtDate(m.date_of_birth) %></dd>
+      <dt class="col-5">Address</dt><dd class="col-7"><%= m.address || '—' %></dd>
+      <dt class="col-5">Office line</dt><dd class="col-7"><%= m.office_phone || '—' %></dd>
+      <dt class="col-5">Home ward</dt><dd class="col-7"><%= m.ward || '—' %></dd>
+      <dt class="col-5">Employer</dt><dd class="col-7"><%= m.employer || 'Not a Church employee' %></dd>
+      <dt class="col-5">Department</dt><dd class="col-7"><%= m.department || '—' %><%= m.designation ? ' · ' + m.designation : '' %></dd>
+      <dt class="col-5">Terms</dt><dd class="col-7 text-capitalize"><%= m.terms %><%= m.contract_end ? ' until ' + S.fmtDate(m.contract_end) : '' %></dd>
+      <dt class="col-5">Payroll no.</dt><dd class="col-7"><%= m.payroll_no || '—' %></dd>
+      <dt class="col-5">Basic pay</dt><dd class="col-7"><%= k(m.net_salary) %></dd>
+      <dt class="col-5">Bank</dt><dd class="col-7"><%= [m.bank_name, m.bank_branch, m.bank_account].filter(Boolean).join(' · ') || '—' %></dd>
+      <dt class="col-5">Admitted</dt><dd class="col-7"><%= m.admission_minute ? 'Minute ' + m.admission_minute : '—' %></dd>
+      <dt class="col-5">Exit notice</dt><dd class="col-7"><%= m.exit_notice_at ? S.fmtDate(m.exit_notice_at) : '—' %></dd>
+    </dl></div></div></div>
+    <div class="col-md-6"><div class="card"><div class="card-header">Nominees</div><div class="card-body p-0"><table class="table table-sm mb-0">
+      <% for (const n of nominees) { %><tr><td><%= n.name %><div class="small text-muted"><%= n.id_number ? 'ID ' + n.id_number : '' %> <%= n.address || '' %></div></td><td><%= n.relationship %></td><td><%= n.phone %></td><td class="text-end"><%= n.share_pct %>%</td></tr><% } %>
+      <% if (!nominees.length) { %><tr><td class="text-warning"><i class="bi bi-exclamation-triangle"></i> No nominees recorded</td></tr><% } %>
+    </table></div></div></div>
+  </div>
+<% } else { %>
+  <div class="card"><div class="table-responsive"><table class="table table-sm">
+    <tbody><% for (const a of history) { %><tr><td class="text-nowrap small text-muted"><%= a.created_at %></td><td class="small"><strong><%= a.actor %></strong> · <%= a.action %> <span class="text-muted"><%= a.details || '' %></span></td></tr><% } %>
+      <% if (!history.length) { %><tr><td class="text-muted">No recorded changes.</td></tr><% } %></tbody>
+  </table></div></div>
+<% } %>
+<%- include('../partials/app-bottom') %>

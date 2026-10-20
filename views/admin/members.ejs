@@ -1,0 +1,28 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<% const k = S.fmtKes; const pill = { active: 'ok', pending: 'warn', exiting: 'info', exited: 'muted', rejected: 'danger' }; %>
+<form class="d-flex flex-wrap gap-2 mb-3" method="GET">
+  <input class="form-control" style="max-width: 340px" name="q" value="<%= q %>" placeholder="Search name, member no, ID, phone, payroll no">
+  <select class="form-select" style="max-width: 180px" name="status" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    <% for (const s of ['active', 'pending', 'exiting', 'rejected']) { %><option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s[0].toUpperCase() + s.slice(1) %></option><% } %>
+  </select>
+  <button class="btn btn-outline-primary">Search</button>
+  <% if (can.registerMember) { %><a class="btn btn-primary ms-auto" href="/admin/members/new"><i class="bi bi-person-plus"></i> Register member</a><% } %>
+</form>
+<div class="card"><div class="table-responsive">
+  <table class="table table-hover">
+    <thead><tr><th>Member</th><th>Phone</th><th>Payroll</th><th class="text-end">Shares</th><th class="text-end">Deposits</th><th class="text-end">Other savings</th><th>Status</th></tr></thead>
+    <tbody>
+      <% for (const m of rows) { %>
+        <tr class="clickable" data-href="/admin/members/<%= m.id %>">
+          <td><a class="fw-semibold text-reset" href="/admin/members/<%= m.id %>"><%= m.first_name %> <%= m.last_name %></a><div class="small text-muted"><%= m.member_no || 'No number yet' %> · ID <%= m.id_number %></div></td>
+          <td class="small"><%= m.phone %></td><td class="small"><%= m.payroll_no %></td>
+          <td class="text-end num"><%= k(m.bal.shares) %></td><td class="text-end num"><%= k(m.bal.deposits) %></td><td class="text-end num"><%= k(m.bal.holiday + m.bal.family) %></td>
+          <td><span class="pill pill-<%= pill[m.status] %>"><%= m.status === 'pending' ? 'Awaiting approval' : m.status %></span></td>
+        </tr>
+      <% } %>
+      <% if (!rows.length) { %><tr><td colspan="7"><div class="empty">No members match.</div></td></tr><% } %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/app-bottom') %>

@@ -1,0 +1,53 @@
+<%- include('../partials/app-top', { area: 'admin' }) %>
+<a href="/admin/payments" class="small"><i class="bi bi-arrow-left"></i> Payments</a>
+<div class="row g-3 mt-1" style="max-width: 900px">
+  <div class="col-12">
+    <form class="card" method="GET">
+      <div class="card-body d-flex gap-2">
+        <input class="form-control" name="member" value="<%= query %>" placeholder="Member number, e.g. DS0006" required>
+        <button class="btn btn-outline-primary text-nowrap">Find member</button>
+      </div>
+    </form>
+  </div>
+  <% if (query && !member) { %><div class="col-12"><div class="alert alert-warning">No active member with number <%= query %>.</div></div><% } %>
+  <% if (member) { %>
+    <div class="col-12">
+      <form class="card" method="POST" action="/admin/payments/new" id="payForm">
+        <div class="card-header"><i class="bi bi-receipt"></i> Payment for <%= member.first_name %> <%= member.last_name %> (<%= member.member_no %>)</div>
+        <div class="card-body">
+          <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+          <input type="hidden" name="member_no" value="<%= member.member_no %>">
+          <div class="row g-3 mb-3">
+            <div class="col-sm-4"><label class="form-label">Received via</label>
+              <select class="form-select" name="channel"><% for (const [c, label] of Object.entries(S.CHANNELS)) { %><option value="<%= c %>"><%= label %></option><% } %></select></div>
+            <div class="col-sm-4"><label class="form-label">Reference</label><input class="form-control" name="reference" placeholder="Slip no. / M-Pesa code" required></div>
+            <div class="col-sm-4"><label class="form-label">Amount received</label><input class="form-control" type="number" name="amount" id="amt" min="1" required></div>
+          </div>
+          <div class="small-caps mb-2">Split it across accounts</div>
+          <% for (const [a, label] of Object.entries(S.ACCOUNTS)) { %>
+            <div class="row g-2 mb-2 align-items-center"><label class="col-sm-5 small"><%= label %></label><div class="col-sm-4"><input class="form-control form-control-sm alloc" type="number" min="0" name="alloc_<%= a %>"></div></div>
+          <% } %>
+          <% for (const l of loans) { %>
+            <div class="row g-2 mb-2 align-items-center"><label class="col-sm-5 small">Loan #<%= l.id %> <%= l.product_name %> <span class="text-muted">(<%= S.fmtKes(l.installment) %>/mo<%= l.state.arrears ? ', ' + S.fmtKes(l.state.arrears) + ' overdue' : '' %>)</span></label>
+              <div class="col-sm-4"><input class="form-control form-control-sm alloc" type="number" min="0" name="alloc_loan_<%= l.id %>"></div></div>
+          <% } %>
+          <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3">
+            <span class="small">Allocated: <strong id="allocTotal" class="num">KES 0</strong> <span id="allocNote" class="ms-1"></span></span>
+            <button class="btn btn-primary">Submit for approval</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  <% } %>
+</div>
+<script>
+  const f = document.getElementById('payForm');
+  if (f) f.addEventListener('input', () => {
+    const total = [...f.querySelectorAll('.alloc')].reduce((s, i) => s + (+i.value || 0), 0), amt = +document.getElementById('amt').value || 0;
+    document.getElementById('allocTotal').textContent = 'KES ' + total.toLocaleString('en-KE');
+    const n = document.getElementById('allocNote');
+    n.className = total === amt && amt ? 'pos' : 'neg';
+    n.textContent = !amt ? '' : total === amt ? '✓ matches' : (amt - total > 0 ? 'KES ' + (amt - total).toLocaleString('en-KE') + ' left to allocate' : 'over by KES ' + (total - amt).toLocaleString('en-KE'));
+  });
+</script>
+<%- include('../partials/app-bottom') %>
