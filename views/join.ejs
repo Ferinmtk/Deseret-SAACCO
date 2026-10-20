@@ -9,9 +9,9 @@
     <div class="row g-3">
       <% for (const [icon, title, text] of [
         ['heart', 'Faith-aligned finance', 'We operate by gospel principles of stewardship and service.'],
-        ['cash-coin', 'Affordable loans', 'Fair rates, and up to 6 years to repay development loans.'],
+        ['cash-coin', 'Affordable loans', 'Fair rates and up to 6 years to repay development loans.'],
         ['lightning-charge', 'Quick processing', 'Apply and follow your loan online; emergency loans are fast-tracked.'],
-        ['people', 'Grow together', 'Your savings earn interest and dividends, and you vote at the AGM.'],
+        ['people', 'Grow together', 'Your savings earn interest and dividends. You vote at the AGM.'],
       ]) { %>
         <div class="col-6 col-lg-3 fade-in"><div class="simple-card"><i class="bi bi-<%= icon %>"></i><h3 class="h6 fw-bold mt-2 mb-1"><%= title %></h3><p class="small"><%= text %></p></div></div>
       <% } %>
@@ -23,14 +23,14 @@
 <section class="py-5">
   <div class="container">
     <h2 class="fw-bold text-center mb-4">Membership</h2>
-    <p class="text-center">Deseret Sacco draws its membership from employees of the Church of Jesus Christ of Latter-day Saints in Kenya, members of the Church, their spouses and children, Corporate Institutions, and Groups/Chamas.</p>
+    <p class="text-center">Deseret Sacco draws its membership from employees of the Church of Jesus Christ of Latter-day Saints in Kenya, members of the Church, their spouses and children, Corporate Institutions and Groups/Chamas.</p>
     
     <div class="row mt-4">
       <div class="col-md-6" data-aos="fade-right">
         <h4 class="fw-bold">How to Join</h4>
         <ul>
           <li>Introduction letter from the institution (employer)</li>
-          <li>Application form — <a href="/join/apply">apply online</a> or collect one from the office — with a copy of your ID or passport</li>
+          <li>Application form (<a href="/join/apply">apply online</a> or collect one from the office) with a copy of your ID or passport</li>
           <li>If you were in another SACCO: a letter showing you owe it nothing</li>
           <li>Registration fee: <strong>Kshs. 1,000</strong> (one-time, non-refundable)</li>
           <li>Share Capital: <strong>Kshs. 6,500</strong> (non-refundable, earns dividends, transferable upon withdrawal)</li>
@@ -85,7 +85,7 @@
             <ul>
               <li>Paybill <span class="fact"><%= S.SACCO.paybill %></span></li>
               <li>Account <span class="fact"><%= S.SACCO.account %></span></li>
-              <li>Then send the M-Pesa message to <span class="fact"><%= S.SACCO.smsNumber %></span>, or submit the code in the member portal.</li>
+              <li>Then send the M-Pesa message to <span class="fact"><%= S.SACCO.smsNumber %></span> or submit the code in the member portal.</li>
             </ul>
           </div>
           <div class="simple-card">

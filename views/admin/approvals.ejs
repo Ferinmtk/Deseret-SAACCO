@@ -16,13 +16,13 @@
 
 <% const visiblePayments = can.approvePayment ? payments : payments.filter(p => p.submitted_by_member && role === 'clerk'); %>
 <% if (visiblePayments.length || can.approvePayment) { %>
-  <h6 class="small-caps mb-2">Payments to verify (<%= visiblePayments.length %>) <span class="text-muted fw-normal text-lowercase">— match each code or slip to the Co-op Bank statement</span></h6>
+  <h6 class="small-caps mb-2">Payments to verify (<%= visiblePayments.length %>) <span class="text-muted fw-normal text-lowercase">· match each code or slip to the Co-op Bank statement</span></h6>
   <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
     <tbody><% for (const p of visiblePayments) { %>
       <tr><td><strong><%= p.name %></strong> <span class="small text-muted"><%= p.member_no %></span><div class="small text-muted"><%= p.channel %> · <%= p.reference %> · by <%= p.maker %></div></td>
         <td class="small"><%= p.split.map(x => (x.account === 'loan' ? 'Loan #' + x.loan_id : S.ACCOUNTS[x.account]) + ' ' + k(x.amount)).join(' · ') %></td>
         <td class="text-end num fw-semibold"><%= k(p.amount) %></td>
-        <td class="text-end"><% if (p.created_by === staff.id) { %><span class="small text-muted">Yours — needs someone else</span><% } else { %>
+        <td class="text-end"><% if (p.created_by === staff.id) { %><span class="small text-muted">Yours: needs someone else</span><% } else { %>
           <form method="POST" action="/admin/payments/<%= p.id %>/decision" class="d-inline-flex gap-1">
             <button name="decision" value="approve" class="btn btn-sm btn-primary">Approve</button>
             <button name="decision" value="reject" class="btn btn-sm btn-outline-danger" onclick="this.form.reason.value = prompt('Reason?') || ''; return !!this.form.reason.value">Reject</button>
@@ -33,7 +33,7 @@
 
 <% if (can.handleRequests) { %>
   <% const nomineeReqs = requests.filter(r => r.type === 'nominee_change'), deductionReqs = requests.filter(r => r.type !== 'nominee_change'); %>
-  <h6 class="small-caps mb-2">Nominee changes (<%= nomineeReqs.length %>) <span class="text-muted fw-normal text-lowercase">— confirm with both witnesses first (by-law 12)</span></h6>
+  <h6 class="small-caps mb-2">Nominee changes (<%= nomineeReqs.length %>) <span class="text-muted fw-normal text-lowercase">· confirm with both witnesses first (by-law 12)</span></h6>
   <div class="card mb-4"><div class="table-responsive"><table class="table align-middle">
     <tbody><% for (const r of nomineeReqs) { %>
       <tr><td><a href="/admin/members/<%= r.member_id %>?tab=kyc" class="fw-semibold"><%= r.name %></a><div class="small text-muted"><%= r.member_no %> · sent <%= S.fmtDate(r.created_at) %></div></td>

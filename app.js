@@ -130,7 +130,7 @@ app.get("/resources", (req, res) => {
 // Don't leak stack traces to visitors.
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).send('<h2>Something went wrong.</h2><p>Please try again, or contact the SACCO office.</p><a href="/">Home</a>');
+  res.status(500).send('<h2>Something went wrong.</h2><p>Please try again or contact the SACCO office.</p><a href="/">Home</a>');
 });
 
 // Vercel imports the app; locally, `npm start` runs this file directly.

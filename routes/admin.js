@@ -137,10 +137,10 @@ router.post('/members/new', allow('registerMember'), async (req, res) => {
   const f = Object.fromEntries(fields.map(k => [k, String(req.body[k] || '').trim()]));
   if (!['permanent', 'contract', 'not employed'].includes(f.terms)) f.terms = 'permanent';
   const error = !f.first_name || !f.last_name ? 'Enter the member’s full name.'
-    : !/^\d{6,9}$/.test(f.id_number) ? 'ID number should be 6–9 digits.'
+    : !/^\d{6,9}$/.test(f.id_number) ? 'ID number should be 6 to 9 digits.'
     : !/^0[17]\d{8}$/.test(f.phone.replace(/\s/g, '')) ? 'Enter a mobile number like 0712345678.'
     : await one(`SELECT 1 AS x FROM members WHERE id_number = ? AND status != 'rejected'`, f.id_number) ? 'A member with this ID number already exists.'
-    : f.terms === 'contract' && !f.contract_end ? 'Enter when the contract ends — loans must finish within it (By-law 64 XXV).'
+    : f.terms === 'contract' && !f.contract_end ? 'Enter when the contract ends. Loans must finish within it (By-law 64 XXV).'
     : !f.nok_name ? 'Enter the nominated next of kin.'
     : null;
   if (error) return res.status(400).render('admin/member-new', { title: 'Register member', error, form: f });
@@ -238,7 +238,7 @@ router.post('/payments/new', allow('recordPayment'), async (req, res) => {
   const error = !S.CHANNELS[req.body.channel] ? 'Choose how the money came in.'
     : !reference ? 'Enter the bank slip, M-Pesa code or check-off reference.'
     : amount <= 0 ? 'Enter the amount received.'
-    : total !== amount ? `The split adds up to ${S.fmtKes(total)}, but the payment is ${S.fmtKes(amount)}.`
+    : total !== amount ? `The split adds up to ${S.fmtKes(total)} but the payment is ${S.fmtKes(amount)}.`
     : await one('SELECT 1 AS x FROM payments WHERE reference = ? AND channel = ?', reference, req.body.channel) ? 'This reference has already been recorded.'
     : null;
   if (error) return res.status(400).render('admin/payment-new', { title: 'Record payment', member, loans, error, query: member.member_no });
@@ -263,7 +263,7 @@ router.post('/payments/:id/decision', async (req, res) => {
     await tx(async () => {
       await run(`UPDATE payments SET status = 'posted', approved_by = ? WHERE id = ?`, req.staff.id, p.id);
       for (const part of JSON.parse(p.note || '[]')) {
-        const desc = part.account === 'loan' ? 'Loan repayment' : `${S.CHANNELS[p.channel]} — ${S.ACCOUNTS[part.account]}`;
+        const desc = part.account === 'loan' ? 'Loan repayment' : `${S.CHANNELS[p.channel]} · ${S.ACCOUNTS[part.account]}`;
         await run(`INSERT INTO transactions (member_id, payment_id, loan_id, account, amount, description, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
           p.member_id, p.id, part.loan_id || null, part.account, part.amount, desc, p.created_at);
         if (part.loan_id) {
@@ -279,7 +279,7 @@ router.post('/payments/:id/decision', async (req, res) => {
     req.flash('success', `Payment ${p.reference} posted.`);
   } else {
     await run(`UPDATE payments SET status = 'rejected', approved_by = ? WHERE id = ?`, req.staff.id, p.id);
-    await audit(req.staff.name, 'Rejected payment', 'payment', p.id, `${p.reference} — ${req.body.reason || 'no reason'}`);
+    await audit(req.staff.name, 'Rejected payment', 'payment', p.id, `${p.reference}: ${req.body.reason || 'no reason'}`);
     req.flash('success', `Payment ${p.reference} rejected.`);
   }
   res.redirect('/admin/payments?status=pending');
@@ -323,7 +323,7 @@ function loanAction(action, from, to, check) {
       await logEvent(loan.id, to, req.staff.name, note || { recommend: 'Recommended for approval', approve: 'Approved by credit committee', disburse: `Disbursed ${S.fmtKes(loan.principal - loan.fee)} (after ${S.fmtKes(loan.fee)} fee)` }[action]);
     });
     await audit(req.staff.name, `Loan ${action}`, 'loan', loan.id, note);
-    req.flash('success', { recommend: 'Recommended — sent to the manager.', approve: 'Approved — sent to the treasurer for disbursement.', disburse: 'Disbursed. The repayment schedule starts next month.' }[action]);
+    req.flash('success', { recommend: 'Recommended and sent to the manager.', approve: 'Approved and sent to the treasurer for disbursement.', disburse: 'Disbursed. The repayment schedule starts next month.' }[action]);
     res.redirect('/admin/loans/' + loan.id);
   };
 }
@@ -358,14 +358,14 @@ router.get('/arrears', async (req, res) => {
     l.bucket = S.bucket(l.state.daysInArrears);
     // By-law 64(XXVI): month 1 letter to borrower (copy guarantors), month 2 warn guarantors, month 3 default.
     l.missed = Math.ceil(l.state.arrears / l.installment);
-    l.stage = l.missed >= defaultAfter ? 'Declared in default — recover from guarantors'
+    l.stage = l.missed >= defaultAfter ? 'Declared in default: recover from guarantors'
       : l.missed === 2 ? 'Warn guarantors' : 'Letter to borrower, copy guarantors';
     l.shares = bal[l.member_id].deposits;
     l.lastPaid = (await one(`SELECT MAX(created_at) AS d FROM transactions WHERE loan_id = ? AND account = 'loan'`, l.id)).d;
     l.guarantors = await all(`SELECT g.amount, m.first_name || ' ' || m.last_name AS name, m.phone FROM guarantees g JOIN members m ON m.id = g.guarantor_id
                               WHERE g.loan_id = ? AND g.status = 'accepted'`, l.id);
   }
-  const buckets = ['1–30 days', '31–60 days', '61–90 days', '90+ days'].map(b => ({
+  const buckets = ['1 to 30 days', '31 to 60 days', '61 to 90 days', '90+ days'].map(b => ({
     label: b, count: rows.filter(r => r.bucket === b).length, amount: rows.filter(r => r.bucket === b).reduce((s, r) => s + r.state.outstanding, 0),
   }));
   res.render('admin/arrears', { title: 'Arrears', rows, buckets, pf });

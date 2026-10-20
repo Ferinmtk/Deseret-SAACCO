@@ -17,7 +17,7 @@
   </div>
   <div class="row mb-3">
     <div class="col"><div class="small-caps">Member</div><strong><%= member.first_name %> <%= member.last_name %></strong><br><%= member.member_no %> · ID <%= member.id_number %></div>
-    <div class="col text-end"><div class="small-caps">Statement</div><strong><%= S.ACCOUNTS[account] %></strong><br><%= S.fmtDate(from) %> – <%= S.fmtDate(to) %></div>
+    <div class="col text-end"><div class="small-caps">Statement</div><strong><%= S.ACCOUNTS[account] %></strong><br><%= S.fmtDate(from) %> to <%= S.fmtDate(to) %></div>
   </div>
   <table class="table table-sm">
     <thead><tr><th>Date</th><th>Details</th><th>Reference</th><th class="text-end">Amount</th><th class="text-end">Balance</th></tr></thead>

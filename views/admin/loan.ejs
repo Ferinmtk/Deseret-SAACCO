@@ -56,7 +56,7 @@
             <form method="POST" action="/admin/loans/<%= loan.id %>/<%= x.url %>" class="mb-3">
               <input class="form-control mb-2" name="note" placeholder="<%= x.placeholder || 'Note for the file (optional)' %>">
               <button class="btn btn-<%= x.cls %>" <%= x.disabled ? 'disabled' : '' %>><%= x.label %></button>
-              <% if (x.disabled) { %><span class="small text-danger ms-2">Fix the failed checks first, or decline.</span><% } %>
+              <% if (x.disabled) { %><span class="small text-danger ms-2">Fix the failed checks first or decline.</span><% } %>
             </form>
           <% } %>
           <% if (canReject) { %>
