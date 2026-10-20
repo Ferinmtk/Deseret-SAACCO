@@ -5,7 +5,7 @@
 <div class="d-flex flex-wrap align-items-center gap-3 my-2">
   <span class="avatar" style="width:52px;height:52px;font-size:1.1rem"><%= m.first_name[0] %><%= m.last_name[0] %></span>
   <div>
-    <h4 class="mb-0 fw-bold"><%= m.first_name %> <%= m.last_name %></h4>
+    <h4 class="mb-0 fw-bold"><%= m.title ? m.title + ' ' : '' %><%= m.first_name %> <%= m.last_name %></h4>
     <div class="text-muted small"><%= m.member_no || 'No member number yet' %> · ID <%= m.id_number %> · <%= m.phone %> · Joined <%= S.fmtDate(m.joined_at) %></div>
   </div>
   <span class="pill pill-<%= pill[m.status] %>"><%= m.status %></span>
@@ -14,7 +14,8 @@
 
 <% if (m.status === 'pending') { %>
   <div class="card border-warning mb-3"><div class="card-body d-flex flex-wrap gap-3 align-items-center">
-    <div class="flex-grow-1"><strong>Awaiting approval.</strong> Registered by <%= maker ? maker.name : 'online application' %> on <%= S.fmtDate(m.created_at) %>.</div>
+    <div class="flex-grow-1"><strong>Awaiting approval.</strong> <%= m.source === 'online' ? 'Applied online' : 'Registered by ' + (maker ? maker.name : 'staff') %> on <%= S.fmtDate(m.created_at) %>.
+      <% if (m.source === 'online') { %><div class="small text-muted">Check their ID copy and employer’s letter before approving.</div><% } %></div>
     <% if (can.approveMember) { %>
       <form method="POST" action="/admin/members/<%= m.id %>/decision" class="d-flex gap-2">
         <input class="form-control form-control-sm" name="minute" placeholder="Committee minute no." style="width: 190px">
@@ -66,6 +67,8 @@
     <div class="col-md-6"><div class="card"><div class="card-body"><dl class="row small mb-0">
       <dt class="col-5">KRA PIN</dt><dd class="col-7"><%= m.kra_pin || '—' %></dd>
       <dt class="col-5">Email</dt><dd class="col-7"><%= m.email || '—' %></dd>
+      <dt class="col-5">Monthly contribution</dt><dd class="col-7"><%= m.monthly_contribution ? k(m.monthly_contribution) : '—' %></dd>
+      <dt class="col-5">Applied</dt><dd class="col-7"><%= m.source === 'online' ? 'Online' + (m.declared_at ? ', declaration signed ' + S.fmtDate(m.declared_at) : '') : 'At the office' %></dd>
       <dt class="col-5">Date of birth</dt><dd class="col-7"><%= S.fmtDate(m.date_of_birth) %></dd>
       <dt class="col-5">Address</dt><dd class="col-7"><%= m.address || '—' %></dd>
       <dt class="col-5">Office line</dt><dd class="col-7"><%= m.office_phone || '—' %></dd>
@@ -80,7 +83,7 @@
       <dt class="col-5">Exit notice</dt><dd class="col-7"><%= m.exit_notice_at ? S.fmtDate(m.exit_notice_at) : '—' %></dd>
     </dl></div></div></div>
     <div class="col-md-6"><div class="card"><div class="card-header">Nominees</div><div class="card-body p-0"><table class="table table-sm mb-0">
-      <% for (const n of nominees) { %><tr><td><%= n.name %><div class="small text-muted"><%= n.id_number ? 'ID ' + n.id_number : '' %> <%= n.address || '' %></div></td><td><%= n.relationship %></td><td><%= n.phone %></td><td class="text-end"><%= n.share_pct %>%</td></tr><% } %>
+      <% for (const n of nominees) { %><tr><td><%= n.name %><div class="small text-muted"><%= n.id_number ? 'ID ' + n.id_number : '' %> <%= n.address || '' %><%= n.witness ? ' · witness: ' + n.witness : '' %></div></td><td><%= n.relationship %></td><td><%= n.phone %></td><td class="text-end"><%= n.share_pct %>%</td></tr><% } %>
       <% if (!nominees.length) { %><tr><td class="text-warning"><i class="bi bi-exclamation-triangle"></i> No nominees recorded</td></tr><% } %>
     </table></div></div></div>
   </div>

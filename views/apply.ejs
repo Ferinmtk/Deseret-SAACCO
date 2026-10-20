@@ -1,0 +1,134 @@
+<%- include('partials/header', { pageTitle: 'Apply for membership' }) %>
+<%
+  const f = locals.form || {};
+  const v = k => f[k] || '';
+  const sel = (k, val) => f[k] === val ? 'selected' : '';
+%>
+
+<section class="faq-hero">
+  <div class="container text-center">
+    <h1 class="fw-bold mb-2">Apply for membership</h1>
+    <p class="mb-0">The same as the paper application form. It takes about 10 minutes.</p>
+  </div>
+</section>
+
+<section class="apply-body">
+  <div class="container" style="max-width: 820px;">
+    <div class="apply-note">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>Have these ready:</strong> your ID or passport number, KRA PIN, payroll number (if you work for the Church), and your next of kin’s details.
+        You’ll bring a copy of your ID and your employer’s introduction letter to the office afterwards.
+      </div>
+    </div>
+
+    <% if (locals.errors && errors.length) { %>
+      <div class="alert alert-danger" role="alert" id="errors">
+        <strong>Please fix the following:</strong>
+        <ul class="mb-0 mt-1"><% for (const e of errors) { %><li><%= e %></li><% } %></ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/join/apply" novalidate class="apply-form">
+      <fieldset>
+        <legend><span>1</span> About you</legend>
+        <div class="row g-3">
+          <div class="col-sm-3"><label class="form-label" for="title">Title</label>
+            <select class="form-select" id="title" name="title"><option value="">—</option><% for (const t of ['Mr', 'Mrs', 'Miss', 'Ms', 'Dr']) { %><option <%= sel('title', t) %>><%= t %></option><% } %></select></div>
+          <div class="col-sm-4"><label class="form-label" for="first_name">First name(s)</label><input class="form-control" id="first_name" name="first_name" value="<%= v('first_name') %>" autocomplete="given-name" required></div>
+          <div class="col-sm-5"><label class="form-label" for="last_name">Surname</label><input class="form-control" id="last_name" name="last_name" value="<%= v('last_name') %>" autocomplete="family-name" required></div>
+          <div class="col-sm-4"><label class="form-label" for="date_of_birth">Date of birth</label><input class="form-control" type="date" id="date_of_birth" name="date_of_birth" value="<%= v('date_of_birth') %>" required></div>
+          <div class="col-sm-4"><label class="form-label" for="id_number">ID or passport no.</label><input class="form-control" id="id_number" name="id_number" value="<%= v('id_number') %>" required></div>
+          <div class="col-sm-4"><label class="form-label" for="kra_pin">KRA PIN</label><input class="form-control text-uppercase" id="kra_pin" name="kra_pin" value="<%= v('kra_pin') %>" placeholder="A001234567Z" required></div>
+          <div class="col-sm-4"><label class="form-label" for="phone">Mobile number</label><input class="form-control" type="tel" id="phone" name="phone" value="<%= v('phone') %>" placeholder="0712 345 678" autocomplete="tel" required></div>
+          <div class="col-sm-4"><label class="form-label" for="office_phone">Office line <span class="opt">optional</span></label><input class="form-control" type="tel" id="office_phone" name="office_phone" value="<%= v('office_phone') %>"></div>
+          <div class="col-sm-4"><label class="form-label" for="email">Email</label><input class="form-control" type="email" id="email" name="email" value="<%= v('email') %>" autocomplete="email" required></div>
+          <div class="col-sm-8"><label class="form-label" for="address">Present address</label><input class="form-control" id="address" name="address" value="<%= v('address') %>" placeholder="P.O. Box or street, town" required></div>
+          <div class="col-sm-4"><label class="form-label" for="ward">Home ward / branch</label><input class="form-control" id="ward" name="ward" value="<%= v('ward') %>"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>2</span> Your work</legend>
+        <div class="row g-3">
+          <div class="col-sm-6"><label class="form-label" for="terms">Terms of service</label>
+            <select class="form-select" id="terms" name="terms">
+              <option value="permanent" <%= sel('terms', 'permanent') %>>Permanent Church employee</option>
+              <option value="contract" <%= sel('terms', 'contract') %>>Contract Church employee</option>
+              <option value="not employed" <%= sel('terms', 'not employed') %>>Spouse / not employed by the Church</option>
+            </select></div>
+          <div class="col-sm-6" data-when="contract"><label class="form-label" for="contract_end">Contract ends</label><input class="form-control" type="date" id="contract_end" name="contract_end" value="<%= v('contract_end') %>"></div>
+          <div class="col-sm-6" data-when="employed"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" value="<%= v('department') %>"></div>
+          <div class="col-sm-6" data-when="employed"><label class="form-label" for="designation">Official designation</label><input class="form-control" id="designation" name="designation" value="<%= v('designation') %>" placeholder="e.g. Accountant"></div>
+          <div class="col-sm-6" data-when="employed"><label class="form-label" for="payroll_no">Payroll number</label><input class="form-control" id="payroll_no" name="payroll_no" value="<%= v('payroll_no') %>"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>3</span> Your bank</legend>
+        <p class="hint">Used for loan payouts and refunds.</p>
+        <div class="row g-3">
+          <div class="col-sm-5"><label class="form-label" for="bank_name">Bank</label><input class="form-control" id="bank_name" name="bank_name" value="<%= v('bank_name') %>" placeholder="e.g. Co-operative Bank" required></div>
+          <div class="col-sm-3"><label class="form-label" for="bank_branch">Branch</label><input class="form-control" id="bank_branch" name="bank_branch" value="<%= v('bank_branch') %>" required></div>
+          <div class="col-sm-4"><label class="form-label" for="bank_account">Account number</label><input class="form-control" id="bank_account" name="bank_account" value="<%= v('bank_account') %>" inputmode="numeric" required></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>4</span> Monthly contribution</legend>
+        <p class="hint">How much you’ll save each month towards shares and deposits. The minimum is KES 1,000. Church employees authorise this as a payroll deduction; others pay by standing order or M-Pesa.</p>
+        <div class="row g-3">
+          <div class="col-sm-5"><label class="form-label" for="monthly_contribution">Amount per month (KES)</label><input class="form-control" type="number" min="1000" step="100" id="monthly_contribution" name="monthly_contribution" value="<%= v('monthly_contribution') || 1000 %>" required></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>5</span> Nominated next of kin</legend>
+        <p class="hint">If you die while a member, everything due to you, less any debts, is paid to this person. You can change this later.</p>
+        <div class="row g-3">
+          <div class="col-sm-6"><label class="form-label" for="nok_name">Full name</label><input class="form-control" id="nok_name" name="nok_name" value="<%= v('nok_name') %>" required></div>
+          <div class="col-sm-3"><label class="form-label" for="nok_relationship">Relationship</label><input class="form-control" id="nok_relationship" name="nok_relationship" value="<%= v('nok_relationship') %>" placeholder="e.g. Spouse" required></div>
+          <div class="col-sm-3"><label class="form-label" for="nok_id">ID / passport no.</label><input class="form-control" id="nok_id" name="nok_id" value="<%= v('nok_id') %>"></div>
+          <div class="col-sm-4"><label class="form-label" for="nok_phone">Phone</label><input class="form-control" type="tel" id="nok_phone" name="nok_phone" value="<%= v('nok_phone') %>" required></div>
+          <div class="col-sm-8"><label class="form-label" for="nok_address">Address</label><input class="form-control" id="nok_address" name="nok_address" value="<%= v('nok_address') %>"></div>
+          <div class="col-sm-6"><label class="form-label" for="witness">Witness <span class="opt">a SACCO member, optional</span></label><input class="form-control" id="witness" name="witness" value="<%= v('witness') %>" placeholder="Name or member number"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span>6</span> Declaration</legend>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="agree_bylaws" name="agree_bylaws" value="1" <%= f.agree_bylaws ? 'checked' : '' %> required>
+          <label class="form-check-label" for="agree_bylaws">I apply for membership of Deseret SACCO Society Ltd and agree to keep to the Society’s by-laws and any amendments to them.</label>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="agree_data" name="agree_data" value="1" <%= f.agree_data ? 'checked' : '' %> required>
+          <label class="form-check-label" for="agree_data">I agree that the SACCO may keep and use these details to run my membership, as allowed by the Data Protection Act, 2019.</label>
+        </div>
+        <div class="row g-3">
+          <div class="col-sm-7"><label class="form-label" for="signature">Type your full name as your signature</label><input class="form-control" id="signature" name="signature" value="<%= v('signature') %>" required></div>
+        </div>
+      </fieldset>
+
+      <div class="d-none" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off"></div>
+      <button class="btn btn-primary btn-lg w-100">Submit application</button>
+      <p class="small text-muted text-center mt-3 mb-0">Prefer paper? Collect the form from the office at <%= S.SACCO.office %>.</p>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Show only the work fields that apply to the chosen terms of service.
+  const terms = document.getElementById('terms');
+  function syncTerms() {
+    document.querySelectorAll('[data-when]').forEach(el => {
+      const when = el.dataset.when;
+      el.hidden = when === 'contract' ? terms.value !== 'contract' : terms.value === 'not employed';
+    });
+  }
+  terms.addEventListener('change', syncTerms);
+  syncTerms();
+  document.getElementById('errors')?.scrollIntoView({ block: 'center' });
+</script>
+
+<%- include('partials/footer') %>

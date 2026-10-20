@@ -6,11 +6,11 @@
   <div class="container" style="max-width: 960px;">
     <div class="text-center">
       <h2>Forms</h2>
-      <p class="intro">Several forms can now be done online in the member portal. The rest are available from the office.</p>
+      <p class="intro">Every form can now be done online. Paper copies are still available from the office.</p>
     </div>
     <div class="row g-3">
       <% for (const [icon, name, text, where] of [
-        ['person-plus', 'Application for membership', 'For new members. Includes your nominated next of kin. Bring a copy of your ID and your employer’s introduction letter.', 'office'],
+        ['person-plus', 'Application for membership', 'For new members. Includes your nominated next of kin. Bring a copy of your ID and your employer’s introduction letter.', 'apply'],
         ['arrow-left-right', 'Authority to vary deductions', 'Change your monthly share contribution or loan repayment.', 'portal'],
         ['cash-coin', 'Loan application', 'Apply for any loan, add guarantors and see your repayment before you submit.', 'portal'],
         ['person-check', 'Guarantor consent', 'Accept or decline a request to guarantee a member’s loan.', 'portal'],
@@ -23,7 +23,9 @@
             <div class="flex-grow-1">
               <h3 class="h6 fw-bold mt-1 mb-1"><%= name %></h3>
               <p class="small mb-2"><%= text %></p>
-              <% if (where === 'portal') { %>
+              <% if (where === 'apply') { %>
+                <a href="/join/apply" class="small fw-semibold">Apply online →</a> <span class="small text-muted">or collect from the office</span>
+              <% } else if (where === 'portal') { %>
                 <a href="/portal/login" class="small fw-semibold">Do it online in the member portal →</a>
               <% } else { %>
                 <span class="small fw-semibold" style="color: var(--brand);">Collect from the office</span>

@@ -361,3 +361,18 @@ form input, form textarea {
 .pay-box .value { font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
 
 .portal-btn { font-weight: 600; color: var(--brand) !important; }
+
+/* ===========================
+   ONLINE APPLICATION
+=========================== */
+.apply-body { padding: 2.5rem 0 4.5rem; }
+.apply-note { display: flex; gap: .75rem; background: var(--brand-soft); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: var(--ink); }
+.apply-note .bi { color: var(--brand); font-size: 1.2rem; }
+.apply-form fieldset { border: 1px solid #e6ebe8; border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; background: #fff; }
+.apply-form legend { float: none; width: auto; font-size: 1.1rem; font-weight: 700; margin-bottom: .75rem; display: flex; align-items: center; gap: .6rem; }
+.apply-form legend span { width: 28px; height: 28px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: .9rem; }
+.apply-form .form-label { font-weight: 600; font-size: .92rem; }
+.apply-form .opt { font-weight: 400; color: var(--muted); font-size: .82rem; }
+.apply-form .hint { color: var(--muted); font-size: .92rem; margin-top: -.25rem; }
+.apply-form .form-control:focus, .apply-form .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(31, 92, 69, .15); }
+.next-steps { display: grid; gap: .75rem; }

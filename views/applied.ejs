@@ -1,0 +1,42 @@
+<%- include('partials/header', { pageTitle: 'Application received' }) %>
+
+<section class="faq-hero">
+  <div class="container text-center">
+    <i class="bi bi-check-circle" style="font-size: 2.5rem; color: #f0d78c;"></i>
+    <h1 class="fw-bold mt-2 mb-2">Application received</h1>
+    <% if (ref) { %><p class="mb-0">Your reference is <strong style="color: #fff;"><%= ref %></strong>. Quote it when you contact the office.</p><% } %>
+  </div>
+</section>
+
+<section class="apply-body">
+  <div class="container" style="max-width: 720px;">
+    <h2 class="h4 mb-3">What happens next</h2>
+    <div class="next-steps">
+      <div class="simple-card d-flex gap-3">
+        <div class="step-num m-0 flex-shrink-0">1</div>
+        <div>
+          <h3 class="h6 fw-bold mb-1">Pay the entrance fee and start your shares</h3>
+          <p class="small mb-2">KES 1,000 entrance fee plus your first share contribution (KES 6,500 in total, which you can build up monthly).</p>
+          <p class="small mb-0">M-Pesa Paybill <strong><%= S.SACCO.paybill %></strong>, account <strong><%= S.SACCO.account %></strong>. Then send the M-Pesa message to <strong><%= S.SACCO.smsNumber %></strong> with your reference.</p>
+        </div>
+      </div>
+      <div class="simple-card d-flex gap-3">
+        <div class="step-num m-0 flex-shrink-0">2</div>
+        <div>
+          <h3 class="h6 fw-bold mb-1">Bring your documents to the office</h3>
+          <p class="small mb-0">A copy of your ID or passport, your employer’s introduction letter, and if you were in another SACCO, a letter showing you owe it nothing. <%= S.SACCO.office %>, <%= S.SACCO.hours %>.</p>
+        </div>
+      </div>
+      <div class="simple-card d-flex gap-3">
+        <div class="step-num m-0 flex-shrink-0">3</div>
+        <div>
+          <h3 class="h6 fw-bold mb-1">Get your member number</h3>
+          <p class="small mb-0">Once the management committee approves your application, we’ll send you your member number. You can then sign in to the member portal; your first password is your ID number.</p>
+        </div>
+      </div>
+    </div>
+    <p class="text-center mt-4 mb-0"><a href="/" class="btn btn-outline-primary">Back to home</a></p>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
