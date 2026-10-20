@@ -19,6 +19,14 @@
           <p class="mb-1"><strong><%= S.fmtKes(r.amount) %></strong> is now in your account.</p>
           <p class="text-muted small">M-Pesa receipt <strong id="stkReceipt"><%= r.receipt || '' %></strong></p>
           <a class="btn btn-primary" href="/portal">Back to my overview</a>
+          <% if (firstPayment) { %>
+            <div class="install-card text-start mt-4 mb-0" data-install-card="after-payment" hidden>
+              <img src="/img/brand/icon-192.png" alt="" width="48" height="48">
+              <div class="flex-grow-1"><strong>Pay faster next time</strong><div class="small">Add Deseret SACCO to your phone and pay with M-Pesa in one tap.</div></div>
+              <button type="button" class="btn btn-light btn-sm fw-semibold" data-install>Install</button>
+              <button type="button" class="btn-close btn-close-white" aria-label="Not now" data-install-dismiss></button>
+            </div>
+          <% } %>
         </div>
         <div id="stkFailed" <%= ['failed', 'review'].includes(r.status) ? '' : 'hidden' %>>
           <div class="stk-phone-icon bad mb-3"><i class="bi bi-x-lg"></i></div>

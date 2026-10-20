@@ -2,15 +2,27 @@
   </main>
 </div>
 <% if (locals.member) { %>
-<div class="modal fade" id="iosInstall" tabindex="-1" aria-labelledby="iosInstallTitle" aria-hidden="true">
+<div class="modal fade" id="installHelp" tabindex="-1" aria-labelledby="installHelpTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
-    <div class="modal-header"><h2 class="modal-title h5" id="iosInstallTitle">Add to your iPhone</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+    <div class="modal-header"><h2 class="modal-title h5" id="installHelpTitle">Add Deseret SACCO to your phone</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
     <div class="modal-body">
-      <ol class="mb-0">
-        <li class="mb-2">In Safari, tap the <strong>Share</strong> button <i class="bi bi-box-arrow-up"></i> at the bottom of the screen.</li>
-        <li class="mb-2">Scroll down and tap <strong>Add to Home Screen</strong> <i class="bi bi-plus-square"></i>.</li>
-        <li>Tap <strong>Add</strong>. Deseret SACCO now opens from your home screen.</li>
-      </ol>
+      <div data-steps="ios">
+        <p class="fw-semibold mb-2">On iPhone (Safari)</p>
+        <ol>
+          <li class="mb-2">Tap the <strong>Share</strong> button <i class="bi bi-box-arrow-up"></i> at the bottom of the screen.</li>
+          <li class="mb-2">Scroll down and tap <strong>Add to Home Screen</strong> <i class="bi bi-plus-square"></i>.</li>
+          <li>Tap <strong>Add</strong>.</li>
+        </ol>
+      </div>
+      <div data-steps="android">
+        <p class="fw-semibold mb-2">On Android (Chrome)</p>
+        <ol class="mb-0">
+          <li class="mb-2">Tap the <strong>menu</strong> <i class="bi bi-three-dots-vertical"></i> at the top right.</li>
+          <li class="mb-2">Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+          <li>Tap <strong>Install</strong>.</li>
+        </ol>
+      </div>
+      <p class="small text-muted mt-3 mb-0">Deseret SACCO then opens from your home screen like any other app.</p>
     </div>
   </div></div>
 </div>

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/app.css">
   <meta name="csrf" content="<%= locals.csrfToken || '' %>">
 </head>
-<body class="app">
+<body class="app" data-demo="<%= locals.demo ? 1 : 0 %>">
 <%
   const portalNav = [
     { label: 'My money' },
