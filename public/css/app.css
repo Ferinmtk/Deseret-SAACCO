@@ -200,3 +200,14 @@ tr.clickable { cursor: pointer; }
   .table-stack td[colspan]::before { display: none; }
 }
 .nom-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .15rem; }
+
+/* Profile sections: summary first, form only while editing; a saved section flashes briefly */
+.editable .edit { display: none; }
+.editable.editing .edit { display: block; }
+.editable.editing .edit.row { display: flex; }
+.editable.editing .view, .editable.editing .show-view { display: none; }
+.editable:target { animation: saved 2.2s ease-out; }
+@keyframes saved { 0% { box-shadow: 0 0 0 3px var(--gold); } 100% { box-shadow: 0 0 0 0 transparent; } }
+@media (prefers-reduced-motion: reduce) { .editable:target { animation: none; } }
+.nominee-pending { background: #fffaeb; border: 1px solid #fedf89; border-radius: 10px; padding: .75rem .9rem; }
+.howto { background: var(--brand-soft); border-radius: 10px; padding: .75rem .9rem; }
