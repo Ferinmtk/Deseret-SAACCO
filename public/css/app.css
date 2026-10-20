@@ -39,7 +39,7 @@ body.app {
   .app-side { position: sticky; top: 0; height: 100vh; }
 }
 .app-brand { display: flex; align-items: center; gap: .6rem; padding: 1.1rem 1.2rem; color: #fff; text-decoration: none; font-weight: 700; }
-.app-brand img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
+.app-brand img { width: 34px; height: 34px; }
 .app-brand small { display: block; font-weight: 500; font-size: .72rem; color: #9fbfb1; letter-spacing: .04em; text-transform: uppercase; }
 .app-nav { list-style: none; margin: .5rem 0; padding: 0 .7rem; flex: 1; }
 .app-nav .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #84a597; padding: 1rem .6rem .35rem; }
