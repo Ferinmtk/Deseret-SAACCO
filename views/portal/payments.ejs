@@ -1,0 +1,28 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const k = S.fmtKes; const via = S.CHANNELS;
+   const partName = t => t.account === 'loan' ? 'Loan repayment' : S.ACCOUNTS[t.account]; %>
+<p class="text-muted">Every payment you make is split across your accounts. Here’s exactly where each shilling went.</p>
+<div class="row g-3">
+  <% for (const p of payments) { %>
+    <div class="col-md-6 col-xl-4" id="p<%= p.id %>">
+      <div class="card h-100">
+        <div class="card-header">
+          <i class="bi bi-<%= p.channel === 'mpesa' ? 'phone' : p.channel === 'bank' ? 'bank' : 'building' %>"></i> <%= via[p.channel] %>
+          <span class="ms-auto"><% if (p.status === 'pending') { %><span class="pill pill-warn">Being verified</span><% } else if (p.status === 'rejected') { %><span class="pill pill-danger">Rejected</span><% } else { %><span class="small text-muted"><%= S.fmtDate(p.created_at) %></span><% } %></span>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-baseline mb-2">
+            <span class="num fs-5 fw-bold"><%= k(p.amount) %></span><span class="small text-muted"><%= p.reference %></span>
+          </div>
+          <% for (const t of p.parts) { %>
+            <div class="d-flex justify-content-between small py-1 border-top">
+              <span><i class="bi bi-arrow-return-right text-muted"></i> <%= partName(t) %></span><span class="num"><%= k(t.amount) %></span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  <% if (!payments.length) { %><div class="empty"><i class="bi bi-receipt"></i>No payments yet.</div><% } %>
+</div>
+<%- include('../partials/app-bottom') %>

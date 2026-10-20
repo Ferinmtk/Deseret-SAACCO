@@ -1,104 +1,152 @@
-<%- include('../partials/header') %>
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<%
+  const k = S.fmtKes;
+  const goalFor = a => goals.find(g => g.account === a);
+  const risky = guaranteed.filter(l => l.state.arrears > 0);
+%>
 
-<section class="py-5 fade-up">
-  <div class="container">
-    <h2 class="text-center mb-5">Welcome back, <strong>Desereter</strong></h2>
-
-    <!-- Overview Cards -->
-    <div class="row g-4 mb-5">
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center p-3">
-          <h6>Savings Balance</h6>
-          <h4 class="text-success">KES 120,500</h4>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center p-3">
-          <h6>Loan Balance</h6>
-          <h4 class="text-danger">KES 45,000</h4>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center p-3">
-          <h6>Insurance Cover</h6>
-          <h4 class="text-info">KES 250,000</h4>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="card shadow-sm text-center p-3">
-          <h6>Last Login</h6>
-          <h5>1 Jul 2025</h5>
-        </div>
-      </div>
+<% if (risky.length) { %>
+  <div class="alert alert-warning d-flex gap-2 align-items-start">
+    <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+    <div>
+      <strong><%= risky.map(l => l.borrower).join(', ') %></strong> <%= risky.length > 1 ? 'are' : 'is' %> behind on a loan you guarantee.
+      If it isn’t cleared, part of your pledged deposits could be used to recover it. <a href="/portal/guarantees">See details</a>
     </div>
-
-    <!-- Actions -->
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">💰 View Savings</h5>
-            <p class="card-text">Track your deposits and interest earned.</p>
-            <a href="#" class="btn btn-outline-success btn-sm">Go to Savings</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">📄 Loan Status</h5>
-            <p class="card-text">Check your repayment progress and apply for new loans.</p>
-            <a href="#" class="btn btn-outline-primary btn-sm">View Loans</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">🛡️ Insurance</h5>
-            <p class="card-text">Explore health and asset coverage available to members.</p>
-            <a href="#" class="btn btn-outline-info btn-sm">View Insurance</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- More Services -->
-    <div class="row g-4 mt-4">
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">📊 Investment</h5>
-            <p class="card-text">Grow your funds with SACCO-backed investment plans.</p>
-            <a href="#" class="btn btn-outline-warning btn-sm">Invest</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">📥 Documents</h5>
-            <p class="card-text">Access your monthly statements and signed contracts.</p>
-            <a href="#" class="btn btn-outline-secondary btn-sm">Download</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body text-center">
-            <h5 class="card-title">💬 Support</h5>
-            <p class="card-text">Need help? Message us or raise a ticket easily.</p>
-            <a href="#" class="btn btn-outline-dark btn-sm">Get Help</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
-</section>
+<% } %>
 
-<%- include('../partials/footer') %>
+<div class="row g-3 mb-3">
+  <div class="col-lg-5">
+    <div class="card hero-card h-100">
+      <div class="stat">
+        <div class="k">Your net position</div>
+        <div class="v num"><%= k(worth) %></div>
+        <div class="s">Shares + savings <%= k(worth + owed) %> &minus; loans <%= k(owed) %></div>
+        <div class="s mt-3"><i class="bi bi-clock-history"></i> Last sign-in <%= lastLogin ? S.fmtDate(lastLogin) : 'first time — welcome!' %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="quick h-100">
+      <a href="/portal/deposit"><i class="bi bi-phone"></i>Make a payment</a>
+      <a href="/portal/loans/apply"><i class="bi bi-cash-coin"></i>Apply for a loan</a>
+      <a href="/portal/guarantees"><i class="bi bi-person-check"></i>Guarantor requests<% if (pendingGuarantees) { %><span class="count"><%= pendingGuarantees %></span><% } %></a>
+      <a href="/portal/accounts/deposits?print=1" target="_blank"><i class="bi bi-file-earmark-text"></i>Download statement</a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <% for (const [acc, label] of Object.entries(S.ACCOUNTS)) { const goal = goalFor(acc); %>
+    <div class="col-6 col-xl-3">
+      <a class="stat-link" href="/portal/accounts/<%= acc %>">
+        <div class="card h-100"><div class="stat">
+          <div class="k"><%= label %></div>
+          <div class="v num"><%= k(bal[acc]) %></div>
+          <% if (acc === 'shares') { %>
+            <% if (bal.shares >= minShares) { %><div class="s"><i class="bi bi-check-circle-fill pos"></i> Fully paid · earns dividends</div>
+            <% } else { %><div class="progress my-2"><div class="progress-bar" style="width: <%= Math.round(bal.shares / minShares * 100) %>%"></div></div><div class="s"><%= k(minShares - bal.shares) %> to the minimum</div><% } %>
+          <% } else if (acc === 'deposits') { %>
+            <div class="s">Backs your loans · earns interest</div>
+          <% } else if (goal) { const pct = Math.min(100, Math.round(bal[acc] / goal.target * 100)); %>
+            <div class="progress my-2"><div class="progress-bar" style="width: <%= pct %>%"></div></div>
+            <div class="s"><%= pct %>% of <%= k(goal.target) %> by <%= S.fmtDate(goal.target_date) %></div>
+          <% } else { %>
+            <div class="s">Set a goal →</div>
+          <% } %>
+        </div></div>
+      </a>
+    </div>
+  <% } %>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-7">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-cash-stack"></i> My loans <a class="ms-auto small" href="/portal/loans">All loans</a></div>
+      <div class="card-body p-0">
+        <% if (!loans.length) { %>
+          <div class="empty"><i class="bi bi-emoji-smile"></i>No loans right now.</div>
+        <% } %>
+        <% for (const l of loans) { %>
+          <a href="/portal/loans/<%= l.id %>" class="d-block p-3 border-bottom text-reset text-decoration-none">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <div>
+                <div class="fw-semibold"><%= l.product_name %></div>
+                <div class="small text-muted"><%= k(l.principal) %> over <%= l.months %> months · <%= k(l.installment) %>/month</div>
+              </div>
+              <% if (l.status !== 'disbursed') { %><span class="pill pill-info"><%= S.STATUS_LABELS[l.status] %></span>
+              <% } else if (l.state.arrears > 0) { %><span class="pill pill-danger"><%= k(l.state.arrears) %> overdue</span>
+              <% } else { %><span class="pill pill-ok">On track</span><% } %>
+            </div>
+            <% if (l.status === 'disbursed') { %>
+              <div class="progress mt-2"><div class="progress-bar <%= l.state.arrears ? 'danger' : '' %>" style="width: <%= l.state.progress %>%"></div></div>
+              <div class="d-flex justify-content-between small text-muted mt-1">
+                <span><%= l.state.progress %>% repaid · <%= k(l.state.outstanding) %> left</span>
+                <span>Next due <%= S.fmtDate(l.state.nextDue) %></span>
+              </div>
+            <% } else { const steps = ['guarantors', 'appraisal', 'recommended', 'approved']; const at = steps.indexOf(l.status); %>
+              <div class="stepper mt-2"><% steps.forEach((s, i) => { %><span class="<%= i < at ? 'on' : i === at ? 'now' : '' %>"></span><% }) %></div>
+            <% } %>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-receipt"></i> Recent payments <a class="ms-auto small" href="/portal/payments">See where each one went</a></div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <tbody>
+            <% for (const p of recent) { %>
+              <tr class="clickable" data-href="/portal/payments#p<%= p.id %>">
+                <td><div class="fw-semibold"><%= S.CHANNELS[p.channel] %></div><div class="small text-muted"><%= S.fmtDate(p.created_at) %> · <%= p.reference %></div></td>
+                <td class="small text-muted">Split into <%= p.parts %> part<%= p.parts === 1 ? '' : 's' %></td>
+                <td class="text-end num fw-semibold"><%= k(p.amount) %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-5">
+    <div class="card mb-3">
+      <div class="card-header"><i class="bi bi-calculator"></i> What can I borrow today?</div>
+      <div class="card-body p-0">
+        <% for (const p of eligibility) { %>
+          <div class="d-flex gap-2 align-items-center px-3 py-2 border-bottom">
+            <div class="flex-grow-1">
+              <div class="fw-semibold"><%= p.name %></div>
+              <div class="small text-muted"><%= p.reasons.length ? p.reasons[0] : p.explain %></div>
+            </div>
+            <div class="text-end">
+              <div class="num fw-bold <%= p.max ? '' : 'text-muted' %>"><%= p.max ? k(p.max) : '—' %></div>
+              <% if (p.max) { %><a href="/portal/loans/apply?product=<%= p.code %>" class="small">Apply</a><% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-people"></i> My guarantees <a class="ms-auto small" href="/portal/guarantees">Manage</a></div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-1 small"><span>Pledged for others</span><strong class="num"><%= k(capacity.exposure) %></strong></div>
+        <div class="progress mb-2"><div class="progress-bar <%= capacity.exposure > capacity.deposits * .7 ? 'warn' : '' %>" style="width: <%= capacity.deposits ? Math.min(100, Math.round(capacity.exposure / capacity.deposits * 100)) : 0 %>%"></div></div>
+        <div class="d-flex justify-content-between small text-muted"><span>Free to guarantee: <strong class="text-dark num"><%= k(capacity.free) %></strong></span><span><%= capacity.count %> of <%= capacity.maxLoans %> loans</span></div>
+        <% for (const l of guaranteed) { %>
+          <div class="d-flex justify-content-between align-items-center border-top mt-2 pt-2 small">
+            <span><%= l.borrower %> · <%= l.product_name %></span>
+            <% if (l.state.arrears > 0) { %><span class="pill pill-danger"><%= l.state.daysInArrears %> days late</span>
+            <% } else if (l.status === 'disbursed') { %><span class="pill pill-ok">Paying</span>
+            <% } else { %><span class="pill pill-muted"><%= S.STATUS_LABELS[l.status] %></span><% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/app-bottom') %>
