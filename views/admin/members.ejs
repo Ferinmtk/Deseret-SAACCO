@@ -7,6 +7,7 @@
     <% for (const s of ['active', 'pending', 'exiting', 'rejected']) { %><option value="<%= s %>" <%= status === s ? 'selected' : '' %>><%= s[0].toUpperCase() + s.slice(1) %></option><% } %>
   </select>
   <button class="btn btn-outline-primary">Search</button>
+  <% if (can.export) { %><a class="btn btn-sm btn-outline-primary" href="/admin/export/members"><i class="bi bi-download"></i> Excel</a><% } %>
   <% if (can.registerMember) { %><a class="btn btn-primary ms-auto" href="/admin/members/new"><i class="bi bi-person-plus"></i> Register member</a><% } %>
 </form>
 <div class="card"><div class="table-responsive">

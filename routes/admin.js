@@ -4,6 +4,7 @@ const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireStaff } = require('../lib/auth');
 const S = require('../lib/sacco');
 const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
+const { sendCsv } = require('../lib/csv');
 
 const router = express.Router();
 
@@ -21,6 +22,8 @@ const CAN = {
   disburse: ['treasurer'],
   rejectLoan: ['credit', 'manager'],
   settings: ['manager'],
+  // Downloads contain members' personal and money details, so only oversight roles get them.
+  export: ['manager', 'treasurer', 'board'],
 };
 
 const logEvent = (loanId, step, actor, note) =>
@@ -117,7 +120,7 @@ router.get('/', async (req, res) => {
                                FROM guarantees g JOIN loans l ON l.id = g.loan_id JOIN members b ON b.id = l.member_id JOIN members gm ON gm.id = g.guarantor_id
                                WHERE g.status = 'pending' AND l.status = 'guarantors' AND g.requested_at < now() - interval '3 days' ORDER BY g.requested_at`);
   const activity = await all(`SELECT * FROM audit WHERE action NOT IN ('Staff signed in', 'Member signed in') ORDER BY id DESC LIMIT 8`);
-  res.render('admin/dashboard', { title: 'Dashboard', totals, members, newMembers, pf, months, channels, exiting, staleGuarantees, activity });
+  res.render('admin/dashboard', { title: 'Dashboard', REPORTS, today: S.today(), yearAgo: S.addMonths(S.today(), -12), totals, members, newMembers, pf, months, channels, exiting, staleGuarantees, activity });
 });
 
 // ---------- Members ----------
@@ -461,6 +464,100 @@ router.post('/settings', allow('settings'), async (req, res) => {
   if (changes.length) await audit(req.staff.name, 'Changed rules', 'settings', null, changes.join('; '));
   req.flash('success', changes.length ? `Saved ${changes.length} change(s). Existing loans keep their original terms.` : 'Nothing changed.');
   res.redirect('/admin/settings');
+});
+
+// ---------- Downloads for Excel ----------
+// Each report is a CSV that opens in Excel or Google Sheets, ready for pivot tables and charts.
+// Dated reports take ?from=YYYY-MM-DD&to=YYYY-MM-DD (default: the last 12 months).
+const dateParam = (v, fallback) => /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) ? String(v) : fallback;
+
+const REPORTS = {
+  members: {
+    label: 'Members and balances',
+    async build() {
+      const rows = await all(`SELECT * FROM members WHERE status != 'rejected' ORDER BY member_no`);
+      const bal = await S.balancesFor(rows.map(m => m.id));
+      return [['Member no', 'First name', 'Last name', 'Status', 'Official seat', 'Phone', 'Email', 'Employer', 'Department', 'Payroll no', 'Terms', 'Joined',
+        'Share capital', 'Deposits', 'Holiday savings', 'Family savings'],
+      rows.map(m => [m.member_no, m.first_name, m.last_name, m.status, m.official_role, m.phone, m.email, m.employer, m.department, m.payroll_no, m.terms,
+        m.joined_at, bal[m.id].shares, bal[m.id].deposits, bal[m.id].holiday, bal[m.id].family])];
+    },
+  },
+  loans: {
+    label: 'Loans',
+    async build() {
+      const loans = await S.withState(await all(`SELECT l.*, m.member_no, m.first_name || ' ' || m.last_name AS name, m.official_role, p.name AS product_name
+                                                 FROM loans l JOIN members m ON m.id = l.member_id JOIN loan_products p ON p.code = l.product ORDER BY l.id`));
+      return [['Loan no', 'Member no', 'Borrower', 'Official', 'Product', 'Status', 'Principal', 'Months', 'Interest % a month', 'Installment', 'Total to repay',
+        'Applied', 'Disbursed', 'Paid so far', 'Balance', 'Overdue amount', 'Days overdue', 'Arrears band'],
+      loans.map(l => [l.id, l.member_no, l.name, l.official_role ? 'Yes' : '', l.product_name, S.STATUS_LABELS[l.status] || l.status, l.principal, l.months,
+        +(l.rate_monthly * 100).toFixed(2), l.installment, l.total_payable, String(l.applied_at).slice(0, 10), l.disbursed_at,
+        l.state.paid, l.state.outstanding, l.state.arrears, l.state.daysInArrears, l.status === 'disbursed' ? S.bucket(l.state.daysInArrears) : ''])];
+    },
+  },
+  payments: {
+    label: 'Payments',
+    dated: true,
+    async build(from, to) {
+      const rows = await all(`SELECT p.*, m.member_no, m.first_name || ' ' || m.last_name AS name,
+                              COALESCE(s.name, CASE WHEN p.submitted_by_member THEN 'Member (code)' END) AS maker, a.name AS checker
+                              FROM payments p JOIN members m ON m.id = p.member_id LEFT JOIN staff s ON s.id = p.created_by LEFT JOIN staff a ON a.id = p.approved_by
+                              WHERE p.created_at::date BETWEEN ? AND ? ORDER BY p.created_at`, from, to);
+      return [['Date', 'Member no', 'Member', 'Channel', 'Reference', 'Amount', 'Status', 'Recorded by', 'Approved by'],
+        rows.map(p => [String(p.created_at).slice(0, 10), p.member_no, p.name, S.CHANNELS[p.channel], p.reference, p.amount, p.status, p.maker, p.checker])];
+    },
+  },
+  transactions: {
+    label: 'Every transaction (ledger)',
+    dated: true,
+    async build(from, to) {
+      const rows = await all(`SELECT t.*, m.member_no, m.first_name || ' ' || m.last_name AS name FROM transactions t JOIN members m ON m.id = t.member_id
+                              WHERE t.created_at::date BETWEEN ? AND ? ORDER BY t.created_at, t.id`, from, to);
+      return [['Date', 'Month', 'Member no', 'Member', 'Account', 'Loan no', 'Description', 'Amount'],
+        rows.map(t => [String(t.created_at).slice(0, 10), String(t.created_at).slice(0, 7), t.member_no, t.name,
+          t.account === 'loan' ? 'Loan repayment' : S.ACCOUNTS[t.account] || t.account, t.loan_id, t.description, t.amount])];
+    },
+  },
+  monthly: {
+    label: 'Monthly totals (for charts)',
+    dated: true,
+    async build(from, to) {
+      // Money in and money out are kept apart, so a withdrawal doesn't show up as negative "paid in".
+      const money = await all(`SELECT to_char(created_at, 'YYYY-MM') AS month, account, SUM(GREATEST(amount, 0)) AS total, SUM(LEAST(amount, 0)) AS out
+                               FROM transactions WHERE created_at::date BETWEEN ? AND ? GROUP BY 1, 2`, from, to);
+      const lent = await all(`SELECT to_char(disbursed_at, 'YYYY-MM') AS month, COUNT(*) AS n, SUM(principal) AS total FROM loans
+                              WHERE disbursed_at BETWEEN ? AND ? GROUP BY 1`, from, to);
+      const joined = await all(`SELECT to_char(joined_at, 'YYYY-MM') AS month, COUNT(*) AS n FROM members WHERE joined_at BETWEEN ? AND ? GROUP BY 1`, from, to);
+      const months = [];
+      for (let m = from.slice(0, 7); m <= to.slice(0, 7); m = S.addMonths(m + '-01', 1).slice(0, 7)) months.push(m);
+      const get = (list, month, key = 'total', extra = () => true) => (list.find(r => r.month === month && extra(r)) || {})[key] || 0;
+      return [['Month', 'New members', 'Share capital paid in', 'Deposits paid in', 'Holiday savings paid in', 'Family savings paid in', 'Loan repayments', 'Savings withdrawn', 'Loans paid out (number)', 'Loans paid out (KES)'],
+        months.map(m => [m, get(joined, m, 'n'),
+          ...['shares', 'deposits', 'holiday', 'family', 'loan'].map(acc => get(money, m, 'total', r => r.account === acc)),
+          -money.filter(r => r.month === m && r.account !== 'loan').reduce((sum, r) => sum + r.out, 0),
+          get(lent, m, 'n'), get(lent, m)])];
+    },
+  },
+  audit: {
+    label: 'Audit trail',
+    dated: true,
+    async build(from, to) {
+      const rows = await all(`SELECT * FROM audit WHERE created_at::date BETWEEN ? AND ? ORDER BY id`, from, to);
+      return [['When', 'Who', 'Action', 'Record', 'Details'],
+        rows.map(a => [String(a.created_at), a.actor, a.action, a.entity_id ? `${a.entity} #${a.entity_id}` : a.entity, a.details])];
+    },
+  },
+};
+
+router.get('/export/:report', allow('export'), async (req, res, next) => {
+  const report = REPORTS[req.params.report];
+  if (!report) return next();
+  const to = dateParam(req.query.to, S.today());
+  const from = dateParam(req.query.from, S.addMonths(to, -12));
+  const [headers, rows] = await report.build(from, to);
+  const range = report.dated ? `${from}_to_${to}` : S.today();
+  await audit(req.staff.name, 'Downloaded report', 'report', null, `${report.label}${report.dated ? ` (${from} to ${to})` : ''}, ${rows.length} rows`);
+  sendCsv(res, `deseret-sacco_${req.params.report}_${range}.csv`, headers, rows);
 });
 
 // ---------- Staff logins and handover ----------
