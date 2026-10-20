@@ -5,6 +5,13 @@
   const risky = guaranteed.filter(l => l.state.arrears > 0);
 %>
 
+<div class="install-card" id="installCard" hidden>
+  <img src="/img/brand/icon-192.png" alt="" width="48" height="48">
+  <div class="flex-grow-1"><strong>Add Deseret SACCO to your phone</strong><div class="small">Open your balances and pay with M-Pesa in one tap, like an app. It’s free and takes no space.</div></div>
+  <button type="button" class="btn btn-light btn-sm fw-semibold" data-install>Install</button>
+  <button type="button" class="btn-close btn-close-white" aria-label="Not now" id="installDismiss"></button>
+</div>
+
 <% if (risky.length) { %>
   <div class="alert alert-warning d-flex gap-2 align-items-start">
     <i class="bi bi-exclamation-triangle-fill mt-1"></i>
@@ -28,7 +35,7 @@
   </div>
   <div class="col-lg-7">
     <div class="quick h-100">
-      <a href="/portal/deposit"><i class="bi bi-phone"></i>Make a payment</a>
+      <a href="/portal/deposit" class="quick-mpesa"><span class="mpesa-chip"><img src="/img/pay/mpesa-logo.svg" alt=""></span>Pay with M-Pesa</a>
       <a href="/portal/loans/apply"><i class="bi bi-cash-coin"></i>Apply for a loan</a>
       <a href="/portal/guarantees"><i class="bi bi-person-check"></i>Guarantor requests<% if (pendingGuarantees) { %><span class="count"><%= pendingGuarantees %></span><% } %></a>
       <a href="/portal/accounts/deposits?print=1" target="_blank"><i class="bi bi-file-earmark-text"></i>Download statement</a>

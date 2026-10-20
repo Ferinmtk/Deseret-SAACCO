@@ -110,6 +110,8 @@ app.post('/contact', async (req, res) => {
 });
 
 
+// Safaricom's M-Pesa callback: no session or CSRF, it is checked by its secret address and a status query.
+app.use('/mpesa', require('./routes/mpesa').router);
 app.use('/portal', appMiddleware, require('./routes/portal'));
 app.use('/admin', appMiddleware, require('./routes/admin'));
 

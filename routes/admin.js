@@ -216,7 +216,8 @@ router.post('/members/:id/decision', allow('approveMember'), async (req, res) =>
 // ---------- Payments ----------
 router.get('/payments', async (req, res) => {
   const status = String(req.query.status || '');
-  const rows = await all(`SELECT p.*, m.first_name || ' ' || m.last_name AS name, m.member_no, COALESCE(s.name, CASE WHEN p.submitted_by_member THEN 'Member (code)' END) AS maker, a.name AS checker
+  const rows = await all(`SELECT p.*, m.first_name || ' ' || m.last_name AS name, m.member_no, COALESCE(s.name, CASE WHEN EXISTS (SELECT 1 FROM mpesa_requests r WHERE r.payment_id = p.id) THEN 'Member (M-Pesa prompt)' WHEN p.submitted_by_member THEN 'Member (code)' END) AS maker,
+                          COALESCE(a.name, CASE WHEN EXISTS (SELECT 1 FROM mpesa_requests r WHERE r.payment_id = p.id) THEN 'Safaricom (automatic)' END) AS checker
                           FROM payments p JOIN members m ON m.id = p.member_id LEFT JOIN staff s ON s.id = p.created_by LEFT JOIN staff a ON a.id = p.approved_by
                           WHERE (?::text = '' OR p.status = ?) ORDER BY p.status = 'pending' DESC, p.created_at DESC LIMIT 150`, status, status);
   for (const p of rows) p.split = p.status === 'pending' ? JSON.parse(p.note || '[]') : null;
@@ -268,18 +269,7 @@ router.post('/payments/:id/decision', async (req, res) => {
   if (req.body.decision === 'approve') {
     await tx(async () => {
       await run(`UPDATE payments SET status = 'posted', approved_by = ? WHERE id = ?`, req.staff.id, p.id);
-      for (const part of JSON.parse(p.note || '[]')) {
-        const desc = part.account === 'loan' ? 'Loan repayment' : `${S.CHANNELS[p.channel]} · ${S.ACCOUNTS[part.account]}`;
-        await run(`INSERT INTO transactions (member_id, payment_id, loan_id, account, amount, description, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          p.member_id, p.id, part.loan_id || null, part.account, part.amount, desc, p.created_at);
-        if (part.loan_id) {
-          const loan = await one('SELECT * FROM loans WHERE id = ?', part.loan_id);
-          if ((await S.loanState(loan)).outstanding === 0) {
-            await run(`UPDATE loans SET status = 'closed' WHERE id = ?`, loan.id);
-            await logEvent(loan.id, 'closed', 'System', 'Loan fully repaid');
-          }
-        }
-      }
+      await S.postPayment(p);
     });
     await audit(req.staff.name, 'Approved payment', 'payment', p.id, `${S.fmtKes(p.amount)} ${p.reference}`);
     req.flash('success', `Payment ${p.reference} posted.`);
@@ -322,8 +312,20 @@ function loanAction(action, from, to, check) {
     if (!loan || loan.status !== from) return res.redirect('/admin/loans');
     const problem = check && await check(loan, req);
     if (problem) { req.flash('danger', problem); return res.redirect('/admin/loans/' + loan.id); }
-    const note = String(req.body.note || '').trim();
+    let note = String(req.body.note || '').trim();
     await tx(async () => {
+      // A top-up clears the old loan out of the new one before the rest is paid out.
+      if (action === 'disburse' && loan.topup_of) {
+        const old = await one('SELECT * FROM loans WHERE id = ?', loan.topup_of);
+        if (old && old.status === 'disbursed') {
+          const clears = S.payoff(old, (await S.loanState(old)).paid);
+          await run(`INSERT INTO transactions (member_id, loan_id, account, amount, description, created_at) VALUES (?, ?, 'loan', ?, ?, ?)`,
+            old.member_id, old.id, clears, `Cleared by top-up loan #${loan.id}`, S.now());
+          await run(`UPDATE loans SET status = 'closed' WHERE id = ?`, old.id);
+          await logEvent(old.id, 'closed', req.staff.name, `Cleared by top-up loan #${loan.id} (${S.fmtKes(clears)})`);
+          note = note || `Disbursed ${S.fmtKes(loan.principal - loan.fee - clears)} after clearing loan #${old.id} (${S.fmtKes(clears)}) and the ${S.fmtKes(loan.fee)} fee`;
+        }
+      }
       const col = { recommend: 'recommended_by', approve: 'approved_by', disburse: 'disbursed_by' }[action];
       await run(`UPDATE loans SET status = ?, ${col} = ?${action === 'disburse' ? ', disbursed_at = ?' : ''} WHERE id = ?`,
         ...(action === 'disburse' ? [to, req.staff.id, S.today(), loan.id] : [to, req.staff.id, loan.id]));
@@ -500,7 +502,8 @@ const REPORTS = {
     dated: true,
     async build(from, to) {
       const rows = await all(`SELECT p.*, m.member_no, m.first_name || ' ' || m.last_name AS name,
-                              COALESCE(s.name, CASE WHEN p.submitted_by_member THEN 'Member (code)' END) AS maker, a.name AS checker
+                              COALESCE(s.name, CASE WHEN EXISTS (SELECT 1 FROM mpesa_requests r WHERE r.payment_id = p.id) THEN 'Member (M-Pesa prompt)' WHEN p.submitted_by_member THEN 'Member (code)' END) AS maker,
+                          COALESCE(a.name, CASE WHEN EXISTS (SELECT 1 FROM mpesa_requests r WHERE r.payment_id = p.id) THEN 'Safaricom (automatic)' END) AS checker
                               FROM payments p JOIN members m ON m.id = p.member_id LEFT JOIN staff s ON s.id = p.created_by LEFT JOIN staff a ON a.id = p.approved_by
                               WHERE p.created_at::date BETWEEN ? AND ? ORDER BY p.created_at`, from, to);
       return [['Date', 'Member no', 'Member', 'Channel', 'Reference', 'Amount', 'Status', 'Recorded by', 'Approved by'],

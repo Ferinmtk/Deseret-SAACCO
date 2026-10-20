@@ -1,7 +1,15 @@
 <%- include('../partials/app-top', { area: 'portal' }) %>
 <% const k = S.fmtKes; const p = selected; const gNos = [].concat(form.guarantor_no || []); const gAmts = [].concat(form.guarantor_amount || []); %>
 <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
-<form method="POST" action="/portal/loans/apply" class="row g-3" id="applyForm">
+<% const topup = locals.topup; %>
+<% if (topup) { %>
+  <div class="alert alert-info d-flex gap-2"><i class="bi bi-arrow-up-circle fs-5"></i><div>
+    <strong>Top-up of your <%= topup.product_name %> (#<%= topup.id %>).</strong>
+    The <%= k(topup.clears) %> you still owe is cleared from the new loan, and you receive the rest less the processing fee.
+    It’s treated as a new application, so guarantors and the usual checks apply.</div></div>
+<% } %>
+<form method="POST" action="/portal/loans/apply" class="row g-3" id="applyForm" data-clears="<%= topup ? topup.clears : 0 %>">
+  <% if (topup) { %><input type="hidden" name="topup_of" value="<%= topup.id %>"><% } %>
   <div class="col-lg-7">
     <div class="card mb-3">
       <div class="card-header">1. Choose a loan</div>
@@ -60,6 +68,7 @@
         <div class="d-flex justify-content-between small py-1 border-top"><span>Interest over the loan</span><span class="num" id="qInt">—</span></div>
         <div class="d-flex justify-content-between small py-1 border-top"><span>Total to repay</span><span class="num" id="qTot">—</span></div>
         <div class="d-flex justify-content-between small py-1 border-top"><span>Processing fee (deducted)</span><span class="num" id="qFee">—</span></div>
+        <% if (topup) { %><div class="d-flex justify-content-between small py-1 border-top"><span>Clears loan #<%= topup.id %></span><span class="num"><%= k(topup.clears) %></span></div><% } %>
         <div class="d-flex justify-content-between small py-1 border-top border-bottom mb-3"><span>You receive</span><span class="num fw-bold" id="qNet">—</span></div>
         <div class="form-check small mb-3">
           <input class="form-check-input" type="checkbox" name="pledge" id="pledge" value="1" <%= form.pledge ? 'checked' : '' %> required>
@@ -94,7 +103,7 @@
       const q = await (await fetch(`/portal/api/quote?product=${p.value}&amount=${a}&months=${m}`)).json();
       if (!q.installment) return;
       $('qInst').textContent = fmt(q.installment); $('qInt').textContent = fmt(q.interest);
-      $('qTot').textContent = fmt(q.total); $('qFee').textContent = fmt(q.fee); $('qNet').textContent = fmt(a - q.fee);
+      $('qTot').textContent = fmt(q.total); $('qFee').textContent = fmt(q.fee); $('qNet').textContent = fmt(a - q.fee - (+$('applyForm').dataset.clears || 0));
     }, 250);
   }
   async function lookup(input) {
