@@ -1,0 +1,6 @@
+.env*
+.agents
+.claude
+.playwright-mcp
+data
+skills-lock.json

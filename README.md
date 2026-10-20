@@ -2,15 +2,30 @@
 
 Website, member portal and staff admin for Deseret SACCO Society Ltd.
 
-## Run
+Live: https://deseret-sacco.vercel.app
 
-Needs Node.js 22.5 or newer (uses the built-in `node:sqlite`).
+## Stack
+
+Node.js + Express + EJS, PostgreSQL on Neon, hosted on Vercel. Logins are stored in the database.
+
+## Run locally
+
+Needs Node.js 22+ and the Vercel CLI, signed in to the project. The database is online (Neon), so nothing is stored on your computer.
 
 ```
 npm install
-npm run seed   # reset the database with fictional demo data
-npm start      # http://localhost:3000
+vercel link                      # once: connect this folder to the deseret-sacco project
+vercel env pull .env.local       # database and session settings
+npm run migrate                  # apply any new database changes
+npm run seed                     # reset the database with fictional demo data
+npm start                        # http://localhost:3000
 ```
+
+`npm run seed` wipes the shared demo database. Don't run it once real data is in.
+
+## Database changes
+
+Add a new numbered file to `migrations/` (e.g. `002_add_sms_log.sql`) and run `npm run migrate`. Applied files are recorded in `schema_migrations`, so each one runs only once.
 
 ## Demo logins (password `demo1234`)
 

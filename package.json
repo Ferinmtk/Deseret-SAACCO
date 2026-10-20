@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node --no-warnings=ExperimentalWarning app.js",
-    "seed": "node --no-warnings=ExperimentalWarning seed.js"
+    "start": "node --env-file-if-exists=.env.local app.js",
+    "migrate": "node --env-file-if-exists=.env.local scripts/migrate.js",
+    "seed": "node --env-file-if-exists=.env.local seed.js"
   },
   "repository": {
     "type": "git",
@@ -19,10 +20,14 @@
   "homepage": "https://github.com/Ferinmtk/Deseret-SAACCO#readme",
   "description": "",
   "dependencies": {
+    "@vercel/functions": "^3.10.1",
+    "connect-pg-simple": "^10.0.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-session": "^1.19.0",
+    "pg": "^8.23.1"
   },
   "engines": {
-    "node": ">=22.5"
+    "node": ">=22"
   }
 }
