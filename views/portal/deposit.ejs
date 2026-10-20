@@ -1,8 +1,34 @@
 <%- include('../partials/app-top', { area: 'portal' }) %>
 <div class="row g-3">
+  <div class="col-12">
+    <form class="mpesa-block" method="POST" action="/portal/mpesa">
+      <div class="mpesa-block-head">
+        <div class="mpesa-ping" aria-hidden="true"><span></span><span></span><img src="/img/pay/mpesa-logo.svg" alt=""></div>
+        <div>
+          <h2 class="mpesa-title">Pay with M-Pesa. Get prompted on your phone.</h2>
+          <p class="mpesa-lead">Choose the amount and we’ll send a payment prompt to your phone. Enter your M-Pesa PIN and it goes straight into your account, with no code to type in.</p>
+          <% if (!mpesaLive) { %><p class="mpesa-test"><i class="bi bi-cone-striped"></i> Test mode: this uses Safaricom’s test Paybill, so use KES 1.</p><% } %>
+        </div>
+      </div>
+      <div class="mpesa-block-form">
+        <div class="row g-2 align-items-end">
+          <div class="col-sm-6 col-lg-3"><label class="form-label" for="stk-amount">Amount (KES)</label><input class="form-control" type="number" id="stk-amount" name="amount" min="1" max="150000" value="<%= preset.amount || '' %>" required></div>
+          <div class="col-sm-6 col-lg-3"><label class="form-label" for="stk-target">Put it towards</label>
+            <select class="form-select" id="stk-target" name="target">
+              <% for (const [a, label] of Object.entries(S.ACCOUNTS)) { %><option value="<%= a %>" <%= (preset.target || 'deposits') === a ? 'selected' : '' %>><%= label %></option><% } %>
+              <% for (const l of loans) { %><option value="loan:<%= l.id %>" <%= preset.target === 'loan:' + l.id ? 'selected' : '' %>>Repay <%= l.product_name %> (<%= S.fmtKes(l.state.arrears || l.installment) %> due)</option><% } %>
+            </select></div>
+          <div class="col-sm-6 col-lg-3"><label class="form-label" for="stk-phone">M-Pesa number</label><%# In test mode the demo members have made-up numbers, so the tester types their own instead of prompting a stranger. %>
+            <input class="form-control" id="stk-phone" name="phone" inputmode="tel" value="<%= mpesaLive ? member.phone : '' %>" placeholder="Your Safaricom number" required></div>
+          <div class="col-sm-6 col-lg-3"><button class="btn btn-mpesa w-100"><i class="bi bi-phone-vibrate"></i> Send M-Pesa prompt</button></div>
+        </div>
+      </div>
+    </form>
+    <p class="small text-muted text-center my-3">Or pay by Paybill yourself:</p>
+  </div>
   <div class="col-lg-6">
-    <div class="card mb-3">
-      <div class="card-header"><i class="bi bi-phone"></i> Step 1 · Pay with M-Pesa</div>
+    <div class="card mb-3 mpesa-card">
+      <div class="card-header"><img src="/img/pay/mpesa-logo.svg" alt="M-Pesa" class="mpesa-logo-sm"> Step 1 · Pay by Paybill</div>
       <div class="card-body">
         <ol class="mb-0">
           <li>Go to <strong>Lipa na M-Pesa → Pay Bill</strong></li>

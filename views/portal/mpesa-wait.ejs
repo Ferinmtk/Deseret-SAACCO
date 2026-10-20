@@ -1,0 +1,54 @@
+<%- include('../partials/app-top', { area: 'portal' }) %>
+<% const masked = '0' + r.phone.slice(3, 6) + ' *** ' + r.phone.slice(-3); %>
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card text-center" id="stkBox" data-status="<%= r.status %>">
+      <div class="card-body p-4">
+        <div id="stkPending" <%= r.status === 'pending' ? '' : 'hidden' %>>
+          <div class="mpesa-ping lg mb-3" aria-hidden="true"><span></span><span></span><img src="/img/pay/mpesa-logo.svg" alt=""></div>
+          <h2 class="h4 fw-bold">Check your phone</h2>
+          <p class="mb-1">We’ve sent a request for <strong><%= S.fmtKes(r.amount) %></strong> to <strong><%= masked %></strong>.</p>
+          <p class="text-muted small">Enter your M-Pesa PIN on the prompt. This page updates by itself.</p>
+          <div class="spinner-border my-2" style="color: var(--mpesa)" role="status"><span class="visually-hidden">Waiting for M-Pesa</span></div>
+          <p class="small text-muted mb-0">No prompt? Make sure your phone is on and unlocked. It can take up to a minute.</p>
+          <% if (r.simulated) { %><p class="small mt-2 mb-0"><span class="pill pill-warn">Demo</span> No real prompt is sent; it will confirm in a few seconds.</p><% } %>
+        </div>
+        <div id="stkPaid" <%= r.status === 'paid' ? '' : 'hidden' %>>
+          <div class="stk-phone-icon ok mb-3"><i class="bi bi-check-lg"></i></div>
+          <h2 class="h4 fw-bold">Payment received</h2>
+          <p class="mb-1"><strong><%= S.fmtKes(r.amount) %></strong> is now in your account.</p>
+          <p class="text-muted small">M-Pesa receipt <strong id="stkReceipt"><%= r.receipt || '' %></strong></p>
+          <a class="btn btn-primary" href="/portal">Back to my overview</a>
+        </div>
+        <div id="stkFailed" <%= ['failed', 'review'].includes(r.status) ? '' : 'hidden' %>>
+          <div class="stk-phone-icon bad mb-3"><i class="bi bi-x-lg"></i></div>
+          <h2 class="h4 fw-bold" id="stkFailTitle"><%= r.status === 'review' ? 'We’re checking this payment' : 'Payment not completed' %></h2>
+          <p class="text-muted" id="stkReason"><%= r.status === 'review' ? 'The office will confirm it shortly. You don’t need to pay again.' : (r.result_desc || '') %></p>
+          <a class="btn btn-primary" href="/portal/deposit?amount=<%= r.amount %>">Try again</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const box = document.getElementById('stkBox');
+  if (box.dataset.status !== 'pending') return;
+  const show = id => ['stkPending', 'stkPaid', 'stkFailed'].forEach(x => { document.getElementById(x).hidden = x !== id; });
+  const check = async () => {
+    try {
+      const s = await (await fetch(location.pathname + '/status', { headers: { Accept: 'application/json' } })).json();
+      if (s.status === 'paid') { document.getElementById('stkReceipt').textContent = s.receipt; return show('stkPaid'); }
+      if (s.status === 'failed') { document.getElementById('stkReason').textContent = s.message; return show('stkFailed'); }
+      if (s.status === 'review') {
+        document.getElementById('stkFailTitle').textContent = 'We’re checking this payment';
+        document.getElementById('stkReason').textContent = 'The office will confirm it shortly. You don’t need to pay again.';
+        return show('stkFailed');
+      }
+    } catch (e) { /* network blip: try again on the next tick */ }
+    setTimeout(check, 3000);
+  };
+  setTimeout(check, 3000);
+})();
+</script>
+<%- include('../partials/app-bottom') %>
