@@ -215,7 +215,9 @@ const myPrompt = req => one('SELECT * FROM mpesa_requests WHERE id = ? AND membe
 router.get('/mpesa/:id', async (req, res, next) => {
   const r = await myPrompt(req);
   if (!r) return next();
-  res.render('portal/mpesa-wait', { title: 'Check your phone', r, live: M.LIVE });
+  // Offer the app after the member's first M-Pesa payment (every payment in the demo, so it can be shown).
+  const earlier = await one(`SELECT 1 AS x FROM mpesa_requests WHERE member_id = ? AND status = 'paid' AND id < ?`, req.member.id, r.id);
+  res.render('portal/mpesa-wait', { title: 'Check your phone', r, live: M.LIVE, firstPayment: !earlier || res.locals.demo });
 });
 
 router.get('/mpesa/:id/status', async (req, res) => {
