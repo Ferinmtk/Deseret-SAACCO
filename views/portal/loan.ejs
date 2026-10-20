@@ -46,7 +46,7 @@
 
     <div class="card">
       <div class="card-header"><i class="bi bi-people"></i> Guarantors</div>
-      <div class="table-responsive"><table class="table">
+      <div class="table-responsive"><table class="table table-stack">
         <tbody>
           <% for (const g of guarantors) { %>
             <tr><td><%= g.name %> <span class="small text-muted"><%= g.member_no %></span></td><td class="text-end num"><%= k(g.amount) %></td>
