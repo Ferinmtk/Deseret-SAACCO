@@ -5,11 +5,11 @@
   const risky = guaranteed.filter(l => l.state.arrears > 0);
 %>
 
-<div class="install-card" id="installCard" hidden>
+<div class="install-card" data-install-card="overview" hidden>
   <img src="/img/brand/icon-192.png" alt="" width="48" height="48">
   <div class="flex-grow-1"><strong>Add Deseret SACCO to your phone</strong><div class="small">Open your balances and pay with M-Pesa in one tap, like an app. It’s free and takes no space.</div></div>
   <button type="button" class="btn btn-light btn-sm fw-semibold" data-install>Install</button>
-  <button type="button" class="btn-close btn-close-white" aria-label="Not now" id="installDismiss"></button>
+  <button type="button" class="btn-close btn-close-white" aria-label="Not now" data-install-dismiss></button>
 </div>
 
 <% if (risky.length) { %>
