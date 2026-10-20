@@ -1,210 +1,72 @@
-const { DatabaseSync } = require('node:sqlite');
-const fs = require('fs');
-const path = require('path');
+// PostgreSQL access (Neon). Queries use `?` placeholders, converted to $1, $2… here,
+// so call sites read the same as plain SQL.
+const { Pool, types } = require('pg');
+const { AsyncLocalStorage } = require('async_hooks');
 
-const dataDir = path.join(__dirname, 'data');
-fs.mkdirSync(dataDir, { recursive: true });
+// Return dates and timestamps as plain strings ("2026-10-20", "2026-10-20 09:15:00")
+// and counts/sums as numbers, which is what the rest of the app works with.
+types.setTypeParser(1082, v => v); // date
+types.setTypeParser(1114, v => v); // timestamp
+types.setTypeParser(20, v => Number(v)); // bigint (COUNT, SUM of integers)
+types.setTypeParser(1700, v => Number(v)); // numeric
 
-const db = new DatabaseSync(process.env.DB_PATH || path.join(dataDir, 'sacco.db'));
-db.exec('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;');
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not set. Run `vercel env pull .env.local` first.');
 
-db.exec(`
-CREATE TABLE IF NOT EXISTS settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  label TEXT
-);
+// pg treats sslmode=require as verify-full already; say so explicitly to avoid its warning.
+const connectionString = process.env.DATABASE_URL.replace('sslmode=require', 'sslmode=verify-full');
+const pool = new Pool({ connectionString, max: 5 });
+// On Vercel, lets idle connections close cleanly before a function is suspended.
+if (process.env.VERCEL) require('@vercel/functions').attachDatabasePool(pool);
 
-CREATE TABLE IF NOT EXISTS staff (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('clerk','credit','manager','treasurer','board')),
-  password_hash TEXT NOT NULL,
-  last_login TEXT
-);
+const txClient = new AsyncLocalStorage();
 
-CREATE TABLE IF NOT EXISTS members (
-  id INTEGER PRIMARY KEY,
-  member_no TEXT UNIQUE,
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  id_number TEXT NOT NULL,
-  kra_pin TEXT,
-  phone TEXT NOT NULL,
-  email TEXT,
-  date_of_birth TEXT,
-  address TEXT,
-  office_phone TEXT,
-  employer TEXT,
-  department TEXT,
-  designation TEXT,
-  terms TEXT NOT NULL DEFAULT 'permanent' CHECK (terms IN ('permanent','contract','not employed')),
-  contract_end TEXT,
-  payroll_no TEXT,
-  ward TEXT,
-  bank_name TEXT,
-  bank_branch TEXT,
-  bank_account TEXT,
-  net_salary INTEGER NOT NULL DEFAULT 0,
-  admission_minute TEXT,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','active','exiting','exited','rejected')),
-  joined_at TEXT,
-  exit_notice_at TEXT,
-  password_hash TEXT,
-  last_login TEXT,
-  created_by INTEGER REFERENCES staff(id),
-  approved_by INTEGER REFERENCES staff(id),
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+function toPg(sql) {
+  let i = 0;
+  return sql.replace(/\?/g, () => '$' + ++i);
+}
 
-CREATE TABLE IF NOT EXISTS nominees (
-  id INTEGER PRIMARY KEY,
-  member_id INTEGER NOT NULL REFERENCES members(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  relationship TEXT NOT NULL,
-  id_number TEXT,
-  phone TEXT,
-  address TEXT,
-  share_pct INTEGER NOT NULL
-);
+async function query(sql, params) {
+  const client = txClient.getStore() || pool;
+  return client.query(toPg(sql), params);
+}
 
--- Member requests that need staff action, e.g. the "Authority to vary deductions" form.
-CREATE TABLE IF NOT EXISTS requests (
-  id INTEGER PRIMARY KEY,
-  member_id INTEGER NOT NULL REFERENCES members(id),
-  type TEXT NOT NULL CHECK (type IN ('deduction_change')),
-  details TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')),
-  handled_by INTEGER REFERENCES staff(id),
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+const one = async (sql, ...params) => (await query(sql, params)).rows[0];
+const all = async (sql, ...params) => (await query(sql, params)).rows;
 
-CREATE TABLE IF NOT EXISTS goals (
-  member_id INTEGER NOT NULL REFERENCES members(id) ON DELETE CASCADE,
-  account TEXT NOT NULL,
-  target INTEGER NOT NULL,
-  target_date TEXT NOT NULL,
-  PRIMARY KEY (member_id, account)
-);
+// INSERTs return the new row's id as lastInsertRowid.
+async function run(sql, ...params) {
+  const isInsert = /^\s*INSERT/i.test(sql) && !/RETURNING/i.test(sql);
+  const result = await query(isInsert ? sql + ' RETURNING *' : sql, params);
+  return { lastInsertRowid: result.rows[0] && result.rows[0].id, changes: result.rowCount };
+}
 
-CREATE TABLE IF NOT EXISTS loan_products (
-  code TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  description TEXT,
-  rate_monthly REAL NOT NULL,
-  method TEXT NOT NULL CHECK (method IN ('reducing','flat')),
-  max_months INTEGER NOT NULL,
-  multiplier REAL NOT NULL,
-  min_guarantors INTEGER NOT NULL,
-  fee_pct REAL NOT NULL,
-  max_salary_pct INTEGER
-);
-
--- A payment is money received (M-Pesa, bank, check-off, cash).
--- It is split into one or more transactions, so members can see where every shilling went.
-CREATE TABLE IF NOT EXISTS payments (
-  id INTEGER PRIMARY KEY,
-  member_id INTEGER NOT NULL REFERENCES members(id),
-  amount INTEGER NOT NULL,
-  channel TEXT NOT NULL CHECK (channel IN ('mpesa','bank','standing','checkoff','cash')),
-  reference TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','posted','rejected')),
-  created_by INTEGER REFERENCES staff(id),
-  approved_by INTEGER REFERENCES staff(id),
-  submitted_by_member INTEGER NOT NULL DEFAULT 0,
-  note TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-
-CREATE TABLE IF NOT EXISTS loans (
-  id INTEGER PRIMARY KEY,
-  member_id INTEGER NOT NULL REFERENCES members(id),
-  product TEXT NOT NULL REFERENCES loan_products(code),
-  principal INTEGER NOT NULL,
-  months INTEGER NOT NULL,
-  rate_monthly REAL NOT NULL,
-  method TEXT NOT NULL,
-  installment INTEGER NOT NULL,
-  total_payable INTEGER NOT NULL,
-  fee INTEGER NOT NULL DEFAULT 0,
-  purpose TEXT,
-  status TEXT NOT NULL CHECK (status IN ('guarantors','appraisal','recommended','approved','disbursed','closed','rejected')),
-  applied_at TEXT NOT NULL,
-  recommended_by INTEGER REFERENCES staff(id),
-  approved_by INTEGER REFERENCES staff(id),
-  disbursed_by INTEGER REFERENCES staff(id),
-  disbursed_at TEXT,
-  reject_reason TEXT
-);
-
-CREATE TABLE IF NOT EXISTS guarantees (
-  id INTEGER PRIMARY KEY,
-  loan_id INTEGER NOT NULL REFERENCES loans(id) ON DELETE CASCADE,
-  guarantor_id INTEGER NOT NULL REFERENCES members(id),
-  amount INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted','declined')),
-  requested_at TEXT NOT NULL,
-  responded_at TEXT,
-  UNIQUE (loan_id, guarantor_id)
-);
-
--- account: shares | deposits | holiday | family | loan
-CREATE TABLE IF NOT EXISTS transactions (
-  id INTEGER PRIMARY KEY,
-  member_id INTEGER NOT NULL REFERENCES members(id),
-  payment_id INTEGER REFERENCES payments(id),
-  loan_id INTEGER REFERENCES loans(id),
-  account TEXT NOT NULL,
-  amount INTEGER NOT NULL,
-  description TEXT NOT NULL,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS loan_events (
-  id INTEGER PRIMARY KEY,
-  loan_id INTEGER NOT NULL REFERENCES loans(id) ON DELETE CASCADE,
-  step TEXT NOT NULL,
-  actor TEXT NOT NULL,
-  note TEXT,
-  created_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS audit (
-  id INTEGER PRIMARY KEY,
-  actor TEXT NOT NULL,
-  action TEXT NOT NULL,
-  entity TEXT,
-  entity_id INTEGER,
-  details TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
-`);
-
-const one = (sql, ...params) => db.prepare(sql).get(...params);
-const all = (sql, ...params) => db.prepare(sql).all(...params);
-const run = (sql, ...params) => db.prepare(sql).run(...params);
-
-function tx(fn) {
-  db.exec('BEGIN');
+// Runs fn inside a transaction; every one/all/run call made within it uses the same connection.
+async function tx(fn) {
+  if (txClient.getStore()) return fn();
+  const client = await pool.connect();
   try {
-    const result = fn();
-    db.exec('COMMIT');
+    await client.query('BEGIN');
+    const result = await txClient.run(client, fn);
+    await client.query('COMMIT');
     return result;
   } catch (err) {
-    db.exec('ROLLBACK');
+    await client.query('ROLLBACK');
     throw err;
+  } finally {
+    client.release();
   }
 }
 
-function setting(key) {
-  const row = one('SELECT value FROM settings WHERE key = ?', key);
-  return row ? Number(row.value) : null;
+// Settings are read on every request (one small query) and then available synchronously.
+let settingsCache = {};
+async function loadSettings() {
+  settingsCache = Object.fromEntries((await all('SELECT key, value FROM settings')).map(r => [r.key, Number(r.value)]));
 }
+const setting = key => (key in settingsCache ? settingsCache[key] : null);
 
-function audit(actor, action, entity, entityId, details) {
-  run('INSERT INTO audit (actor, action, entity, entity_id, details) VALUES (?, ?, ?, ?, ?)',
+async function audit(actor, action, entity, entityId, details) {
+  await run('INSERT INTO audit (actor, action, entity, entity_id, details) VALUES (?, ?, ?, ?, ?)',
     actor, action, entity || null, entityId || null, details || null);
 }
 
-module.exports = { db, one, all, run, tx, setting, audit };
+module.exports = { pool, one, all, run, tx, setting, loadSettings, audit };
