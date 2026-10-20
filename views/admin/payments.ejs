@@ -5,7 +5,8 @@
   <% for (const [s, label] of [['', 'All'], ['pending', 'Awaiting approval'], ['posted', 'Posted'], ['rejected', 'Rejected']]) { %>
     <a href="?status=<%= s %>" class="btn btn-sm <%= status === s ? 'btn-primary' : 'btn-light' %>"><%= label %><%= s === 'pending' && counts.pendingPayments ? ' (' + counts.pendingPayments + ')' : '' %></a>
   <% } %>
-  <% if (can.recordPayment) { %><a href="/admin/payments/new" class="btn btn-sm btn-primary ms-auto"><i class="bi bi-plus"></i> Record a payment</a><% } %>
+  <span class="ms-auto"></span><% if (can.export) { %><a class="btn btn-sm btn-outline-primary" href="/admin/export/payments"><i class="bi bi-download"></i> Excel</a><% } %>
+  <% if (can.recordPayment) { %><a href="/admin/payments/new" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Record a payment</a><% } %>
 </div>
 <div class="card"><div class="table-responsive">
   <table class="table table-hover align-middle table-stack">
