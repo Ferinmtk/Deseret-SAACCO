@@ -2,23 +2,19 @@
 
 <%- include('partials/page-hero', { image: '/img/temple.jpg', heading: 'Join Deseret Sacco', lead: 'Become part of a trusted savings family for Church employees in Kenya.' }) %>
 
-<!-- WHY JOIN SECTION -->
-<section class="py-5 bg-light text-center">
+<!-- WHY JOIN: one short set of reasons (was split across two repeating sections) -->
+<section class="section section-alt">
   <div class="container">
-    <h2 class="fw-bold mb-4">Why Join?</h2>
-    <div class="row">
-      <div class="col-md-4" data-aos="zoom-in">
-        <h5>Faith-Aligned Finance</h5>
-        <p>We operate by gospel principles of stewardship and service.</p>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
-        <h5>Affordable Loans</h5>
-        <p>Access fair and flexible credit solutions for real needs.</p>
-      </div>
-      <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
-        <h5>Uplift Together</h5>
-        <p>We grow as a united Church workforce and member community.</p>
-      </div>
+    <div class="text-center"><h2>Why join?</h2><p class="intro">Built by and for the Church workforce in Kenya.</p></div>
+    <div class="row g-3">
+      <% for (const [icon, title, text] of [
+        ['heart', 'Faith-aligned finance', 'We operate by gospel principles of stewardship and service.'],
+        ['cash-coin', 'Affordable loans', 'Fair rates, and up to 6 years to repay development loans.'],
+        ['lightning-charge', 'Quick processing', 'Apply and follow your loan online; emergency loans are fast-tracked.'],
+        ['people', 'Grow together', 'Your savings earn interest and dividends, and you vote at the AGM.'],
+      ]) { %>
+        <div class="col-6 col-lg-3 fade-in"><div class="simple-card"><i class="bi bi-<%= icon %>"></i><h3 class="h6 fw-bold mt-2 mb-1"><%= title %></h3><p class="small"><%= text %></p></div></div>
+      <% } %>
     </div>
   </div>
 </section>
@@ -50,51 +46,6 @@
           <li>Recommendation letter from Bishop/congregation head (where applicable)</li>
           <li>Duly filled form with authorized signatories’ details</li>
         </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BENEFITS -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-4">Benefits of Joining</h2>
-    <div class="row text-center">
-      <div class="col-md-3 mb-4" data-aos="flip-left">
-        <div class="card shadow h-100 border-0">
-          <div class="card-body">
-            <i class="bi bi-cash-coin fs-1 text-success"></i>
-            <h5 class="mt-3">Quick Loan Processing</h5>
-            <p>Fast and reliable loan approval and disbursement process.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="100">
-        <div class="card shadow h-100 border-0">
-          <div class="card-body">
-            <i class="bi bi-graph-up fs-1 text-success"></i>
-            <h5 class="mt-3">Affordable Interest Rates</h5>
-            <p>Competitive rates that work in favor of our members.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="200">
-        <div class="card shadow h-100 border-0">
-          <div class="card-body">
-            <i class="bi bi-hourglass-split fs-1 text-success"></i>
-            <h5 class="mt-3">Flexible Repayment</h5>
-            <p>Enjoy a repayment period of up to 6 years.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="300">
-        <div class="card shadow h-100 border-0">
-          <div class="card-body">
-            <i class="bi bi-piggy-bank fs-1 text-success"></i>
-            <h5 class="mt-3">Savings Growth</h5>
-            <p>Minimum 6 months savings period to build your capital.</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>

@@ -43,7 +43,7 @@ body.app {
 .app-brand img { width: 41px; height: 34px; }
 .app-brand small { display: block; font-weight: 500; font-size: .72rem; color: #9fb0c0; letter-spacing: .04em; text-transform: uppercase; }
 .app-nav { list-style: none; margin: .5rem 0; padding: 0 .7rem; flex: 1; }
-.app-nav .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #8a9cae; padding: 1rem .6rem .35rem; }
+.app-nav .label { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: #8a9cae; padding: 1rem .6rem .35rem; }
 .app-nav a {
   display: flex; align-items: center; gap: .7rem; padding: .55rem .7rem; border-radius: 8px;
   color: #d3dbe4; text-decoration: none; font-weight: 500;
@@ -73,7 +73,7 @@ body.app {
 
 .stat { padding: 1rem 1.1rem; }
 .stat .k { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
-.stat .v { font-size: 1.45rem; font-weight: 700; margin-top: .2rem; font-variant-numeric: tabular-nums; }
+.stat .v { font-size: clamp(1.1rem, 4.2vw, 1.45rem); overflow-wrap: anywhere; font-weight: 700; margin-top: .2rem; font-variant-numeric: tabular-nums; }
 .stat .s { font-size: .82rem; color: var(--muted); }
 a.stat-link { color: inherit; text-decoration: none; display: block; }
 a.stat-link:hover .card { border-color: var(--brand); }
@@ -177,3 +177,26 @@ tr.clickable { cursor: pointer; }
   .no-print { display: none !important; }
   body.app { background: #fff; }
 }
+
+/* Phones: comfortable tap targets, and 16px inputs so iPhones don't zoom in */
+@media (max-width: 575.98px) {
+  .form-control, .form-select, .form-control-sm, .form-select-sm { font-size: 16px; }
+  .form-check-input { width: 1.35em; height: 1.35em; }
+  .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: .35rem; }
+  .btn-sm { min-height: 38px; }
+  .app-side-foot a { display: inline-block; padding: .35rem 0; }
+}
+
+/* Member tables turn into stacked cards on phones; labels come from the table header (see app-bottom). */
+@media (max-width: 575.98px) {
+  .table-stack thead { display: none; }
+  .table-stack, .table-stack tbody, .table-stack tr, .table-stack td { display: block; width: 100%; }
+  .table-stack tr { padding: .6rem .9rem; border-bottom: 1px solid var(--line); }
+  .table-stack td { border: 0 !important; padding: .2rem 0 !important; display: flex; justify-content: space-between; gap: 1rem; text-align: right !important; }
+  .table-stack td::before { content: attr(data-label); color: var(--muted); font-size: .8rem; text-align: left; flex-shrink: 0; }
+  .table-stack td:first-child { font-weight: 600; text-align: left !important; }
+  .table-stack td:first-child::before { display: none; }
+  .table-stack td[colspan] { display: block; text-align: left !important; }
+  .table-stack td[colspan]::before { display: none; }
+}
+.nom-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-bottom: .15rem; }

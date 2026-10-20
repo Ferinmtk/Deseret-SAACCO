@@ -64,7 +64,7 @@ body {
 =========================== */
 .custom-navbar {
   background: transparent;
-  transition: background-color 0.8s ease;
+  transition: background-color 0.25s ease;
   padding: 0.4rem 0.8rem;   /* reduced padding for smaller height */
   z-index: 9999;
 }
@@ -141,8 +141,10 @@ body {
 =========================== */
 .hero {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 6rem 0 3rem;
   background: url("/img/hero.jpeg") center/cover no-repeat;
   display: flex;
   align-items: center;
@@ -159,6 +161,8 @@ body {
   z-index: 0;
 }
 
+.hero-eyebrow { font-size: .85rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #eda547; margin-bottom: .75rem; }
+.hero .lead { max-width: 640px; margin: 0 auto; }
 .hero .container {
   position: relative;
   z-index: 1;
@@ -230,22 +234,12 @@ body {
   transform: scale(1.2);
 }
 
-.about-section .row.text-center .col-md-3,
-.about-section .row.text-center .col-md-4 {
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  margin: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
-}
-
-.about-section .row.text-center .col-md-3:hover,
-.about-section .row.text-center .col-md-4:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 58px rgba(0,0,0,0.15);
-  background: #f8f9fa;
-}
+/* Board and committee cards: round photo, name, role */
+.member-card { background: #fff; border: 1px solid #e3e8ee; border-radius: 14px; padding: 1.25rem .75rem; height: 100%; }
+.about-section .member-img, .member-img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; object-position: center top; background: var(--brand-soft); box-shadow: none !important; }
+.member-name { font-size: .98rem; font-weight: 700; margin: .75rem 0 .15rem; color: var(--ink); }
+.member-role { font-size: .85rem; color: var(--muted); margin: 0; }
+@media (max-width: 575.98px) { .about-section .member-img { width: 76px; height: 76px; } .member-name { font-size: .9rem; } }
 
 /* ===========================
    SERVICES PAGE
@@ -367,7 +361,7 @@ form input, form textarea {
 /* Payment details box */
 .pay-box { background: var(--brand); color: #fff; border-radius: 16px; padding: 2rem; }
 .pay-box .label { color: #b7c3cf; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
-.pay-box .value { font-size: 1.5rem; font-weight: 700; letter-spacing: .02em; }
+.pay-box .value { font-size: clamp(1.05rem, 4.6vw, 1.5rem); font-weight: 700; letter-spacing: .02em; overflow-wrap: anywhere; }
 
 .portal-btn { font-weight: 600; color: var(--brand) !important; }
 
@@ -385,3 +379,27 @@ form input, form textarea {
 .apply-form .hint { color: var(--muted); font-size: .92rem; margin-top: -.25rem; }
 .apply-form .form-control:focus, .apply-form .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(10, 32, 48, .15); }
 .next-steps { display: grid; gap: .75rem; }
+
+/* ===========================
+   PHONE MENU
+   The open menu gets a solid navy panel so links never sit on top of the page.
+=========================== */
+@media (max-width: 991.98px) {
+  .custom-navbar.menu-open { background-color: var(--brand); box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
+  .custom-navbar .navbar-collapse { margin-top: .5rem; padding: .25rem 0 .75rem; border-top: 1px solid rgba(255, 255, 255, .12); }
+  .custom-navbar .navbar-nav { align-items: stretch !important; }
+  .custom-navbar .navbar-nav .nav-link { display: block; margin-left: 0; padding: .7rem .25rem; font-size: 1rem; }
+  .custom-navbar .navbar-nav .nav-link::after { display: none; }
+  .custom-navbar .portal-btn { display: block; margin: .5rem 0 0 !important; padding: .6rem; font-size: 1rem; }
+}
+
+/* ===========================
+   PHONES: comfortable tap targets, and 16px inputs so iPhones don't zoom in
+=========================== */
+@media (max-width: 575.98px) {
+  .form-control, .form-select, .form-control-sm, .form-select-sm { font-size: 16px; }
+  .form-check-input { width: 1.35em; height: 1.35em; margin-top: .1em; }
+  .form-check-label { padding-left: .3rem; }
+  .btn { min-height: 44px; }
+  .btn-sm { min-height: 38px; }
+}
