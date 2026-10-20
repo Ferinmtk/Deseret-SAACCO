@@ -82,7 +82,7 @@
     $('why').textContent = p.dataset.why;
     const need = +p.dataset.guarantors && (+$('amount').value || 0) > <%= ownFree %>;
     $('gCard').style.display = need ? '' : 'none';
-    $('gNeed').textContent = need ? need + ' required' : '';
+    $('gNeed').textContent = need ? 'At least ' + p.dataset.guarantors + ' required' : '';
     quote();
   }
   let t;
