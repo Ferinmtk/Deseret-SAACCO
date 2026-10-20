@@ -3,6 +3,11 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Every form that changes something carries the session's CSRF token.
+  const csrf = document.querySelector('meta[name="csrf"]')?.content;
+  if (csrf) document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(f => {
+    const i = document.createElement('input'); i.type = 'hidden'; i.name = '_csrf'; i.value = csrf; f.appendChild(i);
+  });
   // Give each cell its column name, used as the label when tables stack on phones.
   document.querySelectorAll('table.table-stack').forEach(t => {
     const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());

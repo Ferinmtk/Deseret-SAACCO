@@ -2,6 +2,7 @@ const express = require('express');
 const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireMember } = require('../lib/auth');
 const S = require('../lib/sacco');
+const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 
 const router = express.Router();
 
@@ -21,11 +22,15 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const memberNo = String(req.body.memberNo || '').trim().toUpperCase();
+  const memberNo = String(req.body.memberNo || '').trim().toUpperCase().slice(0, 20);
+  const locked = await lockedFor('member', memberNo, req);
+  if (locked) return res.status(429).render('portal/login', { error: `Too many wrong passwords. Try again in ${locked} minute${locked === 1 ? '' : 's'}, or call the office.`, memberNo });
   const member = await one(`SELECT * FROM members WHERE member_no = ? AND status IN ('active','exiting')`, memberNo);
   if (!member || !checkPassword(String(req.body.password || ''), member.password_hash)) {
+    await recordFailure('member', memberNo, req);
     return res.status(401).render('portal/login', { error: 'Member number or password is incorrect.', memberNo });
   }
+  await clearFailures('member', memberNo);
   await req.startSession({ memberId: member.id, lastLogin: member.last_login });
   await run(`UPDATE members SET last_login = ? WHERE id = ?`, S.now(), member.id);
   await audit(fullName(member), 'Member signed in', 'member', member.id);
@@ -48,10 +53,27 @@ router.use(async (req, res, next) => {
   if (!member) { await req.endSession(); return res.redirect('/portal/login'); }
   req.member = member;
   res.locals.member = member;
+  // New members sign in with their ID number first and must choose their own password.
+  if (member.must_change_password && !['/change-password', '/logout'].includes(req.path)) return res.redirect('/portal/change-password');
   res.locals.pendingGuarantees = (await one(`SELECT COUNT(*) AS n FROM guarantees g JOIN loans l ON l.id = g.loan_id
     WHERE g.guarantor_id = ? AND g.status = 'pending' AND l.status = 'guarantors'`, member.id)).n;
   res.locals.path = req.originalUrl;
   next();
+});
+
+router.get('/change-password', (req, res) => res.render('portal/change-password', { title: 'Choose your password', error: null }));
+
+router.post('/change-password', async (req, res) => {
+  const fresh = String(req.body.next || ''), confirm = String(req.body.confirm || '');
+  const error = fresh.length < 8 ? 'Use at least 8 characters.'
+    : fresh !== confirm ? 'The two passwords don’t match.'
+    : fresh === req.member.id_number ? 'Choose something other than your ID number.'
+    : null;
+  if (error) return res.status(400).render('portal/change-password', { title: 'Choose your password', error });
+  await run('UPDATE members SET password_hash = ?, must_change_password = false WHERE id = ?', hashPassword(fresh), req.member.id);
+  await audit(fullName(req.member), 'Set first password', 'member', req.member.id);
+  req.flash('success', 'Password saved. Welcome to the member portal.');
+  res.redirect('/portal');
 });
 
 router.get('/', async (req, res) => {

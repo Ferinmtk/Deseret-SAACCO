@@ -4,23 +4,27 @@ const path = require('path');
 const { sessionMiddleware } = require('./lib/auth');
 const { loadSettings, run, one, tx } = require('./db');
 const S = require('./lib/sacco');
+const { securityHeaders, csrf } = require('./lib/security');
 
 // Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('trust proxy', 1); // behind Vercel's proxy; needed for secure cookies
+app.disable('x-powered-by');
+app.use(securityHeaders);
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => { req.body ??= {}; next(); });
 app.use((req, res, next) => {
-  Object.assign(res.locals, { S, title: null, path: req.path });
+  // DEMO_MODE=1 shows the demo sign-in details; leave it unset for real use.
+  Object.assign(res.locals, { S, title: null, path: req.path, demo: process.env.DEMO_MODE === '1' });
   next();
 });
 
 // Portal and admin need a session and the current rules; the public pages don't.
-const appMiddleware = [sessionMiddleware, async (req, res, next) => { await loadSettings(); next(); }];
+const appMiddleware = [sessionMiddleware, csrf, async (req, res, next) => { await loadSettings(); next(); }];
 
 // Routes
 app.get('/', (req, res) => {
