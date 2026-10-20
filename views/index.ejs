@@ -1,14 +1,54 @@
 <%- include('partials/header') %>
 
-<!-- HERO SECTION -->
-<section class="hero d-flex align-items-center text-white text-center">
+<!-- HERO: a member pays by M-Pesa and watches her balance and loan limit rise.
+     Plays once on load; people who turn off motion see the end state. -->
+<section class="home-hero" id="payDemo">
   <div class="container">
-    <p class="hero-eyebrow">Deseret SACCO Society Ltd · Since 2006</p>
-    <h1 class="display-3 fw-bold">Save, borrow and grow together</h1>
-    <p class="lead">The savings and credit co-operative for employees of The Church of Jesus Christ of Latter-day Saints in Kenya and their families.</p>
-    <div class="d-flex flex-wrap gap-2 justify-content-center mt-3">
-      <a href="/join/apply" class="btn btn-gold btn-lg">Join Us</a>
-      <a href="/portal/login" class="btn btn-outline-light btn-lg">Member login</a>
+    <div class="row g-4 g-lg-5 align-items-center">
+      <div class="col-lg-6 text-center text-lg-start">
+        <p class="hero-eyebrow">Deseret SACCO Society Ltd · Since 2006</p>
+        <h1 class="home-title">Save a little.<br>Borrow three times more.</h1>
+        <p class="home-lead">Every shilling you deposit by M-Pesa or payroll grows your savings and raises how much you can borrow — up to three times your deposits.</p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mt-4">
+          <a href="/join/apply" class="btn btn-gold btn-lg">Become a member</a>
+          <a href="/portal/login" class="btn btn-outline-light btn-lg">Member login</a>
+        </div>
+        <div class="home-trust"><span><b>Paybill <%= S.SACCO.paybill %></b></span><span>Owned by members</span><span>One member, one vote</span></div>
+      </div>
+      <div class="col-lg-6">
+        <div class="phone" aria-hidden="true">
+          <div class="phone-screen">
+            <div class="phone-punch"></div>
+            <div class="phone-status"><span>9:15</span><span>Safaricom · 4G <i class="bi bi-reception-4"></i></span></div>
+            <div class="phone-appbar">
+              <div class="phone-brand"><img src="/img/brand/logo-mark-reverse.svg" alt="">DESERET SACCO</div>
+              <div class="phone-label">Deposits</div>
+              <div class="phone-bal" data-count-from="245000" data-count-to="250000">KES 245,000</div>
+              <div class="phone-sub">Grace Wanjiru · DS0001</div>
+            </div>
+            <div class="phone-limit"><div>You can borrow up to<b data-count-from="735000" data-count-to="750000" data-count-delay="950">KES 735,000</b></div><span>3× deposits</span></div>
+            <div class="tx-list">
+              <div class="tx-head">Recent</div>
+              <div class="tx tx-new"><div>M-Pesa deposit<small>UJK4X8B2QP · just now</small></div><span>+5,000</span></div>
+              <div class="tx"><div>Check-off · October<small>Payroll deduction</small></div><span>+12,000</span></div>
+              <div class="tx"><div>Check-off · September<small>Payroll deduction</small></div><span>+12,000</span></div>
+            </div>
+            <div class="stk-scrim"></div>
+            <div class="stk">
+              <div class="stk-app">M-PESA</div>
+              <p>Do you want to pay Ksh5,000.00 to DESERET SACCO for account DS0001? Enter M-PESA PIN</p>
+              <div class="stk-pin"><i></i><i></i><i></i><i></i></div>
+              <div class="stk-acts"><span>CANCEL</span><span class="stk-ok">OK</span></div>
+            </div>
+            <div class="sms">
+              <div class="sms-from">MPESA<span>now</span></div>
+              <p>UJK4X8B2QP Confirmed. Ksh5,000.00 sent to DESERET SACCO for account DS0001 on 20/10/26 at 9:15 AM New M-PESA balance is Ksh12,430.50. Transaction cost, Ksh0.00.</p>
+            </div>
+          </div>
+        </div>
+        <p class="phone-note">Sample member. Pay <b>Ksh 5,000</b> and your loan limit goes up by <b>Ksh 15,000</b>.</p>
+        <button type="button" class="replay-btn" data-replay="payDemo"><i class="bi bi-arrow-counterclockwise"></i> Replay</button>
+      </div>
     </div>
   </div>
 </section>
@@ -19,21 +59,21 @@
     <h2>What membership gives you</h2>
     <p class="intro">Everything a member needs, run by members for members.</p>
     <div class="row g-4 text-start">
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="simple-card">
           <i class="bi bi-piggy-bank"></i>
           <h3 class="h5">Save</h3>
           <p>Build your deposits every month through payroll, M-Pesa or a standing order. Deposits earn interest and your shares earn a dividend each year.</p>
         </div>
       </div>
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="simple-card">
           <i class="bi bi-cash-coin"></i>
           <h3 class="h5">Borrow</h3>
           <p>After six months of saving, borrow up to three times your deposits — for school fees, emergencies, building or a family holiday.</p>
         </div>
       </div>
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="simple-card">
           <i class="bi bi-people"></i>
           <h3 class="h5">Belong</h3>
@@ -44,23 +84,51 @@
   </div>
 </section>
 
+<!-- SAVINGS CALCULATOR -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="row g-4 g-lg-5 align-items-center">
+      <div class="col-lg-5 text-center text-lg-start">
+        <h2>See what saving does in a year</h2>
+        <p class="intro mx-0">Choose how much to save each month. After six months you can borrow up to three times what you’ve saved.</p>
+        <a href="/join/apply" class="btn btn-primary">Start saving</a>
+      </div>
+      <div class="col-lg-7">
+        <div class="calc" id="calc">
+          <label class="calc-q" for="calcRange">If I save every month</label>
+          <div class="calc-amt"><output id="calcAmt">KES 5,000</output> <small>/ month</small></div>
+          <input type="range" id="calcRange" min="1000" max="30000" step="500" value="5000">
+          <div class="calc-scale"><span>KES 1,000</span><span>KES 30,000</span></div>
+          <div class="calc-bars" aria-hidden="true"><% for (let i = 0; i < 12; i++) { %><i></i><% } %></div>
+          <div class="calc-months" aria-hidden="true"><span>Month 1</span><span>Month 6 · loans open</span><span>Month 12</span></div>
+          <div class="calc-outs" aria-live="polite">
+            <div class="calc-out"><span>Deposits after a year</span><b id="calcDep">KES 60,000</b></div>
+            <div class="calc-out calc-gold"><span>You could borrow</span><b id="calcLim">KES 180,000</b></div>
+          </div>
+          <p class="calc-fine">Before interest. Loans also depend on your pay: repayments and savings can’t take more than two-thirds of basic pay.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- HOW TO JOIN -->
-<section class="section section-alt text-center">
+<section class="section text-center">
   <div class="container">
     <h2>Joining takes three steps</h2>
-    <p class="intro">Open to employees of the Church and their families. <a href="/join">See who can join</a>.</p>
+    <p class="intro">Open to employees of The Church of Jesus Christ of Latter-day Saints in Kenya and their families. <a href="/join">See who can join</a>.</p>
     <div class="row g-4">
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="step-num">1</div>
         <h3 class="h6 fw-bold">Apply online</h3>
         <p class="text-muted mb-0">Fill in the <a href="/join/apply">membership application</a>, then bring a copy of your ID and your employer’s introduction letter.</p>
       </div>
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="step-num">2</div>
         <h3 class="h6 fw-bold">Pay the entrance fee and shares</h3>
         <p class="text-muted mb-0">KES 1,000 entrance fee and KES 6,500 share capital (325 shares of KES 20).</p>
       </div>
-      <div class="col-md-4 fade-in">
+      <div class="col-md-4">
         <div class="step-num">3</div>
         <h3 class="h6 fw-bold">Get your member number</h3>
         <p class="text-muted mb-0">Once the committee approves you, you can sign in to the member portal.</p>
@@ -73,27 +141,102 @@
   </div>
 </section>
 
-<!-- ALREADY A MEMBER -->
-<section class="section">
+<!-- ALREADY A MEMBER: a family photo with a live statement. Plays when scrolled into view. -->
+<section class="member-band" id="stmtDemo">
   <div class="container">
-    <div class="pay-box">
-      <div class="row g-4 align-items-center">
-        <div class="col-lg-5">
-          <h2 class="h3 fw-bold text-white mb-2">Already a member?</h2>
-          <p class="mb-3" style="color: #cdd6df;">Check your balances, apply for a loan, accept guarantor requests and download statements in the member portal.</p>
-          <a href="/portal/login" class="btn btn-light fw-semibold" style="color: var(--brand);">Sign in to the portal</a>
+    <div class="row g-4 g-lg-5 align-items-center">
+      <div class="col-lg-6 text-center text-lg-start">
+        <h2 class="text-white">Your family’s savings, growing every payday</h2>
+        <p class="member-band-lead">Members check balances, apply for loans, accept guarantor requests and download statements in the member portal.</p>
+        <a href="/portal/login" class="btn btn-gold btn-lg">Sign in to the portal</a>
+        <div class="pay-details">
+          <div><span>M-Pesa Paybill</span><b><%= S.SACCO.paybill %></b></div>
+          <div><span>Account number</span><b><%= S.SACCO.account %></b></div>
         </div>
-        <div class="col-6 col-lg-3 offset-lg-1">
-          <div class="label">M-Pesa Paybill</div>
-          <div class="value"><%= S.SACCO.paybill %></div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="label">Account number</div>
-          <div class="value"><%= S.SACCO.account %></div>
+      </div>
+      <div class="col-lg-5 offset-lg-1">
+        <div class="stmt-stack" aria-hidden="true">
+          <div class="stmt-toast"><span class="bi bi-check-lg"></span><div><b>Faith Muthoni accepted</b> your guarantor request for the School Fees Loan.<small>Sent to the credit officer · 2 of 2 guarantors</small></div></div>
+          <div class="stmt">
+            <div class="stmt-top"><span class="stmt-who"><span class="stmt-av">GW</span>Grace’s deposits</span><span>Oct 2026</span></div>
+            <div class="stmt-big"><span data-count-from="245000" data-count-to="250000" data-count-delay="900">KES 245,000</span><small>Backs her loans · earns interest</small></div>
+            <div class="tx-list">
+              <div class="tx tx-new"><div>M-Pesa · Paybill <%= S.SACCO.paybill %><small>UJK4X8B2QP · just now</small></div><span>+5,000</span></div>
+              <div class="tx"><div>Check-off · October<small>Payroll deduction</small></div><span>+12,000</span></div>
+              <div class="tx"><div>Check-off · September<small>Payroll deduction</small></div><span>+12,000</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const kes = n => 'KES ' + n.toLocaleString('en-KE');
+
+  // Count a number up, easing out, over about a second.
+  const countUp = (el, from, to) => {
+    const start = performance.now();
+    const step = t => {
+      const p = Math.min((t - start) / 1100, 1);
+      el.textContent = kes(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  // The CSS plays the sequence; JS starts it and runs the number count-ups.
+  // landsAt is when (ms) the deposit lands, so the counts start just after it.
+  const play = (scene, landsAt) => {
+    const counters = scene.querySelectorAll('[data-count-from]');
+    (scene._timers || []).forEach(clearTimeout);
+    scene._timers = [];
+    scene.classList.remove('play', 'done');
+    counters.forEach(el => { el.textContent = kes(+el.dataset.countFrom); });
+    if (reduced) {
+      scene.classList.add('done');
+      counters.forEach(el => { el.textContent = kes(+el.dataset.countTo); });
+      return;
+    }
+    void scene.offsetWidth; // restart the CSS animations
+    scene.classList.add('play');
+    counters.forEach(el => scene._timers.push(setTimeout(
+      () => countUp(el, +el.dataset.countFrom, +el.dataset.countTo),
+      landsAt + 150 + (+el.dataset.countDelay || 0))));
+  };
+
+  // Start each scene once its card is mostly on screen (on phones the handset is below the fold).
+  const playWhenSeen = (scene, card, landsAt) => {
+    const seen = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { play(scene, landsAt); seen.disconnect(); }
+    }, { threshold: 0.6 });
+    seen.observe(card);
+  };
+  playWhenSeen(document.getElementById('payDemo'), document.querySelector('.phone'), 4600);
+  playWhenSeen(document.getElementById('stmtDemo'), document.querySelector('.stmt'), 1100);
+
+  document.querySelectorAll('[data-replay]').forEach(btn =>
+    btn.addEventListener('click', () => play(document.getElementById(btn.dataset.replay), 4600)));
+
+  // Savings calculator: deposits after 12 months and the 3× loan limit.
+  const range = document.getElementById('calcRange');
+  const bars = document.querySelectorAll('.calc-bars i');
+  const update = () => {
+    const m = +range.value, min = +range.min, max = +range.max;
+    range.style.setProperty('--p', ((m - min) / (max - min) * 100) + '%');
+    document.getElementById('calcAmt').textContent = kes(m);
+    document.getElementById('calcDep').textContent = kes(m * 12);
+    document.getElementById('calcLim').textContent = kes(m * 36);
+    // Bars keep their shape (month 1 to 12) and grow taller with the amount saved.
+    const scale = 0.35 + 0.65 * (m - min) / (max - min);
+    bars.forEach((b, i) => { b.style.height = ((i + 1) / 12 * 100 * scale) + '%'; });
+  };
+  range.addEventListener('input', update);
+  update();
+})();
+</script>
 
 <%- include('partials/footer') %>
