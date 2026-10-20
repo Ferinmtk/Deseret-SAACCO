@@ -30,7 +30,7 @@ const SHAFT_WIDTH = 8;
 const TAIL = '5.6,92.5 16.6,88 11.4,82';
 const HEAD = '108.5,10.5 87.5,21.5 103.5,35.5';
 
-function mark({ hexFill, outline, flat }) {
+function mark({ hexFill, outline, flat, hexStroke }) {
   const gold = flat || 'url(#gold)';
   const defs = flat ? '' : `<defs><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">` +
     `<stop offset="0" stop-color="${BRAND.goldLight}"/><stop offset=".55" stop-color="${BRAND.gold}"/><stop offset="1" stop-color="${BRAND.goldDark}"/></linearGradient>` +
@@ -41,7 +41,7 @@ function mark({ hexFill, outline, flat }) {
     `<polygon points="${TAIL}" fill="${fill}" stroke="${stroke === fill ? 'none' : stroke}" stroke-width="${extra}" stroke-linejoin="round"/>` +
     `<polygon points="${HEAD}" fill="${fill}" stroke="${stroke === fill ? 'none' : stroke}" stroke-width="${extra}" stroke-linejoin="round"/>`;
   return defs +
-    `<polygon points="${HEX}" fill="${hexFill}"/>` +
+    `<polygon points="${HEX}" fill="${hexFill}"${hexStroke ? ` stroke="${hexStroke}" stroke-width="3.2" stroke-linejoin="round"` : ''}/>` +
     `<g${clip} fill="${gold}">${STRIPES.map(d => `<path d="${d}"/>`).join('')}</g>` +
     arrow(outline, outline, 2.6) + arrow(gold, gold, 0);
 }
@@ -51,14 +51,14 @@ const BOX = '0 0 120 100';
 const files = {
   // For light backgrounds (as on the poster)
   'logo-mark.svg': svg(BOX, mark({ hexFill: BRAND.navy, outline: '#ffffff' })),
-  // For navy or dark backgrounds: a lighter navy hexagon so the shape doesn't disappear
-  'logo-mark-reverse.svg': svg(BOX, mark({ hexFill: BRAND.navyLight, outline: BRAND.navy })),
+  // For navy or dark backgrounds: a white outline keeps the hexagon visible against navy
+  'logo-mark-reverse.svg': svg('-2 -2 124 104', mark({ hexFill: BRAND.navy, outline: BRAND.navy, hexStroke: '#ffffff' })),
   // One colour, for rubber stamps, photocopies and forms (hexagon outline, solid shapes)
   'logo-mark-mono.svg': svg(BOX, mark({ hexFill: '#ffffff', outline: '#ffffff', flat: BRAND.navy }).replace(
     `<polygon points="${HEX}" fill="#ffffff"/>`, `<polygon points="${HEX}" fill="none" stroke="${BRAND.navy}" stroke-width="5"/>`)),
   // App and phone home-screen icon: the mark on a navy rounded square
   'app-icon.svg': svg('0 0 100 100', `<rect width="100" height="100" rx="22" fill="${BRAND.navy}"/>` +
-    `<g transform="translate(8 15) scale(0.72)">${mark({ hexFill: BRAND.navyLight, outline: BRAND.navy })}</g>`),
+    `<g transform="translate(8 15) scale(0.72)">${mark({ hexFill: BRAND.navy, outline: BRAND.navy, hexStroke: '#ffffff' })}</g>`),
 };
 for (const [name, content] of Object.entries(files)) fs.writeFileSync(path.join(out, name), content);
 

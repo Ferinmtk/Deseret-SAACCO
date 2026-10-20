@@ -42,7 +42,7 @@
 
 <h6 class="small-caps mb-2">Loans you guarantee</h6>
 <div class="card mb-4">
-  <div class="table-responsive"><table class="table">
+  <div class="table-responsive"><table class="table table-stack">
     <thead><tr><th>Borrower</th><th>Loan</th><th class="text-end">You pledged</th><th class="text-end">Still at risk</th><th>Status</th></tr></thead>
     <tbody>
       <% for (const l of guaranteed) { const share = l.status === 'disbursed' ? l.state.outstanding / l.total_payable : 1; %>
@@ -59,7 +59,7 @@
 
 <% if (past.length) { %>
   <h6 class="small-caps mb-2">History</h6>
-  <div class="card"><div class="table-responsive"><table class="table table-sm">
+  <div class="card"><div class="table-responsive"><table class="table table-sm table-stack">
     <tbody><% for (const g of past) { %><tr><td><%= g.borrower %></td><td><%= g.product_name %></td><td class="num text-end"><%= k(g.amount) %></td>
       <td><span class="pill pill-muted"><%= g.status === 'declined' ? 'You declined' : g.loan_status === 'closed' ? 'Released — loan repaid' : 'Released — loan declined' %></span></td></tr><% } %></tbody>
   </table></div></div>

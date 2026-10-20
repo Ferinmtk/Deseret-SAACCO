@@ -107,7 +107,7 @@ router.get('/', async (req, res) => {
   const staleGuarantees = await all(`SELECT g.*, l.member_id, b.first_name || ' ' || b.last_name AS borrower, gm.first_name || ' ' || gm.last_name AS guarantor
                                FROM guarantees g JOIN loans l ON l.id = g.loan_id JOIN members b ON b.id = l.member_id JOIN members gm ON gm.id = g.guarantor_id
                                WHERE g.status = 'pending' AND l.status = 'guarantors' AND g.requested_at < now() - interval '3 days' ORDER BY g.requested_at`);
-  const activity = await all('SELECT * FROM audit ORDER BY id DESC LIMIT 8');
+  const activity = await all(`SELECT * FROM audit WHERE action NOT IN ('Staff signed in', 'Member signed in') ORDER BY id DESC LIMIT 8`);
   res.render('admin/dashboard', { title: 'Dashboard', totals, members, newMembers, pf, months, channels, exiting, staleGuarantees, activity });
 });
 
