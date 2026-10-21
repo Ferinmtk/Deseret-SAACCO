@@ -511,6 +511,7 @@ form input, form textarea {
 .apply-form .opt { font-weight: 400; color: var(--muted); font-size: .82rem; }
 .apply-form .hint { color: var(--muted); font-size: .92rem; margin-top: -.25rem; }
 .apply-form .form-control:focus, .apply-form .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(10, 32, 48, .15); }
+.apply-form .is-invalid:focus { border-color: var(--bs-form-invalid-border-color); box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .2); }
 .next-steps { display: grid; gap: .75rem; }
 
 /* ===========================
