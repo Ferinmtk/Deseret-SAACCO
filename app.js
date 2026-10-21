@@ -60,7 +60,6 @@ app.post('/join/apply', async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) errors.push('Enter a valid email address.');
   if (!f.address) errors.push('Enter your present address.');
   if (f.terms === 'contract' && !f.contract_end) errors.push('Enter when your contract ends.');
-  if (f.terms !== 'not employed' && !f.payroll_no) errors.push('Enter your payroll number.');
   if (!f.bank_name || !f.bank_branch || !f.bank_account) errors.push('Enter your bank, branch and account number.');
   if (monthly < 1000) errors.push('The monthly contribution must be at least KES 1,000.');
   if (!f.nok_name || !f.nok_relationship || !f.nok_phone) errors.push('Enter your next of kin’s name, relationship and phone number.');
@@ -79,7 +78,7 @@ app.post('/join/apply', async (req, res) => {
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'online', now())`,
       f.title || null, f.first_name, f.last_name, f.date_of_birth, f.id_number.toUpperCase(), f.kra_pin, f.phone, f.office_phone || null, f.email, f.address, f.ward || null,
       employed ? 'The Church of Jesus Christ of Latter-day Saints' : null, employed ? f.department || null : null, employed ? f.designation || null : null,
-      f.terms, f.terms === 'contract' ? f.contract_end : null, employed ? f.payroll_no : null, f.bank_name, f.bank_branch, f.bank_account, monthly)).lastInsertRowid;
+      f.terms, f.terms === 'contract' ? f.contract_end : null, employed ? f.payroll_no || null : null, f.bank_name, f.bank_branch, f.bank_account, monthly)).lastInsertRowid;
     await run('INSERT INTO nominees (member_id, name, relationship, id_number, phone, address, witness, share_pct) VALUES (?, ?, ?, ?, ?, ?, ?, 100)',
       id, f.nok_name, f.nok_relationship, f.nok_id || null, f.nok_phone, f.nok_address || null, f.witness || null);
     await run(`INSERT INTO audit (actor, action, entity, entity_id, details) VALUES (?, 'Applied online for membership', 'member', ?, ?)`,
