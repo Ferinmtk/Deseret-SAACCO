@@ -35,7 +35,7 @@ async function seed() {
     ['entry_fee', 1000, 'Entry fee, KES (BL9)'],
     ['min_share_capital', 6500, 'Minimum share capital, KES (325 shares × 20, BL9)'],
     ['share_value', 20, 'Value of one share, KES (BL9)'],
-    ['min_monthly_deposit', 1000, 'Minimum monthly deposit, KES (from the website, not in the by-laws)'],
+    ['min_monthly_deposit', 2000, 'Minimum monthly deposit, KES'],
     ['min_membership_months', 6, 'Months of membership before a loan (BL64 I)'],
     ['min_take_home_pct', 33.33, 'Minimum take-home after all deductions incl. savings, % of basic pay (BL64 XII)'],
     ['max_loans_guaranteed', 3, 'Maximum loans one member may guarantee (BL64 XIX, BL68)'],
