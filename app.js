@@ -61,7 +61,7 @@ app.post('/join/apply', async (req, res) => {
   if (!f.address) errors.push('Enter your present address.');
   if (f.terms === 'contract' && !f.contract_end) errors.push('Enter when your contract ends.');
   if (!f.bank_name || !f.bank_branch || !f.bank_account) errors.push('Enter your bank, branch and account number.');
-  if (monthly < 1000) errors.push('The monthly contribution must be at least KES 1,000.');
+  if (monthly < 2000) errors.push('The monthly contribution must be at least KES 2,000.');
   if (!f.nok_name || !f.nok_relationship || !f.nok_phone) errors.push('Enter your next of kin’s name, relationship and phone number.');
   if (!f.agree_bylaws || !f.agree_data) errors.push('Tick both declarations.');
   if (!f.signature) errors.push('Type your full name as your signature.');

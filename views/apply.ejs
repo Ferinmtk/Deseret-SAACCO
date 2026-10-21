@@ -76,9 +76,9 @@
 
       <fieldset>
         <legend><span>4</span> Monthly contribution</legend>
-        <p class="hint">How much you’ll save each month towards shares and deposits. The minimum is KES 1,000. Church employees authorise this as a payroll deduction; others pay by standing order or M-Pesa.</p>
+        <p class="hint">How much you’ll save each month towards shares and deposits. The minimum is KES 2,000. Church employees authorise this as a payroll deduction; others pay by standing order or M-Pesa.</p>
         <div class="row g-3">
-          <div class="col-sm-5"><label class="form-label" for="monthly_contribution">Amount per month (KES)</label><input class="form-control" type="number" min="1000" step="100" id="monthly_contribution" name="monthly_contribution" value="<%= v('monthly_contribution') || 1000 %>" required></div>
+          <div class="col-sm-5"><label class="form-label" for="monthly_contribution">Amount per month (KES)</label><input class="form-control" type="number" min="2000" step="100" id="monthly_contribution" name="monthly_contribution" value="<%= v('monthly_contribution') || 2000 %>" required></div>
         </div>
       </fieldset>
 
