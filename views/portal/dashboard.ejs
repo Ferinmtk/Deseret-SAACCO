@@ -29,7 +29,8 @@
         <div class="k">Your net position</div>
         <div class="v num"><%= k(worth) %></div>
         <div class="s">Shares + savings <%= k(worth + owed) %> &minus; loans <%= k(owed) %></div>
-        <div class="s mt-3"><i class="bi bi-clock-history"></i> Last sign-in <%= lastLogin ? S.fmtDate(lastLogin) : 'first time. Welcome!' %></div>
+        <div class="s mt-3"><i class="bi bi-clock-history"></i> Last sign-in <%= lastLogin ? S.fmtDate(lastLogin) : 'first time. Welcome!' %><% if (lastLogin && lastLoginFrom) { %> · <%= lastLoginFrom %><% } %></div>
+        <% if (lastLogin) { %><div class="s small">Not you? <a href="/portal/profile#password">Change your password</a> and call the office.</div><% } %>
       </div>
     </div>
   </div>

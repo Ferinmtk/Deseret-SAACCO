@@ -90,6 +90,7 @@
       <dt class="col-5">KRA PIN</dt><dd class="col-7"><%= m.kra_pin || '—' %></dd>
       <dt class="col-5">Email</dt><dd class="col-7"><%= m.email || '—' %></dd>
       <dt class="col-5">Monthly contribution</dt><dd class="col-7"><%= m.monthly_contribution ? k(m.monthly_contribution) : '—' %></dd>
+      <dt class="col-5">Last portal sign-in</dt><dd class="col-7"><%= m.last_login ? S.fmtDate(m.last_login) + (m.last_login_from ? ' · ' + m.last_login_from : '') : 'Never' %></dd>
       <dt class="col-5">Applied</dt><dd class="col-7"><%= m.source === 'online' ? 'Online' + (m.declared_at ? ', declaration signed ' + S.fmtDate(m.declared_at) : '') : 'At the office' %></dd>
       <dt class="col-5">Date of birth</dt><dd class="col-7"><%= S.fmtDate(m.date_of_birth) %></dd>
       <dt class="col-5">Address</dt><dd class="col-7"><%= m.address || '—' %></dd>
