@@ -4,6 +4,7 @@ const { one, all, run, tx, setting, audit } = require('../db');
 const { checkPassword, hashPassword, requireMember } = require('../lib/auth');
 const S = require('../lib/sacco');
 const { sendCsv } = require('../lib/csv');
+const { whereFrom } = require('../lib/where');
 const M = require('../lib/mpesa');
 const { refresh } = require('./mpesa');
 const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
@@ -49,12 +50,13 @@ router.post('/login', async (req, res) => {
   const member = await one(`SELECT * FROM members WHERE member_no = ? AND status IN ('active','exiting')`, memberNo);
   if (!member || !checkPassword(String(req.body.password || ''), member.password_hash)) {
     await recordFailure('member', memberNo, req);
+    if (member) await audit(fullName(member), 'Failed member sign-in', 'member', member.id, whereFrom(req, { ip: true }));
     return res.status(401).render('portal/login', { error: 'Member number or password is incorrect.', memberNo });
   }
   await clearFailures('member', memberNo);
-  await req.startSession({ memberId: member.id, lastLogin: member.last_login });
-  await run(`UPDATE members SET last_login = ? WHERE id = ?`, S.now(), member.id);
-  await audit(fullName(member), 'Member signed in', 'member', member.id);
+  await req.startSession({ memberId: member.id, lastLogin: member.last_login, lastLoginFrom: member.last_login_from });
+  await run(`UPDATE members SET last_login = ?, last_login_from = ? WHERE id = ?`, S.now(), whereFrom(req), member.id);
+  await audit(fullName(member), 'Member signed in', 'member', member.id, whereFrom(req, { ip: true }));
   res.redirect('/portal');
 });
 
@@ -114,6 +116,7 @@ router.get('/', async (req, res) => {
     title: 'Overview', minShares: setting('min_share_capital'), bal, loans, owed, eligibility, goals, recent, capacity, guaranteed,
     worth: bal.shares + bal.deposits + bal.holiday + bal.family - owed,
     lastLogin: req.session.lastLogin,
+    lastLoginFrom: req.session.lastLoginFrom,
   });
 });
 

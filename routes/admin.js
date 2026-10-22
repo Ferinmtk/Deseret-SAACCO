@@ -5,6 +5,7 @@ const { checkPassword, hashPassword, requireStaff } = require('../lib/auth');
 const S = require('../lib/sacco');
 const { lockedFor, recordFailure, clearFailures } = require('../lib/security');
 const { sendCsv } = require('../lib/csv');
+const { whereFrom } = require('../lib/where');
 
 const router = express.Router();
 
@@ -43,13 +44,13 @@ router.post('/login', async (req, res) => {
   // A switched-off login (someone who has left office) fails like a wrong password.
   if (!staff || !staff.active || !checkPassword(String(req.body.password || ''), staff.password_hash)) {
     await recordFailure('staff', email, req);
-    await audit(email, 'Failed staff sign-in', 'staff', staff ? staff.id : null, req.ip);
+    await audit(email, 'Failed staff sign-in', 'staff', staff ? staff.id : null, whereFrom(req, { ip: true }));
     return res.status(401).render('admin/login', { error: 'Email or password is incorrect.', email });
   }
   await clearFailures('staff', email);
   await req.startSession({ staffId: staff.id, staffRole: staff.role });
-  await run('UPDATE staff SET last_login = ? WHERE id = ?', S.now(), staff.id);
-  await audit(staff.name, 'Staff signed in', 'staff', staff.id);
+  await run('UPDATE staff SET last_login = ?, last_login_from = ? WHERE id = ?', S.now(), whereFrom(req), staff.id);
+  await audit(staff.name, 'Staff signed in', 'staff', staff.id, whereFrom(req, { ip: true }));
   res.redirect('/admin');
 });
 

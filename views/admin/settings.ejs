@@ -38,7 +38,7 @@
       <tr class="<%= s.active ? '' : 'text-muted' %>">
         <td><%= s.name %><% if (!s.active) { %> <span class="pill pill-muted">Switched off</span><% } else if (s.must_change_password) { %> <span class="pill pill-warn">Not signed in yet</span><% } %></td>
         <td class="small"><%= s.email %></td><td><%= ROLE_LABELS[s.role] %></td>
-        <td class="small"><%= s.last_login ? S.fmtDate(s.last_login) : '—' %></td>
+        <td class="small"><%= s.last_login ? S.fmtDate(s.last_login) : '—' %><% if (s.last_login_from) { %><div class="text-muted"><%= s.last_login_from %></div><% } %></td>
         <td class="text-end"><% if (can.settings && s.id !== staff.id) { %>
           <form method="POST" action="/admin/staff/<%= s.id %>/<%= s.active ? 'off' : 'on' %>" class="d-inline">
             <button class="btn btn-sm <%= s.active ? 'btn-outline-danger' : 'btn-outline-primary' %>" <% if (s.active) { %>onclick="return confirm('Switch off <%= s.name.replace(/'/g, '') %>’s login? They will no longer be able to sign in.')"<% } %>><%= s.active ? 'Switch off' : 'Switch on' %></button>
